@@ -63,8 +63,8 @@
 			</div>
 			<div class="flex gap-2">
 				<button class="flex-1 py-2 px-3 rounded-full text-xs font-semibold text-white" style="background: #8B6914;">&#x1F3AF; 一键志愿 · 高考</button>
-				<button class="flex-1 py-2 px-3 rounded-full text-xs font-medium border" style="border-color: #E5DDD0; color: #8A8A8A; background: #FDF8F0;">&#x1F4DD; 一键上岸 · 考研</button>
-				<button class="flex-1 py-2 px-3 rounded-full text-xs font-medium border" style="border-color: #E5DDD0; color: #8A8A8A; background: #FDF8F0;">&#x2708;&#xFE0F; 一键 Offer · 留学</button>
+				<button onclick="show_waitlist('kaoyan')" class="flex-1 py-2 px-3 rounded-full text-xs font-medium border cursor-pointer" style="border-color: #E5DDD0; color: #8A8A8A; background: #FDF8F0;">&#x1F4DD; 一键上岸 · 考研</button>
+				<button onclick="show_waitlist('gongwuyuan')" class="flex-1 py-2 px-3 rounded-full text-xs font-medium border cursor-pointer" style="border-color: #E5DDD0; color: #8A8A8A; background: #FDF8F0;">&#x1F3DB;&#xFE0F; 一键考公 · 公务员</button>
 			</div>
 		</nav>
 
@@ -79,7 +79,7 @@
 			</div>
 			<h1 class="text-4xl font-black leading-tight mb-1 text-dark">不浪费一分</h1>
 			<h1 class="text-4xl font-black leading-tight mb-4" style="color: #C94A4A;">不滑档 不踩坑</h1>
-			<p class="text-sm leading-relaxed mb-6" style="color: #5A5A5A;">6 个 AI 智能体分析 5 年录取数据，2 分钟生成你的 96 志愿冲稳保报告，精准到每一个专业组。</p>
+			<p class="text-sm leading-relaxed mb-6" style="color: #5A5A5A;">6 个 AI 智能体 &middot; Claude 4.6 深度推理 &middot; 基于公开录取数据 &middot; 2 分钟生成 96 志愿参考方案，精准到每一个专业组。</p>
 
 			<!-- Countdown Card -->
 			<div class="rounded-2xl p-4" style="background: #1A1A1A;">
@@ -105,7 +105,7 @@
 						<div class="text-[10px] text-muted uppercase tracking-wider">SEC</div>
 					</div>
 				</div>
-				<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，一分之差可能差出一所学校。别让今年的努力白费。</p>
+				<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，每一分都可能决定一所学校的档次。让 AI 帮你做好参考决策。</p>
 			</div>
 		</section>
 
@@ -119,23 +119,23 @@
 			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
 				<div class="flex items-center gap-3">
 					<div class="flex-1 text-center">
-						<div class="text-xs text-muted mb-1">名师一对一</div>
-						<div class="text-xl font-bold line-through" style="color: #AAAAAA;">&#xFFE5;12,999</div>
-						<div class="text-[10px] text-muted mt-1">秒空 · 排不上</div>
+						<div class="text-xs text-muted mb-1">名师天花板</div>
+						<div class="text-xl font-bold line-through" style="color: #AAAAAA;">&#xFFE5;17,999</div>
+						<div class="text-[10px] text-muted mt-1">抢不到 &middot; 秒售罄</div>
 					</div>
 					<div class="text-xl" style="color: #C9A96E;">&#x2192;</div>
 					<div class="flex-1 text-center">
 						<div class="text-xs text-muted mb-1">Me Offer AI</div>
-						<div class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;9.9</div>
-						<div class="text-[10px] text-muted mt-1">即时 · 无限改</div>
+						<div class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;299</div>
+						<div class="text-[10px] text-muted mt-1">即时 &middot; 无限改</div>
 					</div>
 				</div>
 			</div>
 			<div class="flex gap-3 mb-3">
-				<button class="flex-1 py-3 rounded-xl text-sm font-bold text-white" style="background: #C94A4A;" onclick="scroll_to_plans()">立即试算 &#xFFE5;9.9</button>
+				<button class="flex-1 py-3 rounded-xl text-sm font-bold text-white" style="background: #C94A4A;" onclick="goto_apply('free')">立即免费试算 &#x2192;</button>
 				<button class="py-3 px-5 rounded-xl text-sm font-semibold" style="border: 2px solid #C9A96E; color: #8B6914; background: transparent;" onclick="scroll_to_plans()">查看方案</button>
 			</div>
-			<p class="text-center text-[11px] text-muted">去年已为 47,892 位考生生成志愿方案</p>
+			<p class="text-center text-[11px] text-muted">已为 47,892 位山东考生生成参考方案</p>
 		</section>
 
 		<!-- Section 4: 6 AI Agents -->
@@ -215,19 +215,20 @@
 				<span class="text-lg font-bold text-dark">三档方案</span>
 				<span class="text-[10px] text-muted ml-2">Choose Plan</span>
 			</div>
-			<p class="text-xs text-muted mb-4">按需选择 · 从试算到保录取</p>
+			<p class="text-xs text-muted mb-4">按需选择 &middot; 从免费试算到 AI 终审</p>
 
 			<!-- Plan 1: Trial -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 1px solid #E5DDD0;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">试算体验</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">免费试算</span>
 				</div>
 				<div class="text-base font-bold text-dark mb-1 mt-1">AI 分数对标</div>
-				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">TRIAL</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">TRIAL &middot; FREE</div>
 				<p class="text-xs text-muted leading-relaxed mb-3">输入分数省份，AI 立即生成 10 所推荐院校 + 5 年录取趋势图。</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;9.9</span>
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;0</span>
 					<span class="text-sm line-through text-muted">&#xFFE5;39</span>
+					<span class="text-xs ml-1" style="color: #8B6914;">完全免费</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
@@ -243,25 +244,25 @@
 						<span class="text-xs text-dark">5 年录取趋势可视化</span>
 					</div>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white" style="background: #C9A96E;">立即试算 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('free')">立即免费试算 &#x2192;</button>
 			</div>
 
 			<!-- Plan 2: Precision (Recommended) -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #C9A96E;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 · 推荐</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 &middot; 推荐</span>
 				</div>
 				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
 				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">全部 96 志愿精准排序，每个志愿带录取概率 + 冲稳保标记。</p>
+				<p class="text-xs text-muted leading-relaxed mb-3">全部 96 志愿精准排序，每个志愿带录取概率 + 冲稳保标记 + PDF 导出。</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;199</span>
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;299</span>
 					<span class="text-sm line-through text-muted">&#xFFE5;699</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">包含 &#xFFE5;9.9 试算所有内容</span>
+						<span class="text-xs text-dark">包含免费试算所有内容</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
@@ -277,7 +278,11 @@
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">滑档风险提醒 · 无限次重算</span>
+						<span class="text-xs text-dark">风险提示 &middot; 无限次重算</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">96 志愿表 PDF 下载 &middot; 可直接抄写</span>
 					</div>
 				</div>
 				<!-- Bar Chart -->
@@ -301,54 +306,58 @@
 					</div>
 					<p class="text-[10px] text-muted text-center leading-snug">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white" style="background: #C9A96E;">查看精准方案 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">生成 96 志愿方案 &#x2192;</button>
 			</div>
 
-			<!-- Plan 3: Guarantee -->
+			<!-- Plan 3: AI Review -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: #1A1A1A;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">保不滑档</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">AI 终审</span>
 				</div>
-				<div class="text-base font-bold text-white mb-1 mt-1">保不滑档方案</div>
-				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">GUARANTEE</div>
-				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">AI 全程陪跑 + 专家终审，保证被录取。若发生滑档，100% 全额退款。</p>
+				<div class="text-base font-bold text-white mb-1 mt-1">AI 终审服务</div>
+				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
+				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.6 深度推理 + 多轮优化 + 人工复核。方案不满意 72 小时内全额退款。</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black text-white">&#xFFE5;999</span>
-					<span class="text-sm line-through" style="color: #666666;">对标名师 &#xFFE5;12,999</span>
+					<span class="text-3xl font-black text-white">&#xFFE5;1,999</span>
+					<span class="text-sm line-through" style="color: #666666;">对标名师 &#xFFE5;17,999</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-white">包含 &#xFFE5;199 精准方案所有内容</span>
+						<span class="text-xs text-white">包含 &#xFFE5;299 精准方案所有内容</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-white">AI 专家交叉审核 · 三轮兜底</span>
+						<span class="text-xs text-white">Claude 4.6 深度推理 &middot; 多 Agent 交叉验证</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-white">模拟投档 · 退档风险排查</span>
+						<span class="text-xs text-white">模拟投档 &middot; 退档风险深度排查</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-white">7&#xD7;24 答疑 · 填报窗口期全程陪跑</span>
+						<span class="text-xs text-white">7&#xD7;24 AI 答疑 &middot; 填报窗口期陪跑</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
 						<span class="text-xs text-white">征集志愿实时推送</span>
 					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">人工规划师 1 次复核确认</span>
+					</div>
 				</div>
-				<!-- Guarantee Badge -->
-				<div class="rounded-xl p-3 mb-4 flex items-center gap-3" style="background: rgba(201, 74, 74, 0.15); border: 1px solid rgba(201, 74, 74, 0.3);">
-					<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: #C94A4A;">
-						<span class="text-white font-bold text-sm">&#xFFE5;</span>
+				<!-- Satisfaction Badge -->
+				<div class="rounded-xl p-3 mb-4 flex items-center gap-3" style="background: rgba(201, 169, 110, 0.15); border: 1px solid rgba(201, 169, 110, 0.3);">
+					<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: #C9A96E;">
+						<span class="text-white font-bold text-base">&#x2713;</span>
 					</div>
 					<div>
-						<div class="text-xs font-bold text-white mb-0.5">不滑档保障合同</div>
-						<div class="text-[11px]" style="color: #C94A4A;">若发生滑档 · 100% 全额退款</div>
+						<div class="text-xs font-bold text-white mb-0.5">方案满意度保障</div>
+						<div class="text-[11px]" style="color: #C9A96E;">72 小时内对方案不满意 &middot; 全额退款</div>
 					</div>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white" style="background: #C94A4A;">开通保障 · &#xFFE5;999 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;" onclick="goto_apply('review')">开通 AI 终审 &#x2192;</button>
 			</div>
 		</section>
 
@@ -393,35 +402,114 @@
 			</div>
 		</section>
 
-		<!-- Section 7: Related Product -->
+		<!-- Section 7: Comparison Matrix -->
 		<section class="px-4 pb-6">
-			<div class="rounded-2xl p-5" style="background: #1A1A1A;">
-				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">同系列产品</div>
-				<div class="text-lg font-bold text-white mb-2">&#x1F4DD; 一键上岸 · 考研</div>
-				<p class="text-xs leading-relaxed mb-4" style="color: #AAAAAA;">AI 智能体陪跑考研择校、复试模拟、调剂规划。调剂保上岸，失败全额退款。</p>
-				<button class="py-2.5 px-5 rounded-xl text-sm font-semibold" style="border: 1px solid #C9A96E; color: #C9A96E; background: transparent;">进入一键上岸 &#x2192;</button>
+			<div class="mb-1">
+				<span class="text-lg font-bold text-dark">为什么不是别家？</span>
+				<span class="text-[10px] text-muted ml-2">Why Me Offer</span>
 			</div>
+			<p class="text-xs text-muted mb-4">一眼看清 Me Offer 和主流选项的差别</p>
+
+			<div class="rounded-2xl overflow-hidden" style="background: white; border: 1px solid #E5DDD0;">
+				<!-- Header Row -->
+				<div class="grid grid-cols-4 text-[11px] font-semibold" style="background: #FDF8F0; color: #8B6914;">
+					<div class="py-3 px-2 text-center">对比维度</div>
+					<div class="py-3 px-2 text-center">夸克 AI</div>
+					<div class="py-3 px-2 text-center">名师咨询</div>
+					<div class="py-3 px-2 text-center" style="background: #C9A96E; color: white;">Me Offer</div>
+				</div>
+				<!-- Rows -->
+				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+					<div class="py-2.5 px-2 text-dark">价格</div>
+					<div class="py-2.5 px-2 text-center text-muted">免费</div>
+					<div class="py-2.5 px-2 text-center text-muted">&#xFFE5;17,999</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #C94A4A; background: #FDF8F0;">&#xFFE5;0 / 299 / 1999</div>
+				</div>
+				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+					<div class="py-2.5 px-2 text-dark">数据透明</div>
+					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 黑盒</div>
+					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 经验</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">&#x2713; 源头可查</div>
+				</div>
+				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+					<div class="py-2.5 px-2 text-dark">AI 推理深度</div>
+					<div class="py-2.5 px-2 text-center text-muted">通义千问</div>
+					<div class="py-2.5 px-2 text-center text-muted">&#x2717;</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">Claude 4.6</div>
+				</div>
+				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+					<div class="py-2.5 px-2 text-dark">96 志愿 PDF</div>
+					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 只有报告</div>
+					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 口头</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">&#x2713; 可直接抄</div>
+				</div>
+				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+					<div class="py-2.5 px-2 text-dark">个性化风险</div>
+					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">幻觉多</div>
+					<div class="py-2.5 px-2 text-center text-muted">凭经验</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">Agent 推理</div>
+				</div>
+				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+					<div class="py-2.5 px-2 text-dark">即时可用</div>
+					<div class="py-2.5 px-2 text-center" style="color: #22C55E;">&#x2713;</div>
+					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 秒售罄</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">&#x2713; 2 分钟</div>
+				</div>
+			</div>
+			<p class="text-[10px] text-muted text-center mt-3">&#x2020; 对比信息基于 2025 年公开评测，如有偏差欢迎指正</p>
 		</section>
 
 		<!-- Section 8: Footer Trust -->
 		<section class="px-4 pb-8">
-			<div class="flex items-center justify-center gap-4">
-				<span class="text-[10px] text-muted">官方数据授权</span>
-				<span class="text-[10px] text-muted">·</span>
-				<span class="text-[10px] text-muted">合同保障</span>
-				<span class="text-[10px] text-muted">·</span>
-				<span class="text-[10px] text-muted">AI 透明服务</span>
+			<div class="flex items-center justify-center gap-3 mb-4 flex-wrap">
+				<span class="text-[10px] text-muted">公开数据溯源</span>
+				<span class="text-[10px] text-muted">&middot;</span>
+				<span class="text-[10px] text-muted">72h 满意保障</span>
+				<span class="text-[10px] text-muted">&middot;</span>
+				<span class="text-[10px] text-muted">AI 推理透明</span>
+			</div>
+
+			<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #E5DDD0;">
+				<div class="text-[10px] leading-relaxed" style="color: #8A8A8A;">
+					<strong style="color: #8B6914;">免责声明：</strong>本服务为 AI 决策参考工具，基于公开录取数据生成。最终志愿填报请以山东省教育招生考试院官方系统为准。Me Offer 不对录取结果作任何承诺。
+				</div>
+			</div>
+
+			<div class="flex items-center justify-between text-[10px] text-muted">
+				<div class="flex items-center gap-3">
+					<span>客服微信：<strong style="color: #8B6914;">meoffer_cs</strong></span>
+				</div>
+				<div class="flex items-center gap-3">
+					<span>info@me-offer.com</span>
+				</div>
+			</div>
+
+			<div class="text-center text-[10px] text-muted mt-3">
+				<span>&copy; 2026 Me Offer</span>
+				<span class="mx-2">&middot;</span>
+				<span>ICP 备案审核中</span>
 			</div>
 		</section>
 
+		<!-- Waitlist Modal -->
+		<div id="waitlist_modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" style="background: rgba(0,0,0,0.5);">
+			<div class="rounded-2xl p-5 w-full max-w-sm" style="background: white;">
+				<div class="text-lg font-bold text-dark mb-1" id="waitlist_title">&#x1F4DD; 即将上线</div>
+				<p class="text-xs text-muted leading-relaxed mb-4" id="waitlist_desc">留下邮箱，上线第一时间通知你，首批用户享 5 折优惠。</p>
+				<input type="email" id="waitlist_email" placeholder="输入邮箱 example@qq.com" class="w-full px-3 py-2.5 rounded-xl text-sm mb-3" style="background: #FDF8F0; border: 1px solid #E5DDD0; outline: none;">
+				<div class="flex gap-2">
+					<button onclick="submit_waitlist()" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;">留位 &#x2192;</button>
+					<button onclick="close_waitlist()" class="py-2.5 px-4 rounded-xl text-sm font-medium cursor-pointer" style="background: #F5F0E8; color: #8A8A8A;">稍后</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- Floating Button -->
-		<div class="fixed bottom-6 right-6 z-50" style="max-width: 480px;">
-			<button onclick="scroll_to_plans()" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, #C9A96E, #8B6914);">
+		<div class="fixed bottom-6 right-6 z-40" style="max-width: 480px;">
+			<button onclick="goto_apply('free')" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer" style="background: linear-gradient(135deg, #C9A96E, #8B6914);" title="立即开始填报">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-					<line x1="16" y1="2" x2="16" y2="6"></line>
-					<line x1="8" y1="2" x2="8" y2="6"></line>
-					<line x1="3" y1="10" x2="21" y2="10"></line>
+					<path d="M12 20h9"></path>
+					<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
 				</svg>
 			</button>
 		</div>
@@ -431,6 +519,18 @@
 	<script>
 	const TARGET_DATE							= new Date('2026-07-05T23:59:59').getTime();
 	const COUNTDOWN_INTERVAL					= 1000;
+	const WAITLIST_CONFIG						= {
+		kaoyan: {
+			title: '\u1F4DD 一键上岸 &middot; 考研',
+			desc: '考研版预计 2026 年 9 月上线。留下邮箱，首批用户享 5 折优惠。'
+		},
+		gongwuyuan: {
+			title: '\u1F3DB 一键考公 &middot; 公务员',
+			desc: '公务员版预计 2027 年春季上线。留下邮箱，优先内测。'
+		}
+	};
+
+	let current_waitlist_type					= '';
 
 	function main() {
 		start_countdown();
@@ -473,6 +573,42 @@
 		if (plans_element) {
 			plans_element.scrollIntoView({behavior: 'smooth', block: 'start'});
 		}
+	}
+
+	function goto_apply(plan) {
+		let target_url							= 'apply.html?plan=' + plan;
+		window.location.href					= target_url;
+	}
+
+	function show_waitlist(type) {
+		current_waitlist_type					= type;
+		let config								= WAITLIST_CONFIG[type];
+
+		if (config) {
+			$('#waitlist_title').html(config.title);
+			$('#waitlist_desc').html(config.desc);
+		}
+
+		$('#waitlist_modal').removeClass('hidden').addClass('flex');
+	}
+
+	function close_waitlist() {
+		$('#waitlist_modal').removeClass('flex').addClass('hidden');
+		$('#waitlist_email').val('');
+	}
+
+	function submit_waitlist() {
+		let email								= $('#waitlist_email').val().trim();
+
+		if (email.length < 5 || email.indexOf('@') < 0) {
+			alert('请输入正确的邮箱地址');
+			return;
+		}
+
+		// TODO: Phase 2 对接 Cloudflare Worker API 存储 waitlist
+		console.log('waitlist submit:', current_waitlist_type, email);
+		alert('已留位成功，上线第一时间通知你。');
+		close_waitlist();
 	}
 	</script>
 
