@@ -3,513 +3,478 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Me Offer - AI 一键拿录取 | 高考志愿填报</title>
-	<meta name="description" content="Me Offer AI 一键志愿填报，6个AI智能体分析5年录取数据，2分钟生成96志愿冲稳保报告。">
+	<title>Me Offer - AI一键拿录取 | 高考志愿填报</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
 	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
 	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A'
+					}
+				}
+			}
+		}
+	</script>
 	<style>
-		html { scroll-behavior: smooth; }
-		body { font-family: Helvetica, Arial, sans-serif; background-color: #FDF8F0; }
-		.hide-scrollbar::-webkit-scrollbar { display: none; }
-		.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-		.pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+		.fade-in { animation: fadeIn 0.4s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes pulse-green { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+		@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-green 1.5s infinite; }
+		.blink-dot { animation: blink 1s infinite; }
+		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+		.bar-chart-segment { display: flex; flex-direction: column; align-items: center; }
 	</style>
 </head>
-<body class="min-h-screen">
+<body class="bg-cream">
 
-<div class="mx-auto" style="max-width: 480px;">
+	<div id="gaokao_app" class="max-w-[480px] mx-auto bg-cream min-h-screen pb-24 relative">
 
-	<!-- ========== SECTION 1: TOP NAVIGATION ========== -->
-	<nav class="sticky top-0 z-50 px-4 pt-4 pb-3" style="background-color: #0F1B3D;">
-		<div class="flex items-center justify-between mb-3">
-			<div class="flex items-center gap-2">
-				<div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-					<span class="font-bold" style="color: #E6A817; font-size: 16px;">M</span>
+		<!-- Section 1: Top Nav -->
+		<nav class="px-4 pt-3 pb-2">
+			<div class="flex items-center justify-between mb-3">
+				<div class="flex items-center gap-2">
+					<div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #C9A96E, #8B6914);">
+						<span class="text-white font-bold text-sm">M</span>
+					</div>
+					<div>
+						<div class="text-sm font-semibold text-dark">Me Offer · 一键志愿</div>
+						<div class="text-[10px] text-muted">AI 高考填报专家</div>
+					</div>
 				</div>
-				<div class="flex items-center gap-1">
-					<span class="text-white font-bold text-lg">Me</span>
-					<span class="font-bold text-lg italic" style="color: #E6A817;">Offer</span>
-				</div>
-				<span class="text-xs" style="color: #8899BB; letter-spacing: 0.25em;">AI 一 键 拿 录 取</span>
-			</div>
-			<div class="text-white cursor-pointer p-1">
-				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M3 12h18M3 6h18M3 18h18"></path>
-				</svg>
-			</div>
-		</div>
-		<div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-			<button class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium text-white whitespace-nowrap" style="background-color: #1E2A4A;">
-				<span class="mr-1">&#127919;</span> 一键志愿 &middot; 高考
-			</button>
-			<button class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border" style="background-color: white; color: #666; border-color: #ddd;">
-				<span class="mr-1">&#128221;</span> 一键上岸 &middot; 考研
-			</button>
-			<button class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border" style="background-color: white; color: #666; border-color: #ddd;">
-				<span class="mr-1">&#127963;</span> 一键公考 &middot; 公务员
-			</button>
-		</div>
-	</nav>
-
-	<!-- ========== SECTION 2: HERO ========== -->
-	<section class="px-4 pt-6 pb-4">
-		<div class="mb-3">
-			<span class="text-xs font-medium px-3 py-1 rounded-full" style="color: #8B6914; background-color: #F5ECD7;">AI ONE-CLICK &middot; 一键志愿</span>
-		</div>
-		<div class="flex items-center gap-2 mb-4">
-			<span class="w-2 h-2 rounded-full inline-block pulse-dot" style="background-color: #22C55E;"></span>
-			<span class="text-xs px-3 py-1 rounded-full text-white font-medium" style="background-color: #C94A4A;">2026 高考倒计时 &middot; 志愿填报黄金窗口</span>
-		</div>
-		<h1 class="mb-1" style="font-size: 32px; line-height: 1.2;">
-			<span class="font-bold" style="color: #1a1a1a;">不浪费</span>
-			<span class="font-bold" style="color: #E6A817;">一分</span>
-		</h1>
-		<h1 class="mb-4" style="font-size: 32px; line-height: 1.2;">
-			<span class="font-bold" style="color: #C94A4A;">不滑档</span>
-			<span class="font-bold" style="color: #1a1a1a;"> 不踩坑</span>
-		</h1>
-		<p class="text-sm leading-relaxed mb-5" style="color: #777;">
-			6 个 AI 智能体分析 5 年录取数据，2 分钟生成你的 96 志愿冲稳保报告，精准到每一个专业组。
-		</p>
-
-		<div class="rounded-2xl p-5 mb-2" style="background-color: #0F1B3D;">
-			<div class="flex items-center gap-2 mb-4">
-				<span style="font-size: 18px;">&#9200;</span>
-				<span class="text-white text-sm font-medium">距 2026 高考填报截止</span>
-			</div>
-			<div class="flex justify-between gap-2 mb-4" id="countdown_container">
-				<div class="flex-1 rounded-xl text-center py-3" style="background-color: #1E2A4A;">
-					<div class="text-white font-bold" style="font-size: 28px;" id="countdown_days">--</div>
-					<div class="text-xs mt-1" style="color: #6B7FA0;">DAYS</div>
-				</div>
-				<div class="flex-1 rounded-xl text-center py-3" style="background-color: #1E2A4A;">
-					<div class="text-white font-bold" style="font-size: 28px;" id="countdown_hours">--</div>
-					<div class="text-xs mt-1" style="color: #6B7FA0;">HOURS</div>
-				</div>
-				<div class="flex-1 rounded-xl text-center py-3" style="background-color: #1E2A4A;">
-					<div class="text-white font-bold" style="font-size: 28px;" id="countdown_min">--</div>
-					<div class="text-xs mt-1" style="color: #6B7FA0;">MIN</div>
-				</div>
-				<div class="flex-1 rounded-xl text-center py-3" style="background-color: #1E2A4A;">
-					<div class="text-white font-bold" style="font-size: 28px;" id="countdown_sec">--</div>
-					<div class="text-xs mt-1" style="color: #6B7FA0;">SEC</div>
-				</div>
-			</div>
-			<p class="text-xs leading-relaxed" style="color: #E8707A;">
-				填报只有 <strong>5-7 天</strong>，一分之差可能差出一所学校。<strong>别让今年的努力白费。</strong>
-			</p>
-		</div>
-	</section>
-
-	<!-- ========== SECTION 3: PRICING COMPARISON ========== -->
-	<section class="px-4 py-4">
-		<div class="text-center mb-4">
-			<div class="flex items-center justify-center gap-3 mb-1">
-				<div class="h-px flex-1" style="background-color: #ddd;"></div>
-				<span class="text-xs" style="color: #999; letter-spacing: 0.1em;">PRICING DISRUPTION &middot; 价格革命</span>
-				<div class="h-px flex-1" style="background-color: #ddd;"></div>
-			</div>
-		</div>
-
-		<div class="bg-white rounded-2xl p-5 mb-4" style="box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
-			<div class="flex items-center justify-between mb-4">
-				<div class="text-center flex-1">
-					<div class="text-xs mb-1" style="color: #999;">名师一对一</div>
-					<div class="text-xl font-bold line-through" style="color: #bbb;">&#165;12,999</div>
-					<div class="text-xs mt-1" style="color: #bbb;">秒空 &middot; 排不上</div>
-				</div>
-				<div class="px-3">
-					<span class="text-xl" style="color: #E6A817;">&#10132;</span>
-				</div>
-				<div class="text-center flex-1">
-					<div class="text-xs mb-1" style="color: #999;">Me Offer AI</div>
-					<div class="text-2xl font-bold" style="color: #C94A4A;">&#165;9.9</div>
-					<div class="text-xs mt-1" style="color: #999;">即时 &middot; 无限改</div>
+				<div class="w-8 h-8 flex items-center justify-center cursor-pointer">
+					<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+						<rect y="3" width="20" height="2" rx="1" fill="#1A1A1A"/>
+						<rect y="9" width="20" height="2" rx="1" fill="#1A1A1A"/>
+						<rect y="15" width="20" height="2" rx="1" fill="#1A1A1A"/>
+					</svg>
 				</div>
 			</div>
 			<div class="flex gap-2">
-				<button class="flex-1 py-3 rounded-xl text-white font-medium text-sm flex items-center justify-center gap-2" style="background-color: #0F1B3D;">
-					立即试算
-					<span class="text-xs px-2 py-0.5 rounded font-bold" style="background-color: #E6A817; color: white;">&#165;9.9</span>
-				</button>
-				<button class="py-3 px-4 rounded-xl text-sm font-medium border" style="color: #0F1B3D; border-color: #0F1B3D;">
-					查看方案
-				</button>
+				<button class="flex-1 py-2 px-3 rounded-full text-xs font-semibold text-white" style="background: #8B6914;">&#x1F3AF; 一键志愿 · 高考</button>
+				<button class="flex-1 py-2 px-3 rounded-full text-xs font-medium border" style="border-color: #E5DDD0; color: #8A8A8A; background: #FDF8F0;">&#x1F4DD; 一键上岸 · 考研</button>
+				<button class="flex-1 py-2 px-3 rounded-full text-xs font-medium border" style="border-color: #E5DDD0; color: #8A8A8A; background: #FDF8F0;">&#x2708;&#xFE0F; 一键 Offer · 留学</button>
 			</div>
-		</div>
+		</nav>
 
-		<div class="rounded-xl px-4 py-2.5 flex items-center gap-2" style="background-color: #EFF3F8;">
-			<span class="w-2 h-2 rounded-full inline-block pulse-dot" style="background-color: #22C55E;"></span>
-			<span class="text-xs" style="color: #666;">去年已为 47,892 位考生生成志愿方案</span>
-		</div>
-	</section>
+		<!-- Section 2: Hero -->
+		<section class="px-4 pt-4 pb-6">
+			<div class="flex items-center gap-2 mb-3">
+				<span class="text-[10px] tracking-widest text-muted uppercase">AI ONE-CLICK GAOKAO · 一键志愿</span>
+			</div>
+			<div class="flex items-center gap-2 mb-4">
+				<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot inline-block"></span>
+				<span class="inline-block px-3 py-1 rounded-full text-[11px] font-semibold text-white" style="background: #C94A4A;">2026 高考倒计时 · 志愿填报黄金窗口</span>
+			</div>
+			<h1 class="text-4xl font-black leading-tight mb-1 text-dark">不浪费一分</h1>
+			<h1 class="text-4xl font-black leading-tight mb-4" style="color: #C94A4A;">不滑档 不踩坑</h1>
+			<p class="text-sm leading-relaxed mb-6" style="color: #5A5A5A;">6 个 AI 智能体分析 5 年录取数据，2 分钟生成你的 96 志愿冲稳保报告，精准到每一个专业组。</p>
 
-	<!-- ========== SECTION 4: 6 AI AGENTS ========== -->
-	<section class="px-4 py-6">
-		<div class="mb-1">
-			<span class="text-xl font-bold" style="color: #1a1a1a;">志愿 AI 智能体</span>
-			<span class="text-sm italic ml-2" style="color: #4A6FA5;">6 AGENTS</span>
-		</div>
-		<p class="text-xs mb-5" style="color: #999;">训练自近 5 年全国 2,800 所高校 &middot; 10万+ 专业组数据</p>
-
-		<div class="grid grid-cols-2 gap-3" id="agents_grid">
-			<div class="bg-white rounded-xl p-3 border" style="border-color: #eee;">
-				<div class="relative inline-block mb-2">
-					<div class="w-11 h-11 rounded-lg flex items-center justify-center" style="background-color: #FDF3D7; font-size: 22px;">&#128202;</div>
-					<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style="background-color: #22C55E;"></span>
+			<!-- Countdown Card -->
+			<div class="rounded-2xl p-4" style="background: #1A1A1A;">
+				<div class="flex items-center gap-2 mb-3">
+					<span class="text-base">&#x23F0;</span>
+					<span class="text-white text-sm font-semibold">距 2026 高考填报截止</span>
 				</div>
-				<div class="font-bold text-sm mb-0.5" style="color: #1a1a1a;">分数 Agent</div>
-				<div class="text-xs italic mb-1" style="color: #4A6FA5;">SCORE</div>
-				<div class="text-xs" style="color: #999;">位次换算 &middot; 5 年分数段对标</div>
-			</div>
-
-			<div class="bg-white rounded-xl p-3 border" style="border-color: #eee;">
-				<div class="relative inline-block mb-2">
-					<div class="w-11 h-11 rounded-lg flex items-center justify-center" style="background-color: #FDF3D7; font-size: 22px;">&#127979;</div>
-					<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style="background-color: #22C55E;"></span>
-				</div>
-				<div class="font-bold text-sm mb-0.5" style="color: #1a1a1a;">院校 Agent</div>
-				<div class="text-xs italic mb-1" style="color: #4A6FA5;">SCHOOL</div>
-				<div class="text-xs" style="color: #999;">2,800 所高校实时录取线匹配</div>
-			</div>
-
-			<div class="bg-white rounded-xl p-3 border" style="border-color: #eee;">
-				<div class="relative inline-block mb-2">
-					<div class="w-11 h-11 rounded-lg flex items-center justify-center" style="background-color: #FDF3D7; font-size: 22px;">&#128218;</div>
-					<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style="background-color: #22C55E;"></span>
-				</div>
-				<div class="font-bold text-sm mb-0.5" style="color: #1a1a1a;">专业 Agent</div>
-				<div class="text-xs italic mb-1" style="color: #4A6FA5;">MAJOR</div>
-				<div class="text-xs" style="color: #999;">兴趣 + 就业前景 + 薪资图谱</div>
-			</div>
-
-			<div class="bg-white rounded-xl p-3 border" style="border-color: #eee;">
-				<div class="relative inline-block mb-2">
-					<div class="w-11 h-11 rounded-lg flex items-center justify-center" style="background-color: #FDF3D7; font-size: 22px;">&#127919;</div>
-					<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style="background-color: #22C55E;"></span>
-				</div>
-				<div class="font-bold text-sm mb-0.5" style="color: #1a1a1a;">概率 Agent</div>
-				<div class="text-xs italic mb-1" style="color: #4A6FA5;">PROBABILITY</div>
-				<div class="text-xs" style="color: #999;">每个志愿的录取概率精算</div>
-			</div>
-
-			<div class="bg-white rounded-xl p-3 border" style="border-color: #eee;">
-				<div class="relative inline-block mb-2">
-					<div class="w-11 h-11 rounded-lg flex items-center justify-center" style="background-color: #FDF3D7; font-size: 22px;">&#9888;</div>
-					<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style="background-color: #22C55E;"></span>
-				</div>
-				<div class="font-bold text-sm mb-0.5" style="color: #1a1a1a;">风险 Agent</div>
-				<div class="text-xs italic mb-1" style="color: #4A6FA5;">RISK</div>
-				<div class="text-xs" style="color: #999;">滑档 &middot; 退档 &middot; 调剂风险预警</div>
-			</div>
-
-			<div class="bg-white rounded-xl p-3 border" style="border-color: #eee;">
-				<div class="relative inline-block mb-2">
-					<div class="w-11 h-11 rounded-lg flex items-center justify-center" style="background-color: #FDF3D7; font-size: 22px;">&#128203;</div>
-					<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white" style="background-color: #22C55E;"></span>
-				</div>
-				<div class="font-bold text-sm mb-0.5" style="color: #1a1a1a;">填报 Agent</div>
-				<div class="text-xs italic mb-1" style="color: #4A6FA5;">SUBMIT</div>
-				<div class="text-xs" style="color: #999;">96 志愿排序 &middot; 一键导出报表</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- ========== SECTION 5: THREE-TIER PLANS ========== -->
-	<section class="px-4 py-6" id="plans_section">
-		<div class="mb-1">
-			<span class="text-xl font-bold" style="color: #1a1a1a;">三档方案</span>
-			<span class="text-sm italic ml-2" style="color: #4A6FA5;">PLANS</span>
-		</div>
-		<p class="text-xs mb-5" style="color: #999;">按需选择 &middot; 从试算到保录取</p>
-
-		<!-- PLAN 1: TRIAL -->
-		<div class="bg-white rounded-2xl p-5 mb-4 border" style="border-color: #eee;">
-			<div class="flex justify-between items-start mb-3">
-				<div>
-					<div class="text-xs italic mb-1" style="color: #4A6FA5;">TRIAL</div>
-					<div class="font-bold text-lg" style="color: #1a1a1a;">AI 分数对标</div>
-				</div>
-				<span class="text-xs px-3 py-1 rounded-full border" style="color: #999; border-color: #ddd;">试算体验</span>
-			</div>
-			<p class="text-xs mb-3" style="color: #999;">输入分数省份，AI 立即生成 10 所推荐院校 + 5 年录取趋势图。</p>
-			<div class="flex items-baseline gap-2 mb-4">
-				<span class="font-bold" style="color: #E6A817; font-size: 32px;">&#165;9.9</span>
-				<span class="text-sm line-through" style="color: #bbb;">原价 &#165;39</span>
-			</div>
-			<div class="space-y-2 mb-5">
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">全省位次换算</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">10 所推荐院校清单</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">5 年录取趋势可视化</span>
-				</div>
-			</div>
-			<button class="w-full py-3 rounded-xl text-white font-medium text-sm flex items-center justify-center gap-1" style="background-color: #E6A817;">
-				立即试算 <span>&#10132;</span>
-			</button>
-		</div>
-
-		<!-- PLAN 2: PRECISION -->
-		<div class="bg-white rounded-2xl p-5 mb-4 border-2" style="border-color: #E6A817;">
-			<div class="flex justify-between items-start mb-3">
-				<div>
-					<div class="text-xs italic mb-1" style="color: #4A6FA5;">PRECISION</div>
-					<div class="font-bold text-lg" style="color: #1a1a1a;">精准志愿方案</div>
-				</div>
-				<span class="text-xs px-3 py-1 rounded-full text-white font-medium" style="background-color: #E6A817;">热销 &middot; 推荐</span>
-			</div>
-			<p class="text-xs mb-3" style="color: #999;">全部 96 志愿精准排序，每个志愿带录取概率 + 冲稳保标记。</p>
-			<div class="flex items-baseline gap-2 mb-4">
-				<span class="font-bold" style="color: #E6A817; font-size: 32px;">&#165;199</span>
-				<span class="text-sm line-through" style="color: #bbb;">原价 &#165;699</span>
-			</div>
-			<div class="space-y-2 mb-5">
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">包含 <strong>&#165;9.9 试算</strong> 所有内容</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;"><strong>96 志愿</strong> 冲稳保智能排序</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">每个志愿录取概率精算</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">专业兴趣匹配 + 就业薪资</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm" style="color: #555;">滑档风险提醒 &middot; 无限次重算</span>
-				</div>
-			</div>
-
-			<!-- Bar Chart -->
-			<div class="rounded-xl p-4 mb-5" style="background-color: #F8F9FA;">
-				<div class="flex items-center justify-between mb-3">
-					<span class="text-sm font-bold" style="color: #1a1a1a;">你的冲稳保组合</span>
-					<span class="text-xs px-2 py-0.5 rounded" style="color: #999; background-color: #eee;">示例</span>
-				</div>
-				<div class="flex items-end justify-center gap-6" style="height: 120px;">
-					<div class="flex flex-col items-center">
-						<span class="text-sm font-bold mb-1" style="color: #E8707A;">24</span>
-						<div class="w-14 rounded-t-lg" style="height: 60px; background-color: #E8707A;"></div>
-						<span class="text-xs mt-1 font-medium" style="color: #E8707A;">冲</span>
-						<span class="text-xs" style="color: #999;">25%</span>
+				<div class="flex gap-3 mb-3" id="gaokao_countdown">
+					<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+						<div class="text-2xl font-black text-white" id="gaokao_days">--</div>
+						<div class="text-[10px] text-muted uppercase tracking-wider">DAYS</div>
 					</div>
-					<div class="flex flex-col items-center">
-						<span class="text-sm font-bold mb-1" style="color: #D4A843;">48</span>
-						<div class="w-14 rounded-t-lg" style="height: 96px; background-color: #D4A843;"></div>
-						<span class="text-xs mt-1 font-medium" style="color: #D4A843;">稳</span>
-						<span class="text-xs" style="color: #999;">50%</span>
+					<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+						<div class="text-2xl font-black text-white" id="gaokao_hours">--</div>
+						<div class="text-[10px] text-muted uppercase tracking-wider">HOURS</div>
 					</div>
-					<div class="flex flex-col items-center">
-						<span class="text-sm font-bold mb-1" style="color: #5B8E91;">24</span>
-						<div class="w-14 rounded-t-lg" style="height: 60px; background-color: #5B8E91;"></div>
-						<span class="text-xs mt-1 font-medium" style="color: #5B8E91;">保</span>
-						<span class="text-xs" style="color: #999;">25%</span>
+					<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+						<div class="text-2xl font-black text-white" id="gaokao_min">--</div>
+						<div class="text-[10px] text-muted uppercase tracking-wider">MIN</div>
+					</div>
+					<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+						<div class="text-2xl font-black text-white" id="gaokao_sec">--</div>
+						<div class="text-[10px] text-muted uppercase tracking-wider">SEC</div>
 					</div>
 				</div>
-				<p class="text-xs text-center mt-3" style="color: #bbb;">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
+				<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，一分之差可能差出一所学校。别让今年的努力白费。</p>
 			</div>
+		</section>
 
-			<button class="w-full py-3 rounded-xl text-white font-medium text-sm flex items-center justify-center gap-1" style="background-color: #E6A817;">
-				查看精准方案 <span>&#10132;</span>
-			</button>
-		</div>
-
-		<!-- PLAN 3: GUARANTEE -->
-		<div class="rounded-2xl p-5 mb-4 border-2" style="background: linear-gradient(135deg, #0F1B3D, #1E2A4A); border-color: #E6A817;">
-			<div class="flex justify-between items-start mb-3">
-				<div>
-					<div class="text-xs italic mb-1" style="color: #E6A817;">GUARANTEE &middot; 保障</div>
-					<div class="font-bold text-lg text-white">保不滑档方案</div>
-				</div>
-				<span class="text-xs px-3 py-1 rounded-full text-white font-medium" style="background-color: #C94A4A;">保不滑档</span>
+		<!-- Section 3: Pricing Disruption -->
+		<section class="px-4 pb-6">
+			<div class="flex items-center gap-3 mb-4">
+				<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+				<span class="text-[10px] tracking-widest text-muted uppercase">PRICING DISRUPTION · 价格革命</span>
+				<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
 			</div>
-			<p class="text-xs mb-3" style="color: #AAB8D0;">AI 全程陪跑 + 专家终审，保证被录取。若发生滑档，100% 全额退款。</p>
-			<div class="flex items-baseline gap-2 mb-4">
-				<span class="font-bold text-white" style="font-size: 32px;">&#165;999</span>
-				<span class="text-sm line-through" style="color: #6B7FA0;">对标名师 &#165;12,999</span>
-			</div>
-			<div class="space-y-2 mb-5">
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm text-white">包含 <strong>&#165;199 精准方案</strong> 所有内容</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm text-white">AI 专家交叉审核 &middot; 三轮兜底</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm text-white">模拟投档 &middot; 退档风险排查</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm text-white">7&#215;24 答疑 &middot; 窗口期全程陪跑</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<span style="color: #E6A817;">&#10003;</span>
-					<span class="text-sm text-white">征集志愿实时推送</span>
+			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="flex items-center gap-3">
+					<div class="flex-1 text-center">
+						<div class="text-xs text-muted mb-1">名师一对一</div>
+						<div class="text-xl font-bold line-through" style="color: #AAAAAA;">&#xFFE5;12,999</div>
+						<div class="text-[10px] text-muted mt-1">秒空 · 排不上</div>
+					</div>
+					<div class="text-xl" style="color: #C9A96E;">&#x2192;</div>
+					<div class="flex-1 text-center">
+						<div class="text-xs text-muted mb-1">Me Offer AI</div>
+						<div class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;9.9</div>
+						<div class="text-[10px] text-muted mt-1">即时 · 无限改</div>
+					</div>
 				</div>
 			</div>
+			<div class="flex gap-3 mb-3">
+				<button class="flex-1 py-3 rounded-xl text-sm font-bold text-white" style="background: #C94A4A;" onclick="scroll_to_plans()">立即试算 &#xFFE5;9.9</button>
+				<button class="py-3 px-5 rounded-xl text-sm font-semibold" style="border: 2px solid #C9A96E; color: #8B6914; background: transparent;" onclick="scroll_to_plans()">查看方案</button>
+			</div>
+			<p class="text-center text-[11px] text-muted">去年已为 47,892 位考生生成志愿方案</p>
+		</section>
 
-			<!-- Guarantee Card -->
-			<div class="rounded-xl p-4 mb-5 flex items-center gap-3" style="background-color: rgba(201, 74, 74, 0.25);">
-				<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: #C94A4A;">
-					<span class="text-white font-bold" style="font-size: 14px;">&#165;</span>
+		<!-- Section 4: 6 AI Agents -->
+		<section class="px-4 pb-6">
+			<div class="mb-1">
+				<span class="text-lg font-bold text-dark">志愿 AI 智能体</span>
+				<span class="text-[10px] text-muted ml-2">6 Gaokao Agents</span>
+			</div>
+			<p class="text-xs text-muted mb-4">训练自近 5 年全国 2,800 所高校 · 10万+ 专业组数据</p>
+			<div class="grid grid-cols-2 gap-3" id="gaokao_agents">
+				<!-- Agent 1 -->
+				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start gap-1 mb-2">
+						<span class="text-2xl">&#x1F4CA;</span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+					</div>
+					<div class="text-sm font-bold text-dark mb-0.5">分数 Agent</div>
+					<div class="text-[10px] italic mb-1" style="color: #8B6914;">SCORE</div>
+					<div class="text-[11px] text-muted leading-snug">位次换算 · 5 年分数段对标</div>
 				</div>
-				<div>
-					<div class="text-white text-sm font-medium">不滑档保障合同</div>
-					<div class="text-xs" style="color: #E6A817;">若发生滑档 &middot; 100% 全额退款</div>
+				<!-- Agent 2 -->
+				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start gap-1 mb-2">
+						<span class="text-2xl">&#x1F3EB;</span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+					</div>
+					<div class="text-sm font-bold text-dark mb-0.5">院校 Agent</div>
+					<div class="text-[10px] italic mb-1" style="color: #8B6914;">SCHOOL</div>
+					<div class="text-[11px] text-muted leading-snug">2,800 所高校实时录取线匹配</div>
+				</div>
+				<!-- Agent 3 -->
+				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start gap-1 mb-2">
+						<span class="text-2xl">&#x1F4DA;</span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+					</div>
+					<div class="text-sm font-bold text-dark mb-0.5">专业 Agent</div>
+					<div class="text-[10px] italic mb-1" style="color: #8B6914;">MAJOR</div>
+					<div class="text-[11px] text-muted leading-snug">兴趣 + 就业前景 + 薪资图谱</div>
+				</div>
+				<!-- Agent 4 -->
+				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start gap-1 mb-2">
+						<span class="text-2xl">&#x1F3AF;</span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+					</div>
+					<div class="text-sm font-bold text-dark mb-0.5">概率 Agent</div>
+					<div class="text-[10px] italic mb-1" style="color: #8B6914;">PROBABILITY</div>
+					<div class="text-[11px] text-muted leading-snug">每个志愿的录取概率精算</div>
+				</div>
+				<!-- Agent 5 -->
+				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start gap-1 mb-2">
+						<span class="text-2xl">&#x26A0;&#xFE0F;</span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+					</div>
+					<div class="text-sm font-bold text-dark mb-0.5">风险 Agent</div>
+					<div class="text-[10px] italic mb-1" style="color: #8B6914;">RISK</div>
+					<div class="text-[11px] text-muted leading-snug">滑档 · 退档 · 调剂风险预警</div>
+				</div>
+				<!-- Agent 6 -->
+				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start gap-1 mb-2">
+						<span class="text-2xl">&#x1F4CB;</span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+					</div>
+					<div class="text-sm font-bold text-dark mb-0.5">填报 Agent</div>
+					<div class="text-[10px] italic mb-1" style="color: #8B6914;">SUBMIT</div>
+					<div class="text-[11px] text-muted leading-snug">96 志愿排序 · 一键导出报表</div>
 				</div>
 			</div>
+		</section>
 
-			<button class="w-full py-3 rounded-xl text-white font-medium text-sm flex items-center justify-center gap-1" style="background-color: #E6A817;">
-				开通保障 &middot; &#165;999 <span>&#10132;</span>
-			</button>
-		</div>
-	</section>
-
-	<!-- ========== SECTION 6: SUCCESS STORIES ========== -->
-	<section class="px-4 py-6">
-		<div class="flex items-center justify-between mb-4">
-			<div>
-				<span class="text-xl font-bold" style="color: #1a1a1a;">去年战报</span>
-				<span class="text-sm italic ml-2" style="color: #4A6FA5;">2025 STORIES</span>
+		<!-- Section 5: Three Plans -->
+		<section class="px-4 pb-6" id="gaokao_plans">
+			<div class="mb-1">
+				<span class="text-lg font-bold text-dark">三档方案</span>
+				<span class="text-[10px] text-muted ml-2">Choose Plan</span>
 			</div>
-			<span class="text-xs cursor-pointer" style="color: #4A6FA5;">更多 &#10132;</span>
-		</div>
+			<p class="text-xs text-muted mb-4">按需选择 · 从试算到保录取</p>
 
-		<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
-			<!-- Story 1 -->
-			<div class="bg-white rounded-2xl p-4 flex-shrink-0" style="width: 300px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
-				<div class="flex items-center gap-3 mb-3">
-					<div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white" style="background-color: #C4A265;">L</div>
+			<!-- Plan 1: Trial -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">试算体验</span>
+				</div>
+				<div class="text-base font-bold text-dark mb-1 mt-1">AI 分数对标</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">TRIAL</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">输入分数省份，AI 立即生成 10 所推荐院校 + 5 年录取趋势图。</p>
+				<div class="flex items-baseline gap-2 mb-4">
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;9.9</span>
+					<span class="text-sm line-through text-muted">&#xFFE5;39</span>
+				</div>
+				<div class="space-y-2 mb-4">
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">全省位次换算</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">10 所推荐院校清单</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">5 年录取趋势可视化</span>
+					</div>
+				</div>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white" style="background: #C9A96E;">立即试算 &#x2192;</button>
+			</div>
+
+			<!-- Plan 2: Precision (Recommended) -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #C9A96E;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 · 推荐</span>
+				</div>
+				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">全部 96 志愿精准排序，每个志愿带录取概率 + 冲稳保标记。</p>
+				<div class="flex items-baseline gap-2 mb-4">
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;199</span>
+					<span class="text-sm line-through text-muted">&#xFFE5;699</span>
+				</div>
+				<div class="space-y-2 mb-4">
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">包含 &#xFFE5;9.9 试算所有内容</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">96 志愿冲稳保智能排序</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">每个志愿录取概率精算</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">专业兴趣匹配 + 就业薪资</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">滑档风险提醒 · 无限次重算</span>
+					</div>
+				</div>
+				<!-- Bar Chart -->
+				<div class="rounded-xl p-3 mb-4" style="background: #FDF8F0; border: 1px solid #E5DDD0;">
+					<div class="flex items-end justify-center gap-4 mb-2" style="height: 80px;">
+						<div class="bar-chart-segment">
+							<div class="text-[10px] font-bold mb-1" style="color: #C94A4A;">24</div>
+							<div class="rounded-t-md" style="width: 48px; height: 32px; background: #C94A4A;"></div>
+							<div class="text-[10px] mt-1 font-semibold" style="color: #C94A4A;">冲</div>
+						</div>
+						<div class="bar-chart-segment">
+							<div class="text-[10px] font-bold mb-1" style="color: #C9A96E;">48</div>
+							<div class="rounded-t-md" style="width: 48px; height: 60px; background: #C9A96E;"></div>
+							<div class="text-[10px] mt-1 font-semibold" style="color: #C9A96E;">稳</div>
+						</div>
+						<div class="bar-chart-segment">
+							<div class="text-[10px] font-bold mb-1" style="color: #22C55E;">24</div>
+							<div class="rounded-t-md" style="width: 48px; height: 32px; background: #22C55E;"></div>
+							<div class="text-[10px] mt-1 font-semibold" style="color: #22C55E;">保</div>
+						</div>
+					</div>
+					<p class="text-[10px] text-muted text-center leading-snug">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
+				</div>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white" style="background: #C9A96E;">查看精准方案 &#x2192;</button>
+			</div>
+
+			<!-- Plan 3: Guarantee -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: #1A1A1A;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">保不滑档</span>
+				</div>
+				<div class="text-base font-bold text-white mb-1 mt-1">保不滑档方案</div>
+				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">GUARANTEE</div>
+				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">AI 全程陪跑 + 专家终审，保证被录取。若发生滑档，100% 全额退款。</p>
+				<div class="flex items-baseline gap-2 mb-4">
+					<span class="text-3xl font-black text-white">&#xFFE5;999</span>
+					<span class="text-sm line-through" style="color: #666666;">对标名师 &#xFFE5;12,999</span>
+				</div>
+				<div class="space-y-2 mb-4">
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">包含 &#xFFE5;199 精准方案所有内容</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">AI 专家交叉审核 · 三轮兜底</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">模拟投档 · 退档风险排查</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">7&#xD7;24 答疑 · 填报窗口期全程陪跑</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">征集志愿实时推送</span>
+					</div>
+				</div>
+				<!-- Guarantee Badge -->
+				<div class="rounded-xl p-3 mb-4 flex items-center gap-3" style="background: rgba(201, 74, 74, 0.15); border: 1px solid rgba(201, 74, 74, 0.3);">
+					<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: #C94A4A;">
+						<span class="text-white font-bold text-sm">&#xFFE5;</span>
+					</div>
 					<div>
-						<div class="text-sm font-bold" style="color: #1a1a1a;">L 同学 &middot; 山东</div>
-						<div class="text-xs" style="color: #999;">理科 627 分 / 省排 8,423</div>
+						<div class="text-xs font-bold text-white mb-0.5">不滑档保障合同</div>
+						<div class="text-[11px]" style="color: #C94A4A;">若发生滑档 · 100% 全额退款</div>
 					</div>
 				</div>
-				<div class="text-sm mb-3">
-					<span style="color: #1a1a1a;">&#10132; </span>
-					<span class="font-bold" style="color: #C94A4A;">华中科技大学</span>
-					<span class="text-xs" style="color: #666;"> 计算机科学与技术</span>
-				</div>
-				<div class="pl-3 text-xs leading-relaxed" style="color: #777; border-left: 3px solid #E6A817;">
-					第 3 志愿精准命中，比我自己选的稳档校高了 12 分线。
-				</div>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white" style="background: #C94A4A;">开通保障 · &#xFFE5;999 &#x2192;</button>
 			</div>
+		</section>
 
-			<!-- Story 2 -->
-			<div class="bg-white rounded-2xl p-4 flex-shrink-0" style="width: 300px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
-				<div class="flex items-center gap-3 mb-3">
-					<div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white" style="background-color: #7B8FA1;">W</div>
-					<div>
-						<div class="text-sm font-bold" style="color: #1a1a1a;">W 同学 &middot; 河南</div>
-						<div class="text-xs" style="color: #999;">文科 598 分 / 省排 1,87x</div>
+		<!-- Section 6: Success Stories -->
+		<section class="px-4 pb-6">
+			<div class="flex items-center justify-between mb-1">
+				<div>
+					<span class="text-lg font-bold text-dark">去年战报</span>
+					<span class="text-[10px] text-muted ml-2">2025 Stories</span>
+				</div>
+				<span class="text-xs cursor-pointer" style="color: #8B6914;">更多案例 &#x2192;</span>
+			</div>
+			<div class="scroll-x mt-3">
+				<!-- Story 1 -->
+				<div class="flex-shrink-0 rounded-2xl p-4" style="width: 300px; background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">L</div>
+						<div>
+							<div class="text-sm font-bold text-dark">L 同学 · 山东</div>
+							<div class="text-[10px] text-muted">理科 627 分 / 省排 8,423</div>
+						</div>
 					</div>
+					<div class="rounded-lg px-3 py-2 mb-2" style="background: #FDF8F0;">
+						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 华中科技大学 计算机科学与技术</div>
+					</div>
+					<p class="text-[11px] text-muted leading-relaxed">"第 3 志愿精准命中，比我自己选的稳档校高了 12 分线。"</p>
 				</div>
-				<div class="text-sm mb-3">
-					<span style="color: #1a1a1a;">&#10132; </span>
-					<span class="font-bold" style="color: #C94A4A;">厦门大学</span>
-					<span class="text-xs" style="color: #666;"> 新闻传播学类</span>
-				</div>
-				<div class="pl-3 text-xs leading-relaxed" style="color: #777; border-left: 3px solid #E6A817;">
-					AI 帮我避开了一个历史上有大小年的专业组。
+				<!-- Story 2 -->
+				<div class="flex-shrink-0 rounded-2xl p-4" style="width: 300px; background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">W</div>
+						<div>
+							<div class="text-sm font-bold text-dark">W 同学 · 河南</div>
+							<div class="text-[10px] text-muted">文科 598 分 / 省排 1,87x</div>
+						</div>
+					</div>
+					<div class="rounded-lg px-3 py-2 mb-2" style="background: #FDF8F0;">
+						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 厦门大学 新闻传播学类</div>
+					</div>
+					<p class="text-[11px] text-muted leading-relaxed">"AI 帮我避开了一个历史上有大小年的专业组。"</p>
 				</div>
 			</div>
-		</div>
-	</section>
+		</section>
 
-	<!-- ========== SECTION 7: RELATED PRODUCTS ========== -->
-	<section class="px-4 py-4">
-		<div class="rounded-2xl p-5" style="background: linear-gradient(135deg, #0F1B3D, #1E2A4A);">
-			<div class="text-xs mb-2" style="color: #E6A817;">同系列产品</div>
-			<div class="text-lg font-bold text-white mb-2">
-				<span class="mr-1">&#128221;</span> 一键上岸 &middot; 考研
+		<!-- Section 7: Related Product -->
+		<section class="px-4 pb-6">
+			<div class="rounded-2xl p-5" style="background: #1A1A1A;">
+				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">同系列产品</div>
+				<div class="text-lg font-bold text-white mb-2">&#x1F4DD; 一键上岸 · 考研</div>
+				<p class="text-xs leading-relaxed mb-4" style="color: #AAAAAA;">AI 智能体陪跑考研择校、复试模拟、调剂规划。调剂保上岸，失败全额退款。</p>
+				<button class="py-2.5 px-5 rounded-xl text-sm font-semibold" style="border: 1px solid #C9A96E; color: #C9A96E; background: transparent;">进入一键上岸 &#x2192;</button>
 			</div>
-			<p class="text-xs mb-4" style="color: #AAB8D0;">AI 智能体陪跑考研择校、复试模拟、调剂规划。调剂保上岸，失败全额退款。</p>
-			<button class="px-5 py-2.5 rounded-xl text-white font-medium text-sm" style="background-color: #E6A817;">
-				进入一键上岸 <span>&#10132;</span>
+		</section>
+
+		<!-- Section 8: Footer Trust -->
+		<section class="px-4 pb-8">
+			<div class="flex items-center justify-center gap-4">
+				<span class="text-[10px] text-muted">官方数据授权</span>
+				<span class="text-[10px] text-muted">·</span>
+				<span class="text-[10px] text-muted">合同保障</span>
+				<span class="text-[10px] text-muted">·</span>
+				<span class="text-[10px] text-muted">AI 透明服务</span>
+			</div>
+		</section>
+
+		<!-- Floating Button -->
+		<div class="fixed bottom-6 right-6 z-50" style="max-width: 480px;">
+			<button onclick="scroll_to_plans()" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, #C9A96E, #8B6914);">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+					<line x1="16" y1="2" x2="16" y2="6"></line>
+					<line x1="8" y1="2" x2="8" y2="6"></line>
+					<line x1="3" y1="10" x2="21" y2="10"></line>
+				</svg>
 			</button>
 		</div>
-	</section>
 
-	<!-- ========== SECTION 8: FOOTER ========== -->
-	<section class="px-4 py-8">
-		<div class="flex items-center justify-center gap-1 text-xs" style="color: #bbb;">
-			<span>官方数据授权</span>
-			<span>&middot;</span>
-			<span>合同保障</span>
-			<span>&middot;</span>
-			<span>AI 透明服务</span>
-		</div>
-	</section>
+	</div>
 
-	<!-- Bottom spacing for floating button -->
-	<div style="height: 80px;"></div>
+	<script>
+	const TARGET_DATE							= new Date('2026-07-05T23:59:59').getTime();
+	const COUNTDOWN_INTERVAL					= 1000;
 
-</div>
+	function main() {
+		start_countdown();
+	}
+	main();
 
-<!-- ========== FLOATING BUTTON ========== -->
-<div class="fixed z-50" style="bottom: 24px; right: 24px;">
-	<button id="btn_float_plans" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style="background-color: #0F1B3D; border: 3px solid #E6A817;">
-		<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E6A817" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-			<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-			<line x1="16" y1="2" x2="16" y2="6"></line>
-			<line x1="8" y1="2" x2="8" y2="6"></line>
-			<line x1="3" y1="10" x2="21" y2="10"></line>
-		</svg>
-	</button>
-</div>
+	function start_countdown() {
+		update_countdown();
+		setInterval(function() {
+			update_countdown();
+		}, COUNTDOWN_INTERVAL);
+	}
 
-<script>
-$(document).ready(function() {
-	const TARGET_DATE			= new Date('2026-07-05T23:59:59').getTime();
-
-	countdown_update();
-	setInterval(countdown_update, 1000);
-
-	$('#btn_float_plans').on('click', function() {
-		$('html, body').animate({scrollTop: $('#plans_section').offset().top - 80}, 500);
-	});
-
-	function countdown_update() {
-		let now					= new Date().getTime();
-		let diff				= TARGET_DATE - now;
+	function update_countdown() {
+		let now									= new Date().getTime();
+		let diff								= TARGET_DATE - now;
 
 		if (diff <= 0) {
-			$('#countdown_days').text('0');
-			$('#countdown_hours').text('0');
-			$('#countdown_min').text('0');
-			$('#countdown_sec').text('0');
+			$('#gaokao_days').text('0');
+			$('#gaokao_hours').text('0');
+			$('#gaokao_min').text('0');
+			$('#gaokao_sec').text('0');
 			return;
 		}
 
-		let days				= Math.floor(diff / (1000 * 60 * 60 * 24));
-		let hours				= Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-		let minutes				= Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-		let seconds				= Math.floor((diff % (1000 * 60)) / 1000);
+		let days								= Math.floor(diff / (1000 * 60 * 60 * 24));
+		let hours								= Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		let minutes								= Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+		let seconds								= Math.floor((diff % (1000 * 60)) / 1000);
 
-		$('#countdown_days').text(days);
-		$('#countdown_hours').text(hours);
-		$('#countdown_min').text(minutes);
-		$('#countdown_sec').text(seconds);
+		$('#gaokao_days').text(days);
+		$('#gaokao_hours').text(hours);
+		$('#gaokao_min').text(minutes);
+		$('#gaokao_sec').text(seconds);
 	}
-});
-</script>
+
+	function scroll_to_plans() {
+		let plans_element						= document.getElementById('gaokao_plans');
+
+		if (plans_element) {
+			plans_element.scrollIntoView({behavior: 'smooth', block: 'start'});
+		}
+	}
+	</script>
 
 </body>
 </html>
