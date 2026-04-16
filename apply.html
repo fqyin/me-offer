@@ -257,6 +257,85 @@
 				<p class="text-xs text-muted">可以跳过 &middot; 填了方案更个性化</p>
 			</div>
 
+			<!-- Personality Traits -->
+			<div class="mb-5">
+				<label class="text-sm font-semibold text-dark mb-2 block">性格特质 <span class="text-[11px] text-muted">（多选 &middot; 最多 3 个）</span></label>
+				<div class="flex flex-wrap gap-2" id="personality_chips">
+					<span class="chip" data-personality="social">外向善社交</span>
+					<span class="chip" data-personality="introvert">内向爱思考</span>
+					<span class="chip" data-personality="logical">逻辑性强</span>
+					<span class="chip" data-personality="creative">创意想象丰富</span>
+					<span class="chip" data-personality="detail">细致耐心</span>
+					<span class="chip" data-personality="leader">有领导力</span>
+					<span class="chip" data-personality="handson">动手能力强</span>
+					<span class="chip" data-personality="independent">独立自主</span>
+				</div>
+				<p class="text-[11px] text-muted mt-2" id="personality_count">已选 0 / 3 &middot; 影响专业性格匹配</p>
+			</div>
+
+			<!-- Hobbies -->
+			<div class="mb-5">
+				<label class="text-sm font-semibold text-dark mb-2 block">兴趣爱好 <span class="text-[11px] text-muted">（多选）</span></label>
+				<div class="flex flex-wrap gap-2" id="hobby_chips">
+					<span class="chip" data-hobby="reading">&#x1F4DA; 阅读写作</span>
+					<span class="chip" data-hobby="math">&#x1F9EE; 数理竞赛</span>
+					<span class="chip" data-hobby="programming">&#x1F4BB; 编程 / 电脑</span>
+					<span class="chip" data-hobby="sports">&#x26BD; 体育运动</span>
+					<span class="chip" data-hobby="music">&#x1F3B5; 音乐</span>
+					<span class="chip" data-hobby="art">&#x1F3A8; 绘画设计</span>
+					<span class="chip" data-hobby="science">&#x1F52C; 科学实验</span>
+					<span class="chip" data-hobby="debate">&#x1F3AD; 辩论演讲</span>
+					<span class="chip" data-hobby="film">&#x1F3AC; 影视摄影</span>
+					<span class="chip" data-hobby="game">&#x1F3AE; 游戏策划</span>
+					<span class="chip" data-hobby="business">&#x1F4BC; 商业经济</span>
+					<span class="chip" data-hobby="nature">&#x1F33F; 户外自然</span>
+				</div>
+			</div>
+
+			<!-- Academic Strengths -->
+			<div class="mb-5">
+				<label class="text-sm font-semibold text-dark mb-2 block">学科特长 <span class="text-[11px] text-muted">（你在哪些学科上最强 &middot; 多选）</span></label>
+				<div class="flex flex-wrap gap-2" id="strength_chips">
+					<span class="chip" data-strength="chinese">语文</span>
+					<span class="chip" data-strength="math">数学</span>
+					<span class="chip" data-strength="english">英语</span>
+					<span class="chip" data-strength="physics">物理</span>
+					<span class="chip" data-strength="chemistry">化学</span>
+					<span class="chip" data-strength="biology">生物</span>
+					<span class="chip" data-strength="politics">政治</span>
+					<span class="chip" data-strength="history">历史</span>
+					<span class="chip" data-strength="geography">地理</span>
+				</div>
+			</div>
+
+			<!-- Awards / Special Talents -->
+			<div class="mb-5">
+				<label class="text-sm font-semibold text-dark mb-2 block">特长与奖项 <span class="text-[11px] text-muted">（有就勾上 &middot; 强基/综评参考）</span></label>
+				<div class="flex flex-wrap gap-2" id="talent_chips">
+					<span class="chip" data-talent="olympic">&#x1F3C5; 学科竞赛获奖</span>
+					<span class="chip" data-talent="art_cert">&#x1F3B9; 艺术等级证书</span>
+					<span class="chip" data-talent="sports_cert">&#x1F3C6; 体育特长</span>
+					<span class="chip" data-talent="publish">&#x270D;&#xFE0F; 作品发表</span>
+					<span class="chip" data-talent="leadership">&#x1F393; 学生干部</span>
+					<span class="chip" data-talent="volunteer">&#x1F49D; 志愿服务</span>
+					<span class="chip" data-talent="patent">&#x1F4A1; 专利/创新</span>
+					<span class="chip" data-talent="none">暂无</span>
+				</div>
+			</div>
+
+			<!-- Health Considerations -->
+			<div class="mb-5">
+				<label class="text-sm font-semibold text-dark mb-2 block">身体情况 <span class="text-[11px] text-muted">（影响部分专业录取限制）</span></label>
+				<div class="flex flex-wrap gap-2" id="health_chips">
+					<span class="chip" data-health="normal">身体健康</span>
+					<span class="chip" data-health="myopia">高度近视</span>
+					<span class="chip" data-health="color_blind">色盲色弱</span>
+					<span class="chip" data-health="height_short">身高偏矮</span>
+					<span class="chip" data-health="other">其他（填备注）</span>
+				</div>
+				<p class="text-[11px] text-muted mt-2">某些专业对身体有要求（医学/军警/航空等）&middot; AI 会自动排除</p>
+			</div>
+
 			<!-- Family Budget -->
 			<div class="mb-5">
 				<label class="text-sm font-semibold text-dark mb-2 block">家庭经济情况 <span class="text-[11px] text-muted">（影响民办/中外合作推荐）</span></label>
@@ -408,6 +487,18 @@
 				</div>
 			</div>
 
+			<!-- AI Personalization Insight -->
+			<div class="rounded-2xl p-4 mb-4" id="insight_card" style="background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">
+				<div class="flex items-center gap-2 mb-2">
+					<span class="text-base">&#x1F9E0;</span>
+					<div class="text-sm font-bold text-white">AI 个性化洞察</div>
+					<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">Claude 4.6</span>
+				</div>
+				<div class="space-y-2 text-[12px] leading-relaxed" id="insight_list" style="color: #D4D4D4;">
+					<!-- Dynamically populated -->
+				</div>
+			</div>
+
 			<!-- Volunteer Preview -->
 			<div class="mb-4">
 				<div class="flex items-center justify-between mb-2">
@@ -530,15 +621,18 @@ const AGENT_SCRIPT								= [
 	},
 	{
 		agent: 'major',
-		duration: 12000,
+		duration: 16000,
 		logs: [
 			{delay: 200, text: '[03] ▸ 启动 专业 Agent', color: '#C9A96E'},
 			{delay: 600, text: '    ├─ 接入麦可思 2024 就业数据...', color: '#888'},
-			{delay: 2500, text: '    ├─ 分析兴趣匹配度...', color: '#888'},
-			{delay: 4500, text: '    ├─ 你的方向：{major_text}', color: '#FFF'},
-			{delay: 6500, text: '    ├─ 职业路径：{career_text}', color: '#FFF'},
-			{delay: 8500, text: '    ├─ 候选专业：{major_count} 个', color: '#22C55E'},
-			{delay: 10500, text: '    └─ ✓ 专业匹配完成', color: '#22C55E'}
+			{delay: 2200, text: '    ├─ 读取性格特质：{personality_text}', color: '#FFF'},
+			{delay: 4200, text: '    ├─ 读取兴趣爱好：{hobby_text}', color: '#FFF'},
+			{delay: 6200, text: '    ├─ 读取学科特长：{strength_text}', color: '#FFF'},
+			{delay: 8000, text: '    ├─ 性格匹配 RIASEC 职业兴趣模型...', color: '#888'},
+			{delay: 10000, text: '    ├─ 你的方向偏好：{major_text}', color: '#FFF'},
+			{delay: 11500, text: '    ├─ 职业路径：{career_text}', color: '#FFF'},
+			{delay: 13000, text: '    ├─ 候选专业：{major_count} 个', color: '#22C55E'},
+			{delay: 14500, text: '    └─ ✓ 个性化匹配完成', color: '#22C55E'}
 		]
 	},
 	{
@@ -585,18 +679,23 @@ const AGENT_SCRIPT								= [
 ];
 
 let form_data									= {
-	score:		null,
-	province:	'shandong',
-	subjects:	[],
-	cities:		[],
-	majors:		[],
-	level:		'',
-	career:		'',
-	budget:		'',
-	remote:		'',
-	cold:		'',
-	sino:		'',
-	phone:		''
+	score:			null,
+	province:		'shandong',
+	subjects:		[],
+	cities:			[],
+	majors:			[],
+	level:			'',
+	career:			'',
+	personality:	[],
+	hobbies:		[],
+	strengths:		[],
+	talents:		[],
+	health:			[],
+	budget:			'',
+	remote:			'',
+	cold:			'',
+	sino:			'',
+	phone:			''
 };
 
 let current_step								= 1;
@@ -696,8 +795,22 @@ function bind_chip_selectors() {
 		$('#subject_count').text('已选 ' + count + ' / 3');
 	});
 
-	$('#city_chips .chip, #major_chips .chip, #career_chips .chip').on('click', function() {
+	$('#city_chips .chip, #major_chips .chip, #career_chips .chip, #hobby_chips .chip, #strength_chips .chip, #talent_chips .chip, #health_chips .chip').on('click', function() {
 		$(this).toggleClass('chip-active');
+	});
+
+	$('#personality_chips .chip').on('click', function() {
+		let selected						= $('#personality_chips .chip-active').length;
+		let is_active						= $(this).hasClass('chip-active');
+
+		if (is_active) {
+			$(this).removeClass('chip-active');
+		} else if (selected < 3) {
+			$(this).addClass('chip-active');
+		}
+
+		let count							= $('#personality_chips .chip-active').length;
+		$('#personality_count').text('已选 ' + count + ' / 3 · 影响专业性格匹配');
 	});
 }
 
@@ -745,6 +858,31 @@ function collect_form_data() {
 	form_data.career						= '';
 	$('#career_chips .chip-active').each(function() {
 		form_data.career					+= $(this).data('career') + ',';
+	});
+
+	form_data.personality					= [];
+	$('#personality_chips .chip-active').each(function() {
+		form_data.personality.push($(this).data('personality'));
+	});
+
+	form_data.hobbies						= [];
+	$('#hobby_chips .chip-active').each(function() {
+		form_data.hobbies.push($(this).data('hobby'));
+	});
+
+	form_data.strengths						= [];
+	$('#strength_chips .chip-active').each(function() {
+		form_data.strengths.push($(this).data('strength'));
+	});
+
+	form_data.talents						= [];
+	$('#talent_chips .chip-active').each(function() {
+		form_data.talents.push($(this).data('talent'));
+	});
+
+	form_data.health						= [];
+	$('#health_chips .chip-active').each(function() {
+		form_data.health.push($(this).data('health'));
 	});
 
 	form_data.budget						= $('#budget_cards .radio-card-active').data('budget') || '';
@@ -812,8 +950,15 @@ function append_log(text, color) {
 	let rank								= estimate_rank(form_data.score);
 	let major_text_map						= {tech: '理工', medical: '医学', econ: '经管', liberal: '文法', education: '师范', art: '艺术', agri: '农林', military: '军警', unknown: '未定'};
 	let career_text_map						= {research: '科研学术', tech: '技术研发', finance: '金融商业', public: '公共服务', creative: '创意文化', undecided: '未定'};
+	let personality_map						= {social: '外向社交', introvert: '内向思考', logical: '逻辑性强', creative: '创意丰富', detail: '细致耐心', leader: '领导力', handson: '动手能力', independent: '独立自主'};
+	let hobby_map							= {reading: '阅读写作', math: '数理竞赛', programming: '编程', sports: '体育', music: '音乐', art: '绘画', science: '科学实验', debate: '辩论', film: '影视', game: '游戏', business: '商业', nature: '户外'};
+	let strength_map						= {chinese: '语文', math: '数学', english: '英语', physics: '物理', chemistry: '化学', biology: '生物', politics: '政治', history: '历史', geography: '地理'};
+
 	let major_text							= form_data.majors.map(function(m) { return major_text_map[m]; }).filter(Boolean).join(',') || '未选';
 	let career_text							= career_text_map[form_data.career.split(',')[0]] || '未定';
+	let personality_text					= form_data.personality.map(function(p) { return personality_map[p]; }).filter(Boolean).join(' / ') || '未填';
+	let hobby_text							= form_data.hobbies.slice(0, 3).map(function(h) { return hobby_map[h]; }).filter(Boolean).join(' / ') || '未填';
+	let strength_text						= form_data.strengths.map(function(s) { return strength_map[s]; }).filter(Boolean).join(' / ') || '未填';
 
 	let processed							= text
 		.replace('{score}', form_data.score)
@@ -826,7 +971,10 @@ function append_log(text, color) {
 		.replace('{school_filtered}', Math.floor(800 + Math.random() * 200))
 		.replace('{major_count}', Math.floor(80 + Math.random() * 40))
 		.replace('{major_text}', major_text)
-		.replace('{career_text}', career_text);
+		.replace('{career_text}', career_text)
+		.replace('{personality_text}', personality_text)
+		.replace('{hobby_text}', hobby_text)
+		.replace('{strength_text}', strength_text);
 
 	let line								= $('<div></div>').css({color: color, 'margin-bottom': '4px', 'white-space': 'pre-wrap'}).text(processed);
 	$('#terminal_logs').append(line);
@@ -842,7 +990,69 @@ function show_results() {
 	let rank								= estimate_rank(form_data.score);
 	$('#result_rank').text(rank ? rank.toLocaleString() : '—');
 
+	render_insight_card();
 	render_volunteer_preview();
+}
+
+function render_insight_card() {
+	let personality_map						= {social: '外向社交型', introvert: '内向思考型', logical: '逻辑强', creative: '创意型', detail: '细致型', leader: '领导型', handson: '动手型', independent: '独立型'};
+	let hobby_major_map						= {reading: '新闻传播/汉语言', math: '数学/金融', programming: '计算机/软件工程', sports: '体育学/运动康复', music: '音乐学/声乐', art: '设计学/美术', science: '物理学/化学', debate: '法学/政治学', film: '戏剧影视', game: '数字媒体/交互设计', business: '工商管理/经济学', nature: '地质/环境/林学'};
+	let strength_major_map					= {math: '数学/金融/人工智能', physics: '物理/机械/电子信息', chemistry: '化学/材料/制药', biology: '生物/医学/农学', chinese: '汉语言/新闻传播', english: '英语/翻译/国际商务', politics: '法学/政治/公共管理', history: '历史学/考古', geography: '地理/城乡规划/地质'};
+
+	let insights							= [];
+
+	// Insight 1: Personality-based major suggestion
+	if (form_data.personality.length > 0) {
+		let traits							= form_data.personality.map(function(p) { return personality_map[p]; }).filter(Boolean).join('、');
+		let major_sugg						= '';
+
+		if (form_data.personality.indexOf('logical') >= 0) major_sugg = '理工/计算机/金融等强逻辑专业';
+		else if (form_data.personality.indexOf('social') >= 0 || form_data.personality.indexOf('leader') >= 0) major_sugg = '管理/法学/师范等与人打交道的专业';
+		else if (form_data.personality.indexOf('creative') >= 0) major_sugg = '设计/传媒/建筑等创意类专业';
+		else if (form_data.personality.indexOf('detail') >= 0) major_sugg = '医学/会计/审计等细致严谨专业';
+		else if (form_data.personality.indexOf('handson') >= 0) major_sugg = '工程/临床/机械等实操强的专业';
+		else major_sugg = '基于性格特点挑选了多个方向';
+
+		insights.push('<strong style="color: #C9A96E;">&#x1F464; 你的性格：</strong>' + traits + ' &middot; AI 额外加权了 ' + major_sugg);
+	}
+
+	// Insight 2: Hobby-based
+	if (form_data.hobbies.length > 0) {
+		let hobby_suggs						= form_data.hobbies.slice(0, 2).map(function(h) { return hobby_major_map[h]; }).filter(Boolean);
+		if (hobby_suggs.length > 0) {
+			insights.push('<strong style="color: #C9A96E;">&#x1F3A8; 你的兴趣：</strong>匹配到专业方向 — ' + hobby_suggs.join('、'));
+		}
+	}
+
+	// Insight 3: Academic strength
+	if (form_data.strengths.length > 0) {
+		let strength_suggs					= form_data.strengths.slice(0, 2).map(function(s) { return strength_major_map[s]; }).filter(Boolean);
+		if (strength_suggs.length > 0) {
+			insights.push('<strong style="color: #C9A96E;">&#x1F4DA; 你的强势学科：</strong>' + strength_suggs.join('、'));
+		}
+	}
+
+	// Insight 4: Talent -> 强基计划/综评
+	if (form_data.talents.indexOf('olympic') >= 0 || form_data.talents.indexOf('patent') >= 0) {
+		insights.push('<strong style="color: #C9A96E;">&#x1F3C5; 特长加分：</strong>你有竞赛/创新背景，建议额外考虑<strong style="color: white;">强基计划 / 综合评价</strong>单列志愿');
+	} else if (form_data.talents.indexOf('leadership') >= 0 || form_data.talents.indexOf('volunteer') >= 0) {
+		insights.push('<strong style="color: #C9A96E;">&#x1F393; 软实力：</strong>学生干部/志愿服务经历，对港澳高校/综合评价有加分');
+	}
+
+	// Insight 5: Health filter
+	if (form_data.health.indexOf('color_blind') >= 0) {
+		insights.push('<strong style="color: #C94A4A;">&#x26A0;&#xFE0F; 身体限制：</strong>已自动排除<strong style="color: white;">医学/化工/交通运输</strong>等对色觉有要求的专业');
+	} else if (form_data.health.indexOf('myopia') >= 0) {
+		insights.push('<strong style="color: #C94A4A;">&#x26A0;&#xFE0F; 身体限制：</strong>已自动排除<strong style="color: white;">军警/航空/公安</strong>等对视力有要求的专业');
+	}
+
+	// Fallback
+	if (insights.length === 0) {
+		insights.push('<span style="color: #888;">Step 3 填了更多个性化信息可以得到更精准的推荐 &middot; <a style="color: #C9A96E;" onclick="goto_step(3)">去补充 &#x2192;</a></span>');
+	}
+
+	let html								= insights.map(function(i) { return '<div>' + i + '</div>'; }).join('');
+	$('#insight_list').html(html);
 }
 
 function goto_step_no_form(step) {
