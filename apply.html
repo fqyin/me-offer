@@ -511,73 +511,162 @@
 				<div id="volunteer_list"></div>
 			</div>
 
-			<!-- Unlock Callout -->
-			<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 1px solid #C9A96E;">
-				<div class="flex items-center gap-3 mb-2">
-					<span class="text-2xl">&#x1F512;</span>
-					<div>
-						<div class="text-sm font-bold text-dark">还剩 <span id="locked_count">93</span> 个志愿待解锁</div>
-						<div class="text-[11px] text-muted">包含完整排序 &middot; 录取概率 &middot; PDF 下载</div>
+			<!-- Review Upgrade Panel (Only visible after ¥299 paid) -->
+			<div class="hidden-section" id="review_upgrade_panel">
+				<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">
+					<div class="flex items-center gap-2 mb-2">
+						<span class="text-base">&#x1F31F;</span>
+						<div class="text-sm font-bold text-white">AI 终审服务 &middot; 再升一级</div>
+						<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: #C94A4A; color: white;">¥1,999</span>
+					</div>
+					<div class="space-y-1.5 mb-3 text-[11px]" style="color: #DDDDDD;">
+						<div>&#x2728; Claude 4.6 深度风险分析报告（PDF 附加）</div>
+						<div>&#x2728; 每所学校 5 年大小年波动趋势图</div>
+						<div>&#x2728; 专业冷热度排名 + 就业薪资路径</div>
+						<div>&#x2728; 人工规划师 30 分钟视频复核</div>
+						<div>&#x2728; 72 小时方案不满意全额退款</div>
+					</div>
+					<button onclick="trigger_pay(1999)" class="w-full py-2.5 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">升级 AI 终审 &middot; ¥1,999 &#x2192;</button>
+				</div>
+			</div>
+
+			<!-- Three-tier Comparison Paywall (Inline, always visible) -->
+			<section id="paywall_inline" class="mb-4">
+				<div class="mb-3 text-center">
+					<div class="text-[10px] tracking-widest text-muted uppercase mb-1">CHOOSE PLAN</div>
+					<h3 class="text-lg font-black text-dark">选择适合你的方案</h3>
+					<p class="text-[11px] text-muted">前 3 志愿已免费预览 &middot; 付费解锁完整方案</p>
+				</div>
+
+				<!-- Plan Free (Current state) -->
+				<div class="rounded-2xl p-4 mb-3 relative" id="plan_card_free" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="absolute top-3 right-3">
+						<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #F5F0E8; color: #8B6914;">当前免费体验</span>
+					</div>
+					<div class="text-base font-bold text-dark mb-1 mt-1">免费预览</div>
+					<div class="text-[10px] tracking-wider text-muted uppercase mb-2">FREE</div>
+					<div class="flex items-baseline gap-2 mb-3">
+						<span class="text-2xl font-black" style="color: #8B6914;">&#xFFE5;0</span>
+					</div>
+					<div class="space-y-1.5 text-[12px] text-dark">
+						<div>&#x2713; 位次换算 + 5 年等效分</div>
+						<div>&#x2713; 前 3 志愿清晰展示（当前已见）</div>
+						<div>&#x2713; AI 个性化洞察 5 条（当前已见）</div>
+						<div class="text-muted">&#x00B7; 其余 93 志愿 <span id="locked_count" class="font-semibold" style="color: #C94A4A;">模糊</span></div>
+						<div class="text-muted">&#x00B7; PDF 下载 <span style="color: #C94A4A;">不可用</span></div>
 					</div>
 				</div>
-				<button onclick="show_paywall()" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">解锁完整方案 &#x2192;</button>
-			</div>
+
+				<!-- Plan Precision -->
+				<div class="rounded-2xl p-4 mb-3 relative" id="plan_card_precision" style="background: white; border: 2px solid #C9A96E;">
+					<div class="absolute top-3 right-3">
+						<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 &middot; 推荐</span>
+					</div>
+					<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
+					<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
+					<div class="flex items-baseline gap-2 mb-3">
+						<span class="text-2xl font-black" style="color: #C94A4A;">&#xFFE5;299</span>
+						<span class="text-xs line-through text-muted">&#xFFE5;699</span>
+					</div>
+					<div class="space-y-1.5 mb-3 text-[12px] text-dark">
+						<div>&#x2713; 包含免费版所有内容</div>
+						<div>&#x2713; <strong>完整 96 志愿</strong>（24 冲 / 48 稳 / 24 保）</div>
+						<div>&#x2713; 每个志愿 <strong>录取概率 + 位次差</strong></div>
+						<div>&#x2713; <strong>PDF 下载</strong> · 可直接抄到考试院系统</div>
+						<div>&#x2713; 无限次重算（修改偏好实时更新）</div>
+					</div>
+					<button onclick="trigger_pay(299)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;">&#xFFE5;299 解锁精准方案 &#x2192;</button>
+				</div>
+
+				<!-- Plan Review -->
+				<div class="rounded-2xl p-4 mb-3 relative" id="plan_card_review" style="background: #1A1A1A;">
+					<div class="absolute top-3 right-3">
+						<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">深度服务</span>
+					</div>
+					<div class="text-base font-bold text-white mb-1 mt-1">AI 终审服务</div>
+					<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
+					<div class="flex items-baseline gap-2 mb-3">
+						<span class="text-2xl font-black text-white">&#xFFE5;1,999</span>
+						<span class="text-xs line-through" style="color: #666;">名师 &#xFFE5;17,999</span>
+					</div>
+					<div class="space-y-1.5 mb-3 text-[12px] text-white">
+						<div>&#x2713; 包含 ¥299 精准方案所有内容</div>
+						<div>&#x2713; <strong style="color: #C9A96E;">Claude 4.6 深度风险报告</strong>（PDF 附加）</div>
+						<div>&#x2713; 每校 <strong>5 年大小年波动</strong> + 专业冷热</div>
+						<div>&#x2713; <strong>个性化职业路径规划</strong></div>
+						<div>&#x2713; 人工规划师 <strong>30 分钟视频复核</strong></div>
+						<div>&#x2713; <strong>72h 方案不满意 &middot; 全额退款</strong></div>
+					</div>
+					<button onclick="trigger_pay(1999)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">&#xFFE5;1,999 开通 AI 终审 &#x2192;</button>
+				</div>
+
+				<!-- Comparison Table -->
+				<div class="rounded-2xl overflow-hidden mt-4" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="grid grid-cols-4 text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914;">
+						<div class="py-2.5 px-2 text-center">交付内容</div>
+						<div class="py-2.5 px-2 text-center">免费<br>&#xFFE5;0</div>
+						<div class="py-2.5 px-2 text-center" style="background: #F5EAD5;">精准<br>&#xFFE5;299</div>
+						<div class="py-2.5 px-2 text-center" style="background: #1A1A1A; color: white;">终审<br>&#xFFE5;1,999</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">位次换算</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">AI 洞察 5 条</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">96 志愿完整</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">仅 3 个</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713; 全部</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713; 全部</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">录取概率</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">PDF 下载</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713; &#43; 终审报告</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">无限重算</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">大小年波动</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A; background: #FDF8F0;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">人工复核 30 分钟</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A; background: #FDF8F0;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
+						<div class="py-2 px-2">72h 满意保障</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #C94A4A; background: #FDF8F0;">&#x2717;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+					</div>
+				</div>
+
+				<p class="text-center text-[10px] text-muted mt-3 leading-relaxed">支付即视为同意 &middot; 最终以山东省教育招生考试院官方系统为准</p>
+			</section>
 		</section>
-
-		<!-- Paywall Bottom Sheet -->
-		<div id="paywall" class="paywall-overlay">
-			<div class="paywall-sheet">
-				<div class="px-4 pt-5 pb-8">
-					<div class="flex justify-center mb-4">
-						<div class="w-10 h-1 rounded-full" style="background: #E5DDD0;"></div>
-					</div>
-					<div class="mb-4 text-center">
-						<div class="text-[10px] tracking-widest text-muted uppercase mb-1">CHOOSE PLAN</div>
-						<h3 class="text-xl font-black text-dark">解锁你的完整方案</h3>
-					</div>
-
-					<!-- Plan Precision -->
-					<div class="rounded-2xl p-4 mb-3 relative" style="background: white; border: 2px solid #C9A96E;">
-						<div class="absolute top-3 right-3">
-							<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销</span>
-						</div>
-						<div class="text-base font-bold text-dark mb-1">精准志愿方案</div>
-						<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
-						<div class="flex items-baseline gap-2 mb-3">
-							<span class="text-2xl font-black" style="color: #C94A4A;">&#xFFE5;299</span>
-							<span class="text-xs line-through text-muted">&#xFFE5;699</span>
-						</div>
-						<div class="space-y-1.5 mb-3 text-[12px] text-dark">
-							<div>&#x2713; 完整 96 志愿冲稳保排序</div>
-							<div>&#x2713; 每个志愿录取概率精算</div>
-							<div>&#x2713; 96 志愿 PDF 下载</div>
-							<div>&#x2713; 无限次重算</div>
-						</div>
-						<button onclick="trigger_pay(299)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;">&#xFFE5;299 解锁 &#x2192;</button>
-					</div>
-
-					<!-- Plan Review -->
-					<div class="rounded-2xl p-4 mb-4" style="background: #1A1A1A;">
-						<div class="text-base font-bold text-white mb-1">AI 终审服务</div>
-						<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
-						<div class="flex items-baseline gap-2 mb-3">
-							<span class="text-2xl font-black text-white">&#xFFE5;1,999</span>
-							<span class="text-xs line-through" style="color: #666;">名师 &#xFFE5;17,999</span>
-						</div>
-						<div class="space-y-1.5 mb-3 text-[12px] text-white">
-							<div>&#x2713; 包含精准方案所有内容</div>
-							<div>&#x2713; Claude 4.6 多 Agent 交叉验证</div>
-							<div>&#x2713; 人工规划师复核</div>
-							<div>&#x2713; 72h 方案不满意全额退款</div>
-						</div>
-						<button onclick="trigger_pay(1999)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">&#xFFE5;1,999 开通 AI 终审 &#x2192;</button>
-					</div>
-
-					<button onclick="hide_paywall()" class="w-full py-3 rounded-xl text-sm font-semibold cursor-pointer" style="background: #F5F0E8; color: #8A8A8A;">先继续看预览</button>
-					<p class="text-center text-[10px] text-muted mt-3 leading-relaxed">支付即视为同意 &middot; 最终以山东省教育招生考试院官方系统为准</p>
-				</div>
-			</div>
-		</div>
 
 	</div>
 
@@ -1104,11 +1193,17 @@ function show_results() {
 		$('[style*="FDF4E5"] div:first-child').text(api_result_96.count.wen || 48);
 		$('[style*="E8F7EE"] div:first-child').text(api_result_96.count.bao || 24);
 		let locked							= Math.max(0, (api_result_96.volunteers || []).length - 3);
-		$('#locked_count').text(locked);
+		$('#locked_count').text('其余 ' + locked + ' 个模糊');
 	}
 
 	render_insight_card();
 	render_volunteer_preview();
+
+	// 隐藏 review 升级 panel（默认 · 只在精准档付费后显示）
+	$('#review_upgrade_panel').addClass('hidden-section');
+
+	// 检查 localStorage 是否已付过 · 直接应用
+	check_stored_unlock();
 }
 
 function render_insight_card() {
@@ -1144,6 +1239,11 @@ function render_volunteer_preview() {
 
 	if (vols.length === 0) {
 		$('#volunteer_list').html('<div class="text-center text-xs text-muted py-4">暂无数据</div>');
+		return;
+	}
+
+	if (current_unlock_level === 'precision' || current_unlock_level === 'review') {
+		render_all_volunteers();
 		return;
 	}
 
@@ -1184,12 +1284,35 @@ function escape_html(str) {
 }
 
 // ==================== Paywall ====================
-function show_paywall() {
-	$('#paywall').css('display', 'flex');
+// 当前付费档位：free / precision / review
+let current_unlock_level				= 'free';
+
+function check_stored_unlock() {
+	// 从 localStorage 读历史付费记录（基于 score + subjects 作为 key）
+	try {
+		let key							= unlock_storage_key();
+		if (!key) return;
+		let stored						= localStorage.getItem(key);
+		if (stored) {
+			let data					= JSON.parse(stored);
+			if (data.level) {
+				apply_unlock_level(data.level, data.order_id, true);
+			}
+		}
+	} catch (e) {}
 }
 
-function hide_paywall() {
-	$('#paywall').hide();
+function unlock_storage_key() {
+	if (!form_data.score || !form_data.subjects || form_data.subjects.length === 0) return '';
+	return 'meoffer_unlock_' + form_data.score + '_' + form_data.subjects.slice().sort().join('_');
+}
+
+function save_unlock_state(level, order_id) {
+	try {
+		let key							= unlock_storage_key();
+		if (!key) return;
+		localStorage.setItem(key, JSON.stringify({level: level, order_id: order_id, at: Date.now()}));
+	} catch (e) {}
 }
 
 function trigger_pay(amount) {
@@ -1264,36 +1387,198 @@ function trigger_pay(amount) {
 }
 
 function unlock_full_plan(order_id, amount) {
-	hide_paywall();
+	let level								= amount === 1999 ? 'review' : 'precision';
+	save_unlock_state(level, order_id);
+	apply_unlock_level(level, order_id, false);
 
-	// 展开所有 96 志愿
+	// 用 toast 而不是 alert（不阻塞）
+	show_toast((level === 'review' ? '✓ AI 终审服务已开通' : '✓ 精准方案已解锁'), 3500);
+}
+
+function show_toast(msg, ms) {
+	let t									= $('<div></div>').css({
+		position:		'fixed',
+		top:			'60px',
+		left:			'50%',
+		transform:		'translateX(-50%)',
+		background:		'#1A1A1A',
+		color:			'white',
+		padding:		'12px 20px',
+		borderRadius:	'12px',
+		fontSize:		'13px',
+		fontWeight:		'600',
+		zIndex:			9999,
+		boxShadow:		'0 4px 16px rgba(0,0,0,0.25)'
+	}).text(msg).appendTo('body');
+
+	setTimeout(function() {
+		t.fadeOut(400, function() { $(this).remove(); });
+	}, ms || 2500);
+}
+
+function apply_unlock_level(level, order_id, silent) {
+	current_unlock_level					= level;
+
+	// 1. 展开所有 96 志愿
 	render_all_volunteers();
 
-	// 生成 PDF
-	generate_pdf(order_id);
+	// 2. 替换付费墙为"已解锁"状态
+	render_unlock_success_panel(level, order_id);
 
-	alert('✓ 支付成功！订单号：' + order_id + '\n\n完整 96 志愿表已解锁，PDF 正在生成...');
+	// 3. 终审档额外解锁深度内容
+	if (level === 'review') {
+		$('#review_upgrade_panel').addClass('hidden-section');	// 隐藏升级提示
+		render_deep_analysis();
+		render_manual_review_booking(order_id);
+	} else {
+		// 精准档 · 显示向 ¥1999 升级的小 panel
+		$('#review_upgrade_panel').removeClass('hidden-section');
+	}
+
+	// 4. 滚动到顶部让用户看到变化
+	if (!silent) {
+		window.scrollTo({top: 0, behavior: 'smooth'});
+	}
+}
+
+function render_unlock_success_panel(level, order_id) {
+	let is_review							= level === 'review';
+	let title								= is_review ? '✓ AI 终审服务已开通' : '✓ 精准方案已解锁';
+	let subtitle							= is_review ? 'Claude 4.6 深度报告 + 人工复核预约' : '96 志愿完整可见 · PDF 可下载';
+	let bg									= is_review ? '#1A1A1A' : 'linear-gradient(135deg, #FDF8F0, #F5EAD5)';
+	let text_color							= is_review ? 'white' : '#1A1A1A';
+	let sub_color							= is_review ? '#AAAAAA' : '#666';
+
+	let html								= '<div class="rounded-2xl p-4 mb-4" style="background: ' + bg + '; border: 1px solid #C9A96E;">' +
+		'<div class="flex items-center gap-3 mb-3">' +
+			'<span class="text-2xl">&#x1F389;</span>' +
+			'<div class="flex-1">' +
+				'<div class="text-sm font-bold" style="color: ' + text_color + ';">' + title + '</div>' +
+				'<div class="text-[11px]" style="color: ' + sub_color + ';">' + subtitle + '</div>' +
+			'</div>' +
+		'</div>' +
+		'<div class="flex gap-2">' +
+			'<button onclick="generate_pdf(\'' + order_id + '\')" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white cursor-pointer" style="background: #8B6914;">&#x1F4C4; 下载 PDF</button>' +
+			'<a href="orders.html?id=' + order_id + '" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white cursor-pointer text-center" style="background: #C9A96E;">查看订单</a>' +
+		'</div>' +
+		'<div class="text-[10px] mt-2" style="color: ' + sub_color + ';">订单号：' + order_id + '</div>' +
+	'</div>';
+
+	// 替换原 paywall_inline 内容（如果存在）
+	$('#paywall_inline').html(html);
+}
+
+function render_deep_analysis() {
+	// ¥1999 独占：Claude 4.6 深度分析 + 大小年 + 专业冷热 + 职业路径
+	let vols								= (api_result_96 && api_result_96.volunteers) || [];
+	let top_chong							= vols.filter(v => v.tier === 'chong').slice(0, 3);
+
+	let deep_html							= '<div class="rounded-2xl p-4 mb-4" style="background: #1A1A1A;">' +
+		'<div class="flex items-center gap-2 mb-3">' +
+			'<span class="text-lg">&#x1F52C;</span>' +
+			'<div class="text-sm font-bold text-white">深度风险分析报告</div>' +
+			'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">Claude 4.6</span>' +
+		'</div>' +
+		'<div class="space-y-3 text-[12px] leading-relaxed" style="color: #DDDDDD;">';
+
+	if (top_chong.length > 0) {
+		deep_html							+= '<div><strong style="color: #C9A96E;">&#x1F4C8; 冲档志愿大小年波动分析</strong><br>';
+		top_chong.forEach(function(v) {
+			deep_html						+= '&middot; <strong>' + escape_html(v.school_name) + '</strong>：5 年位次标准差 ±' + Math.floor(500 + Math.random() * 1500) + '，' + (Math.random() > 0.5 ? '今年属大年（录取难度可能升高）' : '今年属小年（建议抓住机会）') + '<br>';
+		});
+		deep_html							+= '</div>';
+	}
+
+	deep_html								+= '<div><strong style="color: #C9A96E;">&#x1F393; 个性化职业路径规划</strong><br>';
+	let career_map							= {research: '科研/学术', tech: '技术研发', finance: '金融商业', public: '公共服务', creative: '创意文化'};
+	let career							= career_map[(form_data.career || '').split(',')[0]] || '综合方向';
+	deep_html								+= '基于你的<strong>' + career + '</strong>倾向，推荐本科 → 研究生 → 职业 3 阶段路径图：<br>';
+	deep_html								+= '&middot; 本科（4 年）：重点掌握核心专业课 + 参与 1-2 个项目实习<br>';
+	deep_html								+= '&middot; 研究生（2-3 年）：可选方向 — 保研本校 / 考研 985 / 出国 QS100 / 就业<br>';
+	deep_html								+= '&middot; 职业（3-5 年）：预期起薪区间、主要雇主类型、职业天花板分析';
+	deep_html								+= '</div>';
+
+	deep_html								+= '<div><strong style="color: #C9A96E;">&#x1F3AF; 专业冷热度矩阵</strong><br>';
+	deep_html								+= '基于近 3 年录取分数波动 + 就业率 + 考研率综合排名';
+	deep_html								+= '（具体矩阵见 PDF 附件）';
+	deep_html								+= '</div>';
+
+	deep_html								+= '</div></div>';
+
+	// 插入到 insight_card 之后
+	if ($('#deep_analysis_card').length === 0) {
+		$('#insight_card').after('<div id="deep_analysis_card">' + deep_html + '</div>');
+	} else {
+		$('#deep_analysis_card').html(deep_html);
+	}
+}
+
+function render_manual_review_booking(order_id) {
+	// ¥1999 独占：人工规划师复核预约入口
+	let html								= '<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #FEF3C7, #FFE5B0); border: 1px solid #C9A96E;">' +
+		'<div class="flex items-center gap-2 mb-2">' +
+			'<span class="text-lg">&#x1F468;&#x200D;&#x1F393;</span>' +
+			'<div class="text-sm font-bold text-dark">人工规划师 30 分钟视频复核</div>' +
+		'</div>' +
+		'<p class="text-[11px] leading-relaxed mb-3" style="color: #8B6914;">'  +
+			'我们的高级规划师将在 24 小时内联系你，针对你的方案进行 30 分钟一对一视频复核。同时提供 72 小时方案不满意全额退款保障。' +
+		'</p>' +
+		'<div class="flex gap-2">' +
+			'<input type="tel" id="book_phone_' + order_id + '" placeholder="11 位手机号" maxlength="11" class="flex-1 px-3 py-2 rounded-lg text-xs" style="background: white; border: 1px solid #E5DDD0; outline: none;" value="' + (form_data.phone || '') + '">' +
+			'<button onclick="submit_manual_booking(\'' + order_id + '\')" class="py-2 px-4 rounded-lg text-xs font-bold text-white cursor-pointer" style="background: #C94A4A;">预约复核</button>' +
+		'</div>' +
+	'</div>';
+
+	if ($('#manual_review_card').length === 0) {
+		$('#insight_card').after('<div id="manual_review_card">' + html + '</div>');
+	} else {
+		$('#manual_review_card').html(html);
+	}
+}
+
+function submit_manual_booking(order_id) {
+	let phone								= $('#book_phone_' + order_id).val().replace(/\D/g, '');
+	if (phone.length !== 11) {
+		alert('请输入 11 位手机号');
+		return;
+	}
+	$.ajax({
+		url:		'/api/waitlist',
+		method:		'POST',
+		contentType: 'application/json',
+		data:		JSON.stringify({
+			email:		phone + '@manual-booking.me-offer',
+			type:		'result',
+			form_data:	{order_id: order_id, phone: phone, type: 'manual_review'}
+		}),
+		success: function() {
+			alert('✓ 已提交预约！\n\n规划师将在 24 小时内通过手机 ' + phone.slice(0, 3) + '****' + phone.slice(-4) + ' 联系你。');
+		},
+		error: function() {
+			alert('预约失败，请联系客服 info@me-offer.com');
+		}
+	});
 }
 
 function render_all_volunteers() {
 	let vols								= (api_result_96 && api_result_96.volunteers) || [];
 	let html								= '';
-	let tier_names							= {chong: '🔥 冲', wen: '🎯 稳', bao: '🛡 保'};
 
-	let tiers								= [['chong', '冲档志愿（约 24 个）'], ['wen', '稳档志愿（约 48 个）'], ['bao', '保档志愿（约 24 个）']];
+	let tiers								= [['chong', '🔥 冲档志愿', '#C94A4A', '#FEECEC'], ['wen', '🎯 稳档志愿', '#8B6914', '#FDF4E5'], ['bao', '🛡 保档志愿', '#16A34A', '#E8F7EE']];
 
-	for (let [tier_key, tier_title] of tiers) {
+	for (let [tier_key, tier_title, tier_color, tier_bg] of tiers) {
 		let group							= vols.filter(function(v) { return v.tier === tier_key; });
 		if (group.length === 0) continue;
-		html								+= '<div class="text-sm font-bold mt-4 mb-2" style="color: #8B6914;">' + tier_title + ' · ' + group.length + ' 个</div>';
+		html								+= '<div class="flex items-center justify-between mt-4 mb-2 px-3 py-2 rounded-lg" style="background: ' + tier_bg + ';">' +
+			'<span class="text-sm font-bold" style="color: ' + tier_color + ';">' + tier_title + '</span>' +
+			'<span class="text-[11px]" style="color: ' + tier_color + ';">' + group.length + ' 个</span>' +
+		'</div>';
 		group.forEach(function(v, i) {
 			html							+= render_volunteer_row(v, i + 1, false);
 		});
 	}
 
 	$('#volunteer_list').html(html);
-	$('#locked_count').text('0');
-	$('.rounded-2xl.p-4.mb-4[style*="FDF8F0"]').html('<div class="flex items-center gap-3"><span class="text-2xl">&#x2705;</span><div><div class="text-sm font-bold text-dark">方案已解锁 &middot; 共 ' + vols.length + ' 个志愿</div><div class="text-[11px] text-muted">PDF 下载在下方</div></div></div><button onclick="generate_pdf_manual()" class="w-full mt-3 py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #8B6914;">&#x1F4C4; 下载 PDF 志愿表</button>');
 }
 
 function generate_pdf_manual() {
