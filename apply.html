@@ -1572,7 +1572,8 @@ function render_unlock_success_panel(level, order_id) {
 			'<button onclick="generate_pdf(\'' + order_id + '\')" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white cursor-pointer" style="background: #8B6914;">&#x1F4C4; 下载 PDF</button>' +
 			'<a href="orders.html?id=' + order_id + '" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-white cursor-pointer text-center" style="background: #C9A96E;">查看订单</a>' +
 		'</div>' +
-		'<div class="text-[10px] mt-2" style="color: ' + sub_color + ';">订单号：' + order_id + '</div>' +
+		'<div class="text-[10px] mt-1.5 leading-tight" style="color: ' + sub_color + ';">&#x1F4F1; iOS 用户首次下载需在弹窗中点"允许"</div>' +
+		'<div class="text-[10px] mt-1" style="color: ' + sub_color + ';">订单号：' + order_id + '</div>' +
 	'</div>';
 
 	// 替换原 paywall_inline 内容（如果存在）
@@ -1659,6 +1660,10 @@ function build_deep_analysis_html(res, top_chong) {
 	$('#deep_analysis_card').html(deep_html);
 }
 
+// AI 对话状态（每个订单独立历史）
+let ai_chat_history						= [];
+let ai_chat_current_order				= '';
+
 function render_ai_agent_chat(order_id) {
 	// ¥1999 独占：AI Agent 全天候答疑入口
 	let html								= '<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #FEF3C7, #FFE5B0); border: 1px solid #C9A96E;">' +
@@ -1670,15 +1675,35 @@ function render_ai_agent_chat(order_id) {
 		'<p class="text-[11px] leading-relaxed mb-3" style="color: #8B6914;">'  +
 			'Claude 4.5 为你提供 24 小时 AI 答疑：可追问风险细节、调整志愿、重新生成方案。每次对话都会结合你的 96 志愿方案。' +
 		'</p>' +
+
+		// 常见问题快捷入口
 		'<div class="rounded-lg p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' +
-			'<div class="text-[11px] font-semibold text-dark mb-2">常见追问示例：</div>' +
-			'<div class="space-y-1 text-[11px]" style="color: #8B6914;">' +
-				'<div>&#x1F4AC; "我想把山东大学换成哈工大，帮我调整一下"</div>' +
-				'<div>&#x1F4AC; "我的分数再多 5 分能上什么学校？"</div>' +
-				'<div>&#x1F4AC; "爸妈希望我选医学，你建议我怎么跟他们沟通？"</div>' +
+			'<div class="text-[11px] font-semibold text-dark mb-2">点下方问题直接问 AI：</div>' +
+			'<div class="flex flex-col gap-2">' +
+				'<button class="chat_quick_ask text-left text-[11px] px-3 py-2 rounded-lg cursor-pointer" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">我想把第一志愿换成哈工大，帮我分析合不合理？</button>' +
+				'<button class="chat_quick_ask text-left text-[11px] px-3 py-2 rounded-lg cursor-pointer" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">我的分数再多 5 分能上什么更好的学校？</button>' +
+				'<button class="chat_quick_ask text-left text-[11px] px-3 py-2 rounded-lg cursor-pointer" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">爸妈希望我选医学但我想学计算机，怎么沟通？</button>' +
 			'</div>' +
 		'</div>' +
-		'<button onclick="open_ai_chat(\'' + order_id + '\')" class="w-full py-2.5 rounded-lg text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">&#x1F4AC; 开启 AI 答疑对话</button>' +
+
+		'<button onclick="open_ai_chat(\'' + order_id + '\')" class="w-full py-2.5 rounded-lg text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">&#x1F4AC; 打开 AI 对话窗口</button>' +
+
+		// 对话窗口（默认折叠）
+		'<div id="ai_chat_window" class="hidden-section mt-3 rounded-xl" style="background: #0F0F0F; overflow: hidden;">' +
+			'<div class="flex items-center gap-2 px-3 py-2" style="background: #1A1A1A; border-bottom: 1px solid #2A2A2A;">' +
+				'<span class="text-base">&#x1F916;</span>' +
+				'<div class="text-xs font-bold text-white">Claude 4.5 · AI 志愿助手</div>' +
+				'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(34,197,94,0.2); color: #22C55E;">在线</span>' +
+				'<button onclick="close_ai_chat()" class="text-white text-sm cursor-pointer ml-2">&times;</button>' +
+			'</div>' +
+			'<div id="ai_chat_messages" class="p-3" style="max-height: 380px; overflow-y: auto; color: white; font-size: 12px; line-height: 1.5;">' +
+				'<div class="text-center text-[10px] py-2" style="color: #666;">你好，我是你的 AI 志愿助手。你可以随时追问方案细节。</div>' +
+			'</div>' +
+			'<div class="flex gap-2 p-3" style="background: #1A1A1A; border-top: 1px solid #2A2A2A;">' +
+				'<textarea id="ai_chat_input" rows="1" placeholder="输入问题（500字内）..." class="flex-1 text-[12px] rounded-lg px-3 py-2 resize-none" style="background: #2A2A2A; color: white; border: 1px solid #3A3A3A; outline: none;"></textarea>' +
+				'<button id="ai_chat_send" onclick="send_ai_chat()" class="px-4 rounded-lg text-[12px] font-bold text-white cursor-pointer" style="background: #C94A4A;">发送</button>' +
+			'</div>' +
+		'</div>' +
 	'</div>';
 
 	if ($('#manual_review_card').length === 0) {
@@ -1686,11 +1711,135 @@ function render_ai_agent_chat(order_id) {
 	} else {
 		$('#manual_review_card').html(html);
 	}
+
+	ai_chat_current_order					= order_id;
+
+	// 绑定快捷问题按钮
+	$(document).off('click', '.chat_quick_ask').on('click', '.chat_quick_ask', function() {
+		let question						= $(this).text().trim();
+		open_ai_chat(ai_chat_current_order);
+		$('#ai_chat_input').val(question);
+		setTimeout(function() {
+			send_ai_chat();
+		}, 200);
+	});
+
+	// 回车发送（Shift+Enter 换行）
+	$(document).off('keydown', '#ai_chat_input').on('keydown', '#ai_chat_input', function(e) {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			send_ai_chat();
+		}
+	});
 }
 
 function open_ai_chat(order_id) {
-	// MVP 阶段：对话功能开发中，引导到客服
-	alert('AI 对话通道开发中，下一版本上线。\n\n如需立即追问，请联系客服微信 meoffer_cs，我们会把你的问题通过 Claude 4.5 回复。');
+	ai_chat_current_order					= order_id;
+	$('#ai_chat_window').removeClass('hidden-section');
+	setTimeout(function() {
+		$('#ai_chat_input').focus();
+		$('#ai_chat_window')[0].scrollIntoView({behavior: 'smooth', block: 'nearest'});
+	}, 100);
+}
+
+function close_ai_chat() {
+	$('#ai_chat_window').addClass('hidden-section');
+}
+
+function send_ai_chat() {
+	let input_el							= $('#ai_chat_input');
+	let message								= input_el.val().trim();
+
+	if (!message) return;
+	if (message.length > 500) {
+		append_chat_msg('system', '单次提问不超过 500 字');
+		return;
+	}
+
+	// UI：显示用户消息
+	append_chat_msg('user', message);
+	input_el.val('');
+
+	// UI：显示"正在思考"
+	append_chat_msg('thinking', '');
+
+	// 禁用发送按钮
+	$('#ai_chat_send').prop('disabled', true).text('思考中...').css('background', '#666');
+
+	// 准备上下文
+	let user_context						= {
+		score:		form_data.score,
+		rank:		api_result_96 ? api_result_96.rank : 0,
+		subjects:	form_data.subjects,
+		personality: form_data.personality,
+		hobbies:	form_data.hobbies,
+		strengths:	form_data.strengths,
+		talents:	form_data.talents,
+		cities:		form_data.cities,
+		majors:		form_data.majors,
+		top_volunteers: api_result_96 ? (api_result_96.volunteers || []).slice(0, 6) : []
+	};
+
+	// 请求
+	$.ajax({
+		url:		'/api/ai_chat',
+		method:		'POST',
+		contentType: 'application/json',
+		data:		JSON.stringify({
+			order_id:		ai_chat_current_order,
+			user_context:	user_context,
+			history:		ai_chat_history,
+			message:		message
+		}),
+		success: function(res) {
+			$('#chat_thinking').remove();
+			let reply						= res.reply || '（AI 没有返回内容）';
+			append_chat_msg('assistant', reply);
+			ai_chat_history.push({role: 'user', content: message});
+			ai_chat_history.push({role: 'assistant', content: reply});
+			$('#ai_chat_send').prop('disabled', false).text('发送').css('background', '#C94A4A');
+		},
+		error: function(xhr) {
+			$('#chat_thinking').remove();
+			let err							= '请求失败：' + (xhr.status || '网络错误');
+			try {
+				let data					= JSON.parse(xhr.responseText);
+				err							= data.reply || data.error || err;
+			} catch (e) {}
+			append_chat_msg('system', err);
+			$('#ai_chat_send').prop('disabled', false).text('发送').css('background', '#C94A4A');
+		}
+	});
+}
+
+function append_chat_msg(role, content) {
+	let container							= $('#ai_chat_messages');
+	let html								= '';
+
+	if (role === 'user') {
+		html								= '<div class="mb-3 flex justify-end">' +
+			'<div style="max-width: 80%; background: #C9A96E; color: white; padding: 8px 12px; border-radius: 12px 12px 2px 12px; font-size: 12px;">' +
+				escape_html(content) +
+			'</div>' +
+		'</div>';
+	} else if (role === 'assistant') {
+		html								= '<div class="mb-3">' +
+			'<div style="max-width: 85%; background: #2A2A2A; color: #DDD; padding: 10px 12px; border-radius: 12px 12px 12px 2px; font-size: 12px; line-height: 1.6; white-space: pre-wrap;">' +
+				escape_html(content) +
+			'</div>' +
+		'</div>';
+	} else if (role === 'thinking') {
+		html								= '<div id="chat_thinking" class="mb-3">' +
+			'<div style="max-width: 85%; background: #2A2A2A; color: #888; padding: 10px 12px; border-radius: 12px 12px 12px 2px; font-size: 12px;">' +
+				'<span style="animation: blink 1s infinite;">Claude 4.5 正在思考...</span>' +
+			'</div>' +
+		'</div>';
+	} else if (role === 'system') {
+		html								= '<div class="text-center text-[10px] py-1" style="color: #C94A4A;">' + escape_html(content) + '</div>';
+	}
+
+	container.append(html);
+	container.scrollTop(container[0].scrollHeight);
 }
 
 function render_all_volunteers() {
