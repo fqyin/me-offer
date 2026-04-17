@@ -97,7 +97,7 @@
 			<div class="rounded-xl px-3 py-2.5 flex items-center gap-2" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1px solid #C94A4A;">
 				<span class="text-base flex-shrink-0">&#x1F525;</span>
 				<div class="flex-1">
-					<div class="text-[11px] font-bold" style="color: #C94A4A;">内测期限时优惠 &middot; 全部服务统一 ¥10</div>
+					<div class="text-[11px] font-bold" style="color: #C94A4A;">内测期限时优惠 &middot; 全部服务统一 ¥1</div>
 					<div class="text-[10px] leading-tight" style="color: #8B6914;">山东 2025 真实数据 &middot; 96,342 条记录 &middot; Claude 4.5 真实分析</div>
 				</div>
 				<button onclick="goto_apply('free')" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold text-white cursor-pointer" style="background: #C94A4A;">立即体验</button>
@@ -320,13 +320,13 @@
 			<!-- Plan 2: Precision (Recommended) -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #C9A96E;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">内测 ¥10</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">内测 ¥1</span>
 				</div>
 				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
 				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
 				<p class="text-xs text-muted leading-relaxed mb-3">全部 96 志愿精准排序，每个志愿带录取概率 + 冲稳保标记 + PDF 导出。</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;10</span>
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;1</span>
 					<span class="text-sm line-through text-muted">原价 &#xFFE5;299</span>
 				</div>
 				<div class="space-y-2 mb-4">
@@ -382,13 +382,13 @@
 			<!-- Plan 3: AI Review -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: #1A1A1A;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">内测 ¥10</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">内测 ¥1</span>
 				</div>
 				<div class="text-base font-bold text-white mb-1 mt-1">AI 终审服务</div>
 				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
 				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.5 多轮深度推理 + 6 Agent 交叉验证 + 全天候 AI 答疑。一次试算，无限优化。</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black text-white">&#xFFE5;10</span>
+					<span class="text-3xl font-black text-white">&#xFFE5;1</span>
 					<span class="text-sm line-through" style="color: #666666;">原价 &#xFFE5;1,999</span>
 				</div>
 				<div class="space-y-2 mb-4">
@@ -497,7 +497,7 @@
 					<div class="py-2.5 px-2 text-dark">价格</div>
 					<div class="py-2.5 px-2 text-center text-muted">免费</div>
 					<div class="py-2.5 px-2 text-center text-muted">&#xFFE5;17,999</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #C94A4A; background: #FDF8F0;">内测 &#xFFE5;10</div>
+					<div class="py-2.5 px-2 text-center font-semibold" style="color: #C94A4A; background: #FDF8F0;">内测 &#xFFE5;1</div>
 				</div>
 				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
 					<div class="py-2.5 px-2 text-dark">数据透明</div>
@@ -1024,7 +1024,7 @@
 			let used						= parseInt(localStorage.getItem(key) || '0');
 			probability_try_count			= used;
 			let left						= Math.max(0, 3 - used);
-			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'precision\')">生成完整 96 志愿（内测 ¥10 无限次）</a>');
+			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'precision\')">生成完整 96 志愿（内测 ¥1 无限次）</a>');
 		} catch (e) {}
 	}
 
@@ -1048,7 +1048,7 @@
 		if (used >= 3) {
 			$('#prob_agent_result').html('<div class="rounded-xl p-4 text-center" style="background: #1A1A1A;">' +
 				'<div class="text-base font-bold text-white mb-2">&#x1F389; 今日试算次数已用完</div>' +
-				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">内测 ¥10 精准方案：完整 96 志愿 + 无限次重算 + PDF 下载</div>' +
+				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">内测 ¥1 精准方案：完整 96 志愿 + 无限次重算 + PDF 下载</div>' +
 				'<button class="agent-btn agent-btn-gold" style="padding: 12px 24px;" onclick="goto_apply(\'precision\')">立即生成完整方案 &rarr;</button>' +
 			'</div>');
 			return;
@@ -1155,7 +1155,7 @@
 				'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201,169,110,0.2); color: #C9A96E;">Claude 4.5</span>' +
 			'</div>' +
 			'<div class="text-[11px] leading-relaxed mb-3" style="color: #DDDDDD;">AI 终审服务会为你深度生成：大小年波动分析 + 退档风险排查 + Claude 4.5 多轮推理 + 6 Agent 交叉验证</div>' +
-			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看 AI 终审服务 &middot; 内测 ¥10 &rarr;</button>' +
+			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看 AI 终审服务 &middot; 内测 ¥1 &rarr;</button>' +
 		'</div>';
 
 		$('#agent_detail_body').html(html);
