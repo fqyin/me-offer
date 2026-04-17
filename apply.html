@@ -2153,67 +2153,141 @@ function generate_pdf(order_id) {
 		return;
 	}
 
-	try {
-		let doc								= new jspdf.jsPDF('p', 'mm', 'a4');
+	// 显示加载提示
+	show_toast('📄 正在生成专业志愿表（可能需要 10 秒）...', 8000);
 
-		// 由于 jsPDF 对中文支持差，用 html2canvas 方式兜底（走 canvas 截图）
-		build_pdf_via_html(order_id, vols);
-	} catch (e) {
-		console.error('PDF error:', e);
-		alert('PDF 生成失败：' + e.message);
-	}
+	// 先调富化 API 补全每条志愿的数据
+	$.ajax({
+		url:		'/api/enrich_volunteers',
+		method:		'POST',
+		contentType: 'application/json',
+		data:		JSON.stringify({volunteers: vols}),
+		success: function(res) {
+			try {
+				build_pdf_via_html(order_id, res.enriched || vols);
+			} catch (e) {
+				console.error('PDF error:', e);
+				alert('PDF 生成失败：' + e.message);
+			}
+		},
+		error: function() {
+			// 富化失败时用原始数据兜底
+			try {
+				build_pdf_via_html(order_id, vols);
+			} catch (e) {
+				alert('PDF 生成失败：' + e.message);
+			}
+		}
+	});
 }
 
 function build_pdf_via_html(order_id, vols) {
-	// 在 body 里构造一个隐藏的标准 HTML 容器 → html2canvas → 转 PDF
-	let tier_colors							= {chong: '#C94A4A', wen: '#8B6914', bao: '#22C55E'};
+	// 按院校聚合志愿组：同一院校用一个"志愿序号"
+	let school_groups						= [];			// [{school_name, tier, volunteers: [...]}]
+	let current_school						= null;
+	vols.forEach(function(v) {
+		if (!current_school || current_school.school_name !== v.school_name || current_school.tier !== v.tier) {
+			current_school					= {school_name: v.school_name, tier: v.tier, volunteers: []};
+			school_groups.push(current_school);
+		}
+		current_school.volunteers.push(v);
+	});
+
+	let tier_colors							= {chong: '#DC2626', wen: '#2563EB', bao: '#16A34A'};
 	let tier_names							= {chong: '冲', wen: '稳', bao: '保'};
 
 	let rows_html							= '';
-	vols.forEach(function(v, i) {
-		let tcolor							= tier_colors[v.tier] || '#888';
-		rows_html							+= '<tr>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;text-align:center;">' + (i + 1) + '</td>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;"><span style="display:inline-block;padding:1px 6px;border-radius:8px;color:white;background:' + tcolor + ';font-size:10px;">' + tier_names[v.tier] + '</span></td>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;">' + (v.school_code || '') + '</td>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;">' + escape_html(v.school_name) + '</td>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;">' + escape_html(v.group_name) + '</td>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;text-align:right;">' + (v.min_rank || '') + '</td>' +
-			'<td style="padding:4px 6px;border:1px solid #ccc;text-align:right;">' + (v.prob || 0) + '%</td>' +
-		'</tr>';
+	let volunteer_no						= 0;
+	school_groups.forEach(function(sg) {
+		volunteer_no++;
+		let tcolor							= tier_colors[sg.tier] || '#666';
+		let first							= true;
+		sg.volunteers.forEach(function(v) {
+			let career						= v.career_path || '相关行业';
+			let code_5						= v.school_code_5digit || v.school_code || '';
+			let min_score					= v.min_score_2024 ? v.min_score_2024 : '-';
+			let min_rank					= v.min_rank || '-';
+			let plan_count					= v.plan_count || '-';
+			let study_years					= v.study_years || '四年';
+			let tuition						= v.tuition_yuan || 5500;
+			let prob						= v.prob || 0;
+
+			rows_html						+= '<tr>' +
+				// 序号 - 只在每个院校第一行显示
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + (first ? volunteer_no : '') + '</td>' +
+				// 梯度 - 只在每个院校第一行显示
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;">' +
+					(first ? '<span style="display:inline-block;padding:1px 7px;border-radius:8px;color:white;background:' + tcolor + ';font-size:10px;font-weight:600;">' + tier_names[sg.tier] + '</span>' : '') +
+				'</td>' +
+				// 院校名称
+				'<td style="padding:4px 5px;border:1px solid #ddd;font-size:10px;' + (first ? 'font-weight:600;' : 'color:#666;') + '">' + (first ? escape_html(v.school_name) : '') + '</td>' +
+				// 院校代码 - 每行都显示
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;color:#666;">' + (first ? code_5 : '') + '</td>' +
+				// 专业名称
+				'<td style="padding:4px 5px;border:1px solid #ddd;font-size:10px;">' + escape_html(v.group_name || '') + '</td>' +
+				// 专业代码
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;color:#666;">' + (v.group_code || '-') + '</td>' +
+				// 2024 招生人数
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + plan_count + '</td>' +
+				// 2024 最低分/位次
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + min_score + '/' + min_rank + '</td>' +
+				// 录取概率
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;font-weight:600;color:' + tcolor + ';">' + prob + '%</td>' +
+				// 就业去向
+				'<td style="padding:4px 5px;border:1px solid #ddd;font-size:9px;color:#555;">' + escape_html(career) + '</td>' +
+				// 学制
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + study_years + '</td>' +
+				// 学费（元/年）
+				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + tuition + '</td>' +
+			'</tr>';
+			first							= false;
+		});
 	});
 
 	let gen_time							= new Date().toLocaleString('zh-CN');
+	let province_name						= '山东';
+	let batch_name							= '普通类常规批';
+	let subjects_cn							= (form_data.subjects || []).map(function(s) {
+		let map								= {physics: '物理', chemistry: '化学', biology: '生物', politics: '政治', history: '历史', geography: '地理'};
+		return map[s] || s;
+	}).join('·');
+	let rank								= api_result_96 ? api_result_96.rank : '—';
+	let title_line							= province_name + ' / 本科 / ' + subjects_cn + ' / ' + form_data.score + '分 / ' + rank + '名';
+
 	let container							= $('<div></div>').css({
-		position:	'absolute', left: '-10000px', top: 0, width: '794px',
-		background: 'white', padding: '30px', fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif', color: '#222'
+		position:	'absolute', left: '-10000px', top: 0, width: '1200px',
+		background: 'white', padding: '25px', fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif', color: '#222'
 	}).html(
-		'<div style="border-bottom:2px solid #8B6914;padding-bottom:10px;margin-bottom:15px;">' +
-			'<div style="font-size:22px;font-weight:bold;color:#8B6914;">Me Offer &middot; 高考 96 志愿方案</div>' +
-			'<div style="font-size:11px;color:#888;margin-top:4px;">订单号：' + order_id + '　生成时间：' + gen_time + '</div>' +
+		// 标题栏（仿国内专业模板）
+		'<div style="margin-bottom: 12px;">' +
+			'<div style="font-size:16px;font-weight:700;color:#1A1A1A;margin-bottom:6px;">志愿填报: ' + title_line + '</div>' +
 		'</div>' +
-		'<div style="font-size:12px;margin-bottom:10px;">' +
-			'<strong>考生分数：</strong>' + form_data.score + '　' +
-			'<strong>位次：</strong>' + (api_result_96 ? api_result_96.rank : '') + '　' +
-			'<strong>选科：</strong>' + (form_data.subjects || []).join(', ') +
-		'</div>' +
+
+		// 主表格
 		'<table style="width:100%;border-collapse:collapse;font-size:10px;">' +
-			'<thead><tr style="background:#FDF8F0;">' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">志愿</th>' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">档</th>' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">代号</th>' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">院校</th>' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">专业组</th>' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">2024 位次</th>' +
-				'<th style="padding:4px 6px;border:1px solid #ccc;">概率</th>' +
+			'<thead><tr style="background:#F5F0E8;">' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:30px;">序号</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:36px;">梯度</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:95px;">院校名称</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:55px;">院校代码</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;">专业名称</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:55px;">专业代码</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:70px;">2024专业招生人数</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:80px;">2024专业最低分/位次</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:50px;">录取概率(%)</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;">就业去向</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:38px;">学制</th>' +
+				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:62px;">学费 (元/年)</th>' +
 			'</tr></thead>' +
 			'<tbody>' + rows_html + '</tbody>' +
 		'</table>' +
-		'<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:10px;color:#888;line-height:1.6;">' +
-			'<div><strong>数据来源：</strong>山东省教育招生考试院公开数据（2024-2025）</div>' +
-			'<div><strong>算法：</strong>Me Offer AI 位次匹配引擎 + Claude 4.5 个性化推理</div>' +
+
+		// 底部信息
+		'<div style="margin-top:15px;padding-top:10px;border-top:1px solid #ccc;font-size:9px;color:#999;line-height:1.7;">' +
+			'<div><strong>订单号：</strong>' + order_id + '　<strong>生成时间：</strong>' + gen_time + '</div>' +
+			'<div><strong>数据来源：</strong>山东省教育招生考试院 2021-2025 公开数据　<strong>算法：</strong>Me Offer AI 位次匹配引擎 + Claude 4.5 个性化推理</div>' +
 			'<div><strong>免责声明：</strong>本方案为 AI 参考建议，最终志愿填报以山东省教育招生考试院官方系统为准。Me Offer 不对录取结果作任何承诺。</div>' +
-			'<div><strong>客服：</strong>info@me-offer.com</div>' +
+			'<div><strong>客服：</strong>info@me-offer.com　<strong>官网：</strong>me-offer.com</div>' +
 		'</div>'
 	);
 
