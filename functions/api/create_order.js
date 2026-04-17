@@ -30,8 +30,11 @@ export async function onRequestPost(context) {
 	const phone								= (body.phone || '').replace(/\D/g, '').slice(0, 11);
 	const email								= body.email || '';
 
-	if (phone.length !== 11) {
-		return json_response({error: '手机号格式错误'}, 400);
+	// 宽容校验：11 位数字 + 以 1 开头就放行（兼容 130-199 号段）
+	if (phone.length !== 11 || phone[0] !== '1') {
+		return json_response({
+			error:		'手机号格式错误（需 11 位数字以 1 开头），当前：' + (body.phone || '[空]')
+		}, 400);
 	}
 
 	const order_id							= generate_order_id();

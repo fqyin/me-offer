@@ -1406,14 +1406,33 @@ const TEST_MODE							= true;
 const TEST_PRICE						= 10;
 
 function trigger_pay(amount) {
-	if (!form_data.phone || form_data.phone.length !== 11) {
-		// 付费前补收手机号
-		let ph								= prompt('请输入你的 11 位手机号（用于接收方案 PDF）');
-		if (!ph || ph.replace(/\D/g, '').length !== 11) {
-			alert('手机号格式错误');
-			return;
+	// 先把已有的手机号规范化（去掉空格、横线、括号等非数字）
+	let phone_clean							= (form_data.phone || '').replace(/\D/g, '');
+
+	if (phone_clean.length !== 11 || !phone_clean.match(/^1[3-9]\d{9}$/)) {
+		// 弹窗补收手机号（多次机会）
+		let retries							= 3;
+		while (retries > 0) {
+			let ph							= prompt('请输入你的 11 位手机号\n（用于接收方案 PDF，支持 138xxxxxxxx 格式）', phone_clean || '');
+			if (ph === null) {
+				return;		// 用户点取消
+			}
+			phone_clean						= (ph || '').replace(/\D/g, '');
+			if (phone_clean.length === 11 && phone_clean.match(/^1[3-9]\d{9}$/)) {
+				form_data.phone				= phone_clean;
+				$('#input_phone').val(phone_clean);	// 回填
+				break;
+			}
+			retries--;
+			if (retries > 0) {
+				alert('手机号格式错误：必须是 11 位数字且以 13-19 开头\n当前输入：' + ph + '\n解析后：' + phone_clean + '（' + phone_clean.length + ' 位）\n还可以重试 ' + retries + ' 次');
+			} else {
+				alert('手机号格式错误次数过多，请刷新页面重试');
+				return;
+			}
 		}
-		form_data.phone						= ph.replace(/\D/g, '');
+	} else {
+		form_data.phone						= phone_clean;
 	}
 
 	let plan								= amount === 299 ? 'precision' : 'review';
