@@ -52,36 +52,41 @@ export async function onRequestPost(context) {
 
 	// 3. 计算录取概率
 	// diff = user_rank - min_rank
-	// diff 正：用户位次>录取位次 = 用户分低 = 冲（概率低）
-	// diff 负：用户位次<录取位次 = 用户分高 = 保（概率高）
+	// diff 正：用户位次>录取位次（用户排名靠后）= 用户分低 = 冲（概率低）
+	// diff 负：用户位次<录取位次（用户排名靠前）= 用户分高 = 保（概率高）
 	// diff ≈ 0：稳档
+	//
+	// 概率区间（三档清晰分层，不重叠）：
+	//   冲 15-40%   稳 50-75%   保 85-98%
 	const enriched							= candidates.map(c => {
 		const diff							= user_rank - c.min_rank;
 		let tier;
 		let prob;
 
 		if (diff >= -2000 && diff <= 3000) {
-			// 稳：位次差 [-2000, 3000]
+			// 稳：位次差 [-2000, 3000]，概率 50-75%
 			tier							= 'wen';
 			if (diff > 0) {
-				prob						= Math.max(50, Math.min(78, 75 - diff / 150));
+				// 用户略差 → 50-62%
+				prob						= Math.round(62 - (diff / 3000) * 12);
 			} else {
-				prob						= Math.max(78, Math.min(92, 85 + (-diff) / 300));
+				// 用户略好 → 62-75%
+				prob						= Math.round(62 + (-diff / 2000) * 13);
 			}
 		} else if (diff > 3000 && diff <= 10000) {
-			// 冲：用户位次差于录取线 3000~10000
+			// 冲：用户位次差于录取线 3000~10000，概率 25-40%
 			tier							= 'chong';
-			prob							= Math.max(20, Math.min(50, 50 - (diff - 3000) / 300));
+			prob							= Math.round(40 - ((diff - 3000) / 7000) * 15);
 		} else if (diff > 10000) {
-			// 极冲：差距 > 10000
+			// 极冲：差距 > 10000，概率 15-25%
 			tier							= 'chong';
-			prob							= Math.max(10, Math.min(20, 20 - (diff - 10000) / 2000));
+			prob							= Math.max(15, Math.round(25 - (diff - 10000) / 2000));
 		} else if (diff < -2000 && diff >= -8000) {
-			// 保：用户位次好于录取线 2000~8000
+			// 保：用户位次好于录取线 2000~8000，概率 85-95%
 			tier							= 'bao';
-			prob							= Math.max(90, Math.min(96, 92 + (-diff - 2000) / 1500));
+			prob							= Math.round(85 + ((-diff - 2000) / 6000) * 10);
 		} else {
-			// diff < -8000 极保
+			// diff < -8000 极保，概率 96-98%
 			tier							= 'bao';
 			prob							= 98;
 		}
