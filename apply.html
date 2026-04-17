@@ -1035,6 +1035,7 @@ function start_ai_analysis() {
 	api_result_insights						= null;
 
 	// API 1: 生成 96 志愿
+	console.log('[API] calling generate_96 with score=' + form_data.score);
 	$.ajax({
 		url:		'/api/generate_96',
 		method:		'POST',
@@ -1058,6 +1059,7 @@ function start_ai_analysis() {
 			sino:			form_data.sino
 		}),
 		success: function(res) {
+			console.log('[API] generate_96 success, volunteers=' + (res.volunteers || []).length);
 			api_result_96					= res;
 
 			// API 2: Claude 分析（要 Top 志愿作为上下文）
@@ -1084,10 +1086,12 @@ function start_ai_analysis() {
 				}
 			});
 		},
-		error: function(xhr) {
-			console.error('generate_96 failed:', xhr.status, xhr.responseText);
-			alert('AI 分析服务暂时不可用，请稍后再试。');
-		}
+		error: function(xhr, status, err) {
+			console.error('generate_96 failed:', xhr.status, status, err, xhr.responseText);
+			// 不阻塞动画，让 wait_for_api_then_show 超时兜底
+			api_result_96						= {error: true, status: xhr.status, msg: xhr.responseText};
+		},
+		timeout: 30000
 	});
 
 	run_agent_sequence(0);
@@ -1123,17 +1127,35 @@ function run_agent_sequence(index) {
 }
 
 function wait_for_api_then_show() {
-	// 最多等 10 秒
+	// 最多等 60 秒
 	let wait_count							= 0;
-	let max_wait							= 50;
+	let max_wait							= 300;
 	let interval							= setInterval(function() {
 		wait_count++;
 		if (api_result_96 || wait_count >= max_wait) {
 			clearInterval(interval);
+
 			if (!api_result_96) {
-				alert('AI 分析超时，请刷新重试');
+				append_log('[07] ✗ API 超时，请刷新重试', '#C94A4A');
+				setTimeout(function() {
+					if (confirm('AI 分析超时，点击确定刷新页面重试？')) {
+						window.location.reload();
+					}
+				}, 500);
 				return;
 			}
+
+			if (api_result_96.error) {
+				append_log('[07] ✗ API 错误（' + (api_result_96.status || '?') + '）', '#C94A4A');
+				append_log('    └─ ' + (api_result_96.msg || '').slice(0, 80), '#C94A4A');
+				setTimeout(function() {
+					if (confirm('AI 分析遇到错误（' + api_result_96.status + '）。点击确定刷新重试？')) {
+						window.location.reload();
+					}
+				}, 500);
+				return;
+			}
+
 			append_log('[07] ✓ 所有 Agent 分析完成', '#22C55E');
 			append_log('    └─ 总志愿数：' + (api_result_96.volunteers || []).length, '#22C55E');
 			setTimeout(function() {
