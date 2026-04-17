@@ -28,37 +28,48 @@ export async function onRequestPost(context) {
 		return json_response({error: 'no segment data'}, 500);
 	}
 
-	// 2. 查询候选院校专业组（按位次区间）
-	// 冲：位次差 -8000 ~ 0（我比录取线高）
-	// 稳：0 ~ +5000
-	// 保：+5000 ~ +15000
-	const chong_range						= [user_rank - 8000, user_rank];
-	const wen_range							= [user_rank, user_rank + 5000];
-	const bao_range							= [user_rank + 5000, user_rank + 15000];
-
-	// 查最近一年（2025）的投档数据作为推荐基础，用 2024 作辅助
-	const candidates						= await fetch_candidates(env.DB, user_rank - 10000, user_rank + 20000, body);
+	// 2. 查询候选院校专业组
+	// user_rank 周围区间：
+	// min_rank < user_rank - 6000: 我分显著高于录取线 (保档)
+	// min_rank 在 user_rank -6000 ~ user_rank: 稳档
+	// min_rank 在 user_rank ~ user_rank + 5000: 冲档
+	// min_rank > user_rank + 5000: 偏远冲档（数据价值低）
+	const candidates						= await fetch_candidates(env.DB, Math.max(1, user_rank - 20000), user_rank + 30000, body);
 
 	// 3. 计算录取概率
+	// diff = user_rank - min_rank
+	// diff 正：用户位次>录取位次 = 用户分低 = 冲（概率低）
+	// diff 负：用户位次<录取位次 = 用户分高 = 保（概率高）
+	// diff ≈ 0：稳档
 	const enriched							= candidates.map(c => {
-		const diff							= user_rank - c.min_rank;	// 正数=我高，负数=我低
+		const diff							= user_rank - c.min_rank;
 		let tier;
 		let prob;
-		if (diff < -3000) {
-			tier							= 'chong';
-			prob							= Math.max(15, Math.min(45, 35 + diff / 200));
-		} else if (diff < 3000) {
-			tier							= 'chong';
-			prob							= Math.max(40, Math.min(70, 55 + diff / 300));
-		} else if (diff < 8000) {
+
+		if (diff >= -2000 && diff <= 3000) {
+			// 稳：位次差 [-2000, 3000]
 			tier							= 'wen';
-			prob							= Math.max(70, Math.min(88, 75 + diff / 1000));
-		} else if (diff < 15000) {
+			if (diff > 0) {
+				prob						= Math.max(50, Math.min(78, 75 - diff / 150));
+			} else {
+				prob						= Math.max(78, Math.min(92, 85 + (-diff) / 300));
+			}
+		} else if (diff > 3000 && diff <= 10000) {
+			// 冲：用户位次差于录取线 3000~10000
+			tier							= 'chong';
+			prob							= Math.max(20, Math.min(50, 50 - (diff - 3000) / 300));
+		} else if (diff > 10000) {
+			// 极冲：差距 > 10000
+			tier							= 'chong';
+			prob							= Math.max(10, Math.min(20, 20 - (diff - 10000) / 2000));
+		} else if (diff < -2000 && diff >= -8000) {
+			// 保：用户位次好于录取线 2000~8000
 			tier							= 'bao';
-			prob							= Math.max(88, Math.min(97, 90 + diff / 3000));
+			prob							= Math.max(90, Math.min(96, 92 + (-diff - 2000) / 1500));
 		} else {
+			// diff < -8000 极保
 			tier							= 'bao';
-			prob							= 97;
+			prob							= 98;
 		}
 
 		// 个性化偏好加权
@@ -168,7 +179,7 @@ async function fetch_candidates(db, rank_low, rank_high, body) {
 		WHERE s.year IN (2024, 2025)
 		  AND s.min_rank BETWEEN ? AND ?
 		ORDER BY s.year DESC, s.min_rank
-		LIMIT 500
+		LIMIT 3000
 	`).bind(rank_low, rank_high);
 
 	const result							= await q.all();
