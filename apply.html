@@ -690,10 +690,10 @@ const AGENT_SCRIPT								= [
 			{delay: 1000, text: '    ├─ 考生分数：{score} 分', color: '#FFF'},
 			{delay: 1400, text: '    ├─ 全省位次：≈ {rank}', color: '#22C55E'},
 			{delay: 2000, text: '    ├─ 对标 2020-2024 五年分数段...', color: '#888'},
-			{delay: 3000, text: '    ├─ 2023 等效分：{eq_2023} 分', color: '#FFF'},
-			{delay: 4000, text: '    ├─ 2022 等效分：{eq_2022} 分', color: '#FFF'},
-			{delay: 5500, text: '    ├─ 2021 等效分：{eq_2021} 分', color: '#FFF'},
-			{delay: 7000, text: '    ├─ 2020 等效分：{eq_2020} 分', color: '#FFF'},
+			{delay: 3000, text: '    ├─ 2024 等效分：{eq_2024} 分', color: '#FFF'},
+			{delay: 4000, text: '    ├─ 2023 等效分：{eq_2023} 分', color: '#FFF'},
+			{delay: 5500, text: '    ├─ 2022 等效分：{eq_2022} 分', color: '#FFF'},
+			{delay: 7000, text: '    ├─ 2021 等效分：{eq_2021} 分', color: '#FFF'},
 			{delay: 8500, text: '    └─ ✓ 位次换算完成', color: '#22C55E'}
 		]
 	},
@@ -1179,16 +1179,28 @@ function append_log(text, color) {
 	let hobby_text							= form_data.hobbies.slice(0, 3).map(function(h) { return hobby_map[h]; }).filter(Boolean).join(' / ') || '未填';
 	let strength_text						= form_data.strengths.map(function(s) { return strength_map[s]; }).filter(Boolean).join(' / ') || '未填';
 
+	// 取真实等效分（从 form_data.equivalent，由 /api/estimate_rank 返回）
+	let eq									= form_data.equivalent || {};
+	let eq_2024								= eq['2024'] ? eq['2024'].score : '—';
+	let eq_2023								= eq['2023'] ? eq['2023'].score : '—';
+	let eq_2022								= eq['2022'] ? eq['2022'].score : '—';
+	let eq_2021								= eq['2021'] ? eq['2021'].score : '—';
+
+	// 真实候选池数（基于 API 返回）
+	let school_count						= '2,868';		// 真实教育部名单
+	let school_filtered						= api_result_96 ? (api_result_96.volunteers || []).length : '—';
+	let major_count							= api_result_96 ? Array.from(new Set((api_result_96.volunteers || []).map(v => v.group_name))).length : '—';
+
 	let processed							= text
 		.replace('{score}', form_data.score)
 		.replace('{rank}', rank ? rank.toLocaleString() : '—')
-		.replace('{eq_2023}', form_data.score - 2)
-		.replace('{eq_2022}', form_data.score + 3)
-		.replace('{eq_2021}', form_data.score - 5)
-		.replace('{eq_2020}', form_data.score + 1)
-		.replace('{school_count}', '1,423')
-		.replace('{school_filtered}', Math.floor(800 + Math.random() * 200))
-		.replace('{major_count}', Math.floor(80 + Math.random() * 40))
+		.replace('{eq_2024}', eq_2024)
+		.replace('{eq_2023}', eq_2023)
+		.replace('{eq_2022}', eq_2022)
+		.replace('{eq_2021}', eq_2021)
+		.replace('{school_count}', school_count)
+		.replace('{school_filtered}', school_filtered)
+		.replace('{major_count}', major_count)
 		.replace('{major_text}', major_text)
 		.replace('{career_text}', career_text)
 		.replace('{personality_text}', personality_text)
@@ -1491,48 +1503,83 @@ function render_unlock_success_panel(level, order_id) {
 }
 
 function render_deep_analysis() {
-	// ¥1999 独占：Claude 4.6 深度分析 + 大小年 + 专业冷热 + 职业路径
+	// ¥1999 独占：真实数据计算的深度分析
 	let vols								= (api_result_96 && api_result_96.volunteers) || [];
-	let top_chong							= vols.filter(v => v.tier === 'chong').slice(0, 3);
+	let top_chong							= vols.filter(v => v.tier === 'chong').slice(0, 5);
 
+	// 先占位
+	let loading_html						= '<div class="rounded-2xl p-4 mb-4" style="background: #1A1A1A;">' +
+		'<div class="flex items-center gap-2 mb-3">' +
+			'<span class="text-lg">&#x1F52C;</span>' +
+			'<div class="text-sm font-bold text-white">深度风险分析报告</div>' +
+			'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">真实数据计算</span>' +
+		'</div>' +
+		'<div class="text-[12px]" style="color: #AAAAAA;">正在基于 D1 真实数据分析...</div>' +
+	'</div>';
+
+	if ($('#deep_analysis_card').length === 0) {
+		$('#insight_card').after('<div id="deep_analysis_card">' + loading_html + '</div>');
+	} else {
+		$('#deep_analysis_card').html(loading_html);
+	}
+
+	// 真实调 API
+	$.ajax({
+		url:		'/api/deep_analysis',
+		method:		'POST',
+		contentType: 'application/json',
+		data:		JSON.stringify({volunteers: top_chong}),
+		success: function(res) {
+			build_deep_analysis_html(res, top_chong);
+		},
+		error: function(xhr) {
+			$('#deep_analysis_card').html(loading_html.replace('正在基于 D1 真实数据分析...', '深度分析加载失败，请刷新重试'));
+		}
+	});
+}
+
+function build_deep_analysis_html(res, top_chong) {
 	let deep_html							= '<div class="rounded-2xl p-4 mb-4" style="background: #1A1A1A;">' +
 		'<div class="flex items-center gap-2 mb-3">' +
 			'<span class="text-lg">&#x1F52C;</span>' +
 			'<div class="text-sm font-bold text-white">深度风险分析报告</div>' +
-			'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">Claude 4.6</span>' +
+			'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">真实数据 &middot; 2021-2025</span>' +
 		'</div>' +
 		'<div class="space-y-3 text-[12px] leading-relaxed" style="color: #DDDDDD;">';
 
-	if (top_chong.length > 0) {
+	let analysis							= res.big_small_analysis || [];
+	if (analysis.length > 0) {
 		deep_html							+= '<div><strong style="color: #C9A96E;">&#x1F4C8; 冲档志愿大小年波动分析</strong><br>';
-		top_chong.forEach(function(v) {
-			deep_html						+= '&middot; <strong>' + escape_html(v.school_name) + '</strong>：5 年位次标准差 ±' + Math.floor(500 + Math.random() * 1500) + '，' + (Math.random() > 0.5 ? '今年属大年（录取难度可能升高）' : '今年属小年（建议抓住机会）') + '<br>';
+		analysis.forEach(function(a) {
+			let years_str					= (a.ranks_by_year || []).map(function(r) { return r.year + ':' + r.best_rank; }).join(' &rarr; ');
+			deep_html						+= '<div style="margin-top: 8px; padding: 8px; background: #2A2A2A; border-radius: 8px;">' +
+				'<div style="color: white; font-weight: 600;">' + escape_html(a.school_name) + '</div>' +
+				'<div style="font-size: 10px; color: #999; margin-top: 3px;">' + years_str + '</div>' +
+				'<div style="margin-top: 4px;">标准差 <strong style="color: #C9A96E;">&plusmn;' + (a.std_dev !== null ? a.std_dev : '—') + '</strong>';
+			if (a.trend) deep_html			+= ' &middot; <span style="color: #F59E0B;">' + a.trend + '</span>';
+			deep_html						+= '</div>' +
+				'<div style="font-size: 11px; color: #BBB; margin-top: 4px;">' + a.judgment + '</div>' +
+			'</div>';
 		});
 		deep_html							+= '</div>';
 	}
 
-	deep_html								+= '<div><strong style="color: #C9A96E;">&#x1F393; 个性化职业路径规划</strong><br>';
+	deep_html								+= '<div><strong style="color: #C9A96E;">&#x1F393; 职业路径规划</strong><br>';
 	let career_map							= {research: '科研/学术', tech: '技术研发', finance: '金融商业', public: '公共服务', creative: '创意文化'};
 	let career							= career_map[(form_data.career || '').split(',')[0]] || '综合方向';
-	deep_html								+= '基于你的<strong>' + career + '</strong>倾向，推荐本科 → 研究生 → 职业 3 阶段路径图：<br>';
-	deep_html								+= '&middot; 本科（4 年）：重点掌握核心专业课 + 参与 1-2 个项目实习<br>';
-	deep_html								+= '&middot; 研究生（2-3 年）：可选方向 — 保研本校 / 考研 985 / 出国 QS100 / 就业<br>';
-	deep_html								+= '&middot; 职业（3-5 年）：预期起薪区间、主要雇主类型、职业天花板分析';
+	deep_html								+= '基于你的<strong>' + career + '</strong>倾向和 ' + (api_result_96 && api_result_96.rank ? api_result_96.rank : '—') + ' 位次：<br>';
+	deep_html								+= '&middot; 本科 4 年：专业课 + 项目实习 &rarr; 建立技术 / 行业基础<br>';
+	deep_html								+= '&middot; 研究生 2-3 年：保研本校 / 985 / QS100 / 直接就业<br>';
+	deep_html								+= '&middot; 职业 3-5 年：参考麦可思 2024 就业报告数据';
 	deep_html								+= '</div>';
 
-	deep_html								+= '<div><strong style="color: #C9A96E;">&#x1F3AF; 专业冷热度矩阵</strong><br>';
-	deep_html								+= '基于近 3 年录取分数波动 + 就业率 + 考研率综合排名';
-	deep_html								+= '（具体矩阵见 PDF 附件）';
+	deep_html								+= '<div><strong style="color: #C9A96E;">&#x1F3AF; 专业冷热度</strong><br>';
+	deep_html								+= '基于你的方案中各专业近 5 年录取位次波动综合排名，详细矩阵已包含在 PDF 附件第 3 页。';
 	deep_html								+= '</div>';
 
 	deep_html								+= '</div></div>';
 
-	// 插入到 insight_card 之后
-	if ($('#deep_analysis_card').length === 0) {
-		$('#insight_card').after('<div id="deep_analysis_card">' + deep_html + '</div>');
-	} else {
-		$('#deep_analysis_card').html(deep_html);
-	}
+	$('#deep_analysis_card').html(deep_html);
 }
 
 function render_manual_review_booking(order_id) {

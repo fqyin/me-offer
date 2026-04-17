@@ -927,6 +927,9 @@
 
 		for (let m of res.items) {
 			let color						= trend_color[m.trend] || '#8B6914';
+			let school_info					= m.open_school_count > 0 ? '山东 2025 开设 <strong style="color:#8B6914;">' + m.open_school_count + '</strong> 所高校' : '';
+			let rank_info					= m.lowest_rank_2025 ? '最低位 <strong style="color:#C94A4A;">' + m.lowest_rank_2025.toLocaleString() + '</strong>' : '';
+
 			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
 				'<div class="flex items-center justify-between mb-1">' +
 					'<div class="flex items-center gap-2">' +
@@ -939,8 +942,13 @@
 					'<span>起薪 <strong style="color: #8B6914;">¥' + m.salary_avg.toLocaleString() + '</strong></span>' +
 					'<span>就业率 <strong style="color: #8B6914;">' + m.employment + '%</strong></span>' +
 				'</div>' +
+				(school_info || rank_info ? '<div class="flex items-center gap-3 text-[10px] mb-1 text-muted">' + school_info + (school_info && rank_info ? ' &middot; ' : '') + rank_info + '</div>' : '') +
 				'<div class="text-[11px] text-muted">' + m.note + '</div>' +
 			'</div>';
+		}
+
+		if (res.source) {
+			html							+= '<div class="text-[10px] text-muted text-center mt-3">数据源：' + res.source + '</div>';
 		}
 
 		$('#major_agent_result').html(html);
