@@ -131,13 +131,19 @@
 			<div class="mb-5">
 				<label class="text-sm font-semibold text-dark mb-2 block">省份</label>
 				<select id="input_province" class="step-input">
-					<option value="shandong">山东（3+3 新高考）</option>
-					<option value="hebei" disabled>河北（即将支持）</option>
-					<option value="henan" disabled>河南（即将支持）</option>
-					<option value="jiangsu" disabled>江苏（即将支持）</option>
-					<option value="other" disabled>其他省份（即将支持）</option>
+					<option value="shandong">山东（加载中...）</option>
 				</select>
-				<p class="text-[11px] text-muted mt-2">当前只开放山东省 &middot; 其他省份陆续上线</p>
+				<div id="province_info" class="mt-2 text-[11px] leading-relaxed" style="color: #8B6914;">
+					加载省份配置中...
+				</div>
+				<div id="province_unsupported" class="hidden-section mt-2 rounded-lg p-2.5" style="background: #FEF3C7; border: 1px solid #F59E0B; display: none;">
+					<div class="text-[11px] font-bold" style="color: #C94A4A;">&#x26A0;&#xFE0F; 该省份暂未开放</div>
+					<div class="text-[10px] mt-1" style="color: #8B6914;">Me Offer 正在陆续开放全国省份，请留下邮箱优先通知。</div>
+					<div class="flex gap-2 mt-2">
+						<input type="email" id="province_waitlist_email" placeholder="邮箱" class="flex-1 px-2 py-1.5 text-[11px] rounded" style="background: white; border: 1px solid #E5DDD0; outline: none;">
+						<button onclick="submit_province_waitlist()" class="px-3 py-1.5 text-[11px] rounded font-bold text-white cursor-pointer" style="background: #C94A4A;">留位</button>
+					</div>
+				</div>
 			</div>
 
 			<!-- Subject Selection (3 of 6) -->
@@ -803,6 +809,140 @@ function main() {
 	bind_chip_selectors();
 	bind_radio_cards();
 	restore_url_plan();
+	load_provinces();
+	bind_province_change();
+}
+
+// ==================== Provinces Dynamic Load ====================
+let provinces_cache							= [];
+
+function load_provinces() {
+	$.ajax({
+		url:		'/api/provinces',
+		method:		'GET',
+		success: function(res) {
+			provinces_cache					= res.provinces || [];
+			render_provinces_dropdown();
+			update_province_info();
+		},
+		error: function() {
+			$('#province_info').html('<span style="color: #C94A4A;">加载省份列表失败，使用默认配置</span>');
+		}
+	});
+}
+
+function render_provinces_dropdown() {
+	let html								= '';
+
+	// 按 available 排序：可用的在前，即将上线次之，暂不支持最后
+	let available							= provinces_cache.filter(p => p.available);
+	let coming								= provinces_cache.filter(p => !p.available && p.data_status === 'pending');
+	let unsupported							= provinces_cache.filter(p => p.data_status === 'not_supported');
+
+	if (available.length > 0) {
+		html								+= '<optgroup label="已开放（' + available.length + '）">';
+		available.forEach(function(p) {
+			html							+= '<option value="' + p.code + '">' + p.name + '（' + (p.reform_type || '') + '）</option>';
+		});
+		html								+= '</optgroup>';
+	}
+
+	if (coming.length > 0) {
+		html								+= '<optgroup label="即将上线（' + coming.length + '）">';
+		coming.forEach(function(p) {
+			html							+= '<option value="' + p.code + '" data-status="pending">' + p.name + '（即将开放）</option>';
+		});
+		html								+= '</optgroup>';
+	}
+
+	if (unsupported.length > 0) {
+		html								+= '<optgroup label="暂不支持（' + unsupported.length + '）">';
+		unsupported.forEach(function(p) {
+			html							+= '<option value="' + p.code + '" data-status="not_supported">' + p.name + '（传统文理）</option>';
+		});
+		html								+= '</optgroup>';
+	}
+
+	$('#input_province').html(html);
+	// 默认选山东
+	$('#input_province').val('shandong');
+}
+
+function bind_province_change() {
+	$(document).on('change', '#input_province', function() {
+		update_province_info();
+	});
+}
+
+function update_province_info() {
+	let code								= $('#input_province').val();
+	let p									= provinces_cache.find(function(x) { return x.code === code; });
+
+	if (!p) {
+		$('#province_info').text('');
+		return;
+	}
+
+	// 规则展示
+	let parts								= [];
+
+	if (p.total_volunteers) {
+		parts.push('<strong>' + p.total_volunteers + '</strong> 个志愿');
+	}
+
+	if (p.model) {
+		parts.push(p.model);
+	}
+
+	if (p.chong_count) {
+		parts.push('冲 ' + p.chong_count + ' / 稳 ' + p.wen_count + ' / 保 ' + p.bao_count);
+	}
+
+	let notes_line							= '';
+	if (p.special_notes && p.special_notes.length > 0) {
+		notes_line							= '<div class="text-[10px] mt-1" style="color: #8A8A8A;">&#x1F4A1; ' + escape_html(p.special_notes[0]) + '</div>';
+	}
+
+	$('#province_info').html('&#x1F4CB; ' + parts.join(' &middot; ') + notes_line);
+
+	// 不可用省显示 waitlist
+	if (!p.available) {
+		$('#province_unsupported').css('display', 'block');
+		if (p.data_status === 'not_supported') {
+			$('#province_unsupported .text-\\[11px\\].font-bold').html('&#x26A0;&#xFE0F; 该省暂不支持（传统文理分科）');
+		} else {
+			$('#province_unsupported .text-\\[11px\\].font-bold').html('&#x26A0;&#xFE0F; ' + p.name + ' 即将上线');
+		}
+	} else {
+		$('#province_unsupported').css('display', 'none');
+	}
+}
+
+function submit_province_waitlist() {
+	let email								= $('#province_waitlist_email').val().trim();
+	if (email.length < 5 || email.indexOf('@') < 0) {
+		alert('请输入有效邮箱');
+		return;
+	}
+
+	let code								= $('#input_province').val();
+	$.ajax({
+		url:		'/api/waitlist',
+		method:		'POST',
+		contentType: 'application/json',
+		data:		JSON.stringify({
+			email:		email,
+			type:		'launch',
+			form_data:	{interested_province: code}
+		}),
+		success: function() {
+			alert('✓ 已记录！' + code + ' 省份开放时会第一时间邮件通知你');
+			$('#province_waitlist_email').val('');
+		},
+		error: function() {
+			alert('提交失败，请稍后重试');
+		}
+	});
 }
 
 $(document).ready(main);

@@ -17,9 +17,23 @@ export async function onRequestPost(context) {
 	const score								= parseInt(body.score);
 	const subject_type						= body.subject_type || 'total';
 	const target_year						= 2025;		// 参考最近一年做预测
+	const province							= body.province || 'shandong';
 
 	if (isNaN(score) || score < 150 || score > 750) {
 		return json_response({error: 'invalid score'}, 400);
+	}
+
+	// 省份可用性校验
+	const province_config					= await env.DB.prepare('SELECT code, name, data_status, chong_count, wen_count, bao_count FROM provinces WHERE code = ?').bind(province).first();
+	if (!province_config) {
+		return json_response({error: '不支持的省份：' + province}, 400);
+	}
+	if (province_config.data_status !== 'complete') {
+		return json_response({
+			error:		province_config.name + ' 即将上线，请留邮箱订阅上线通知',
+			province_status:	province_config.data_status,
+			province_name:	province_config.name
+		}, 400);
 	}
 
 	// 1. 估算用户位次
