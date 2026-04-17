@@ -41,6 +41,41 @@
 		.agent-tile.active { border-color: #8B6914 !important; background: #FDF8F0 !important; }
 
 		.hidden-agent { display: none; }
+
+		/* Agent Bottom Drawer */
+		.agent-drawer-overlay {
+			position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;
+			opacity: 0; pointer-events: none; transition: opacity 0.3s;
+		}
+		.agent-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+		.agent-drawer {
+			display: none;
+			position: fixed; bottom: 0; left: 0; right: 0;
+			margin-left: auto; margin-right: auto;
+			width: 100%; max-width: 480px; background: white;
+			border-radius: 20px 20px 0 0;
+			max-height: 85vh; overflow-y: auto;
+			z-index: 9999;
+			box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+			transform: none !important;
+			--tw-translate-x: 0 !important;
+			--tw-translate-y: 0 !important;
+		}
+		.agent-drawer.open {
+			display: block;
+			animation: drawer_slide_in 0.3s ease-out;
+		}
+		@keyframes drawer_slide_in {
+			from { opacity: 0; bottom: -50vh; }
+			to { opacity: 1; bottom: 0; }
+		}
+
+		.agent-drawer-handle {
+			width: 40px; height: 4px; border-radius: 2px;
+			background: #D1D5DB; margin: 10px auto 4px;
+		}
+
 		.agent-input { width: 100%; padding: 10px 12px; border-radius: 10px; background: #FDF8F0; border: 1px solid #E5DDD0; font-size: 13px; outline: none; }
 		.agent-input:focus { border-color: #C9A96E; }
 		.agent-btn { padding: 10px 20px; border-radius: 10px; background: #8B6914; color: white; font-size: 12px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; }
@@ -242,19 +277,6 @@
 				</div>
 			</div>
 
-			<!-- Agent Detail Panel -->
-			<div id="agent_detail" class="hidden-agent rounded-2xl mt-4 fade-in" style="background: white; border: 1px solid #C9A96E; overflow: hidden;">
-				<div class="flex items-center justify-between px-4 py-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5);">
-					<div class="flex items-center gap-2">
-						<span id="agent_detail_icon" class="text-xl">&#x1F4CA;</span>
-						<span id="agent_detail_title" class="text-sm font-bold text-dark">分数 Agent</span>
-					</div>
-					<button onclick="close_agent_detail()" class="text-muted hover:text-dark text-lg cursor-pointer">&times;</button>
-				</div>
-				<div id="agent_detail_body" class="px-4 py-4 text-[13px]">
-					<!-- Dynamic content -->
-				</div>
-			</div>
 		</section>
 
 		<!-- Section 5: Three Plans -->
@@ -679,12 +701,12 @@
 
 	// ==================== 6 AI Agent 交互 ====================
 	const AGENT_META						= {
-		score:			{icon: '\u1F4CA', title: '分数 Agent · 位次换算'},
-		school:			{icon: '\u1F3EB', title: '院校 Agent · 5 年走势'},
-		major:			{icon: '\u1F4DA', title: '专业 Agent · 就业薪资'},
-		probability:	{icon: '\u1F3AF', title: '概率 Agent · 录取试算'},
-		risk:			{icon: '\u26A0\uFE0F', title: '风险 Agent · 大小年案例'},
-		submit:			{icon: '\u1F4CB', title: '填报 Agent · 规则策略'}
+		score:			{icon: '\u1F4CA', title: '分数 Agent', subtitle: '位次换算引擎 · 基于 5 年真实数据'},
+		school:			{icon: '\u1F3EB', title: '院校 Agent', subtitle: '2,868 所高校 5 年录取走势 · 真实查询'},
+		major:			{icon: '\u1F4DA', title: '专业 Agent', subtitle: '麦可思 2024 就业 + D1 实时招生统计'},
+		probability:	{icon: '\u1F3AF', title: '概率 Agent', subtitle: '位次差模型 · 录取概率精算'},
+		risk:			{icon: '\u26A0\uFE0F', title: '风险 Agent', subtitle: '5 年大小年波动 · 滑档案例 · 调剂预警'},
+		submit:			{icon: '\u1F4CB', title: '填报 Agent', subtitle: '山东 96 志愿规则 · 冲稳保策略'}
 	};
 	let probability_try_count				= 0;
 
@@ -694,18 +716,16 @@
 	});
 
 	function open_agent_detail(agent) {
-		$('.agent-tile').removeClass('active');
-		$('.agent-tile[data-agent="' + agent + '"]').addClass('active');
-
 		let meta							= AGENT_META[agent];
 		$('#agent_detail_icon').html(meta.icon);
 		$('#agent_detail_title').text(meta.title);
-		$('#agent_detail_body').html('<div class="text-center text-muted text-xs py-4">加载中...</div>');
-		$('#agent_detail').removeClass('hidden-agent');
+		$('#agent_detail_subtitle').text(meta.subtitle);
+		$('#agent_detail_body').html('<div class="text-center text-muted text-xs py-6">加载中...</div>');
 
-		setTimeout(function() {
-			$('#agent_detail')[0].scrollIntoView({behavior: 'smooth', block: 'start'});
-		}, 100);
+		// 打开抽屉
+		$('#agent_drawer').addClass('open');
+		$('#agent_drawer_overlay').addClass('open').css({opacity: 1, 'pointer-events': 'auto'});
+		$('body').css('overflow', 'hidden');
 
 		// 6 个 agent 分发
 		if (agent === 'score') render_score_agent();
@@ -717,9 +737,34 @@
 	}
 
 	function close_agent_detail() {
-		$('#agent_detail').addClass('hidden-agent');
-		$('.agent-tile').removeClass('active');
+		$('#agent_drawer').removeClass('open');
+		$('#agent_drawer_overlay').removeClass('open').css({opacity: 0, 'pointer-events': 'none'});
+		$('body').css('overflow', '');
 	}
+
+	// ESC 键关闭抽屉
+	$(document).on('keydown', function(e) {
+		if (e.key === 'Escape' && $('#agent_drawer').hasClass('open')) {
+			close_agent_detail();
+		}
+	});
+
+	// 下滑手势关闭（移动端）
+	let drawer_touch_start_y				= 0;
+	let drawer_touch_current_y				= 0;
+	$(document).on('touchstart', '.agent-drawer-handle, .agent-drawer', function(e) {
+		drawer_touch_start_y				= e.touches[0].clientY;
+	});
+	$(document).on('touchmove', '.agent-drawer-handle', function(e) {
+		drawer_touch_current_y				= e.touches[0].clientY;
+	});
+	$(document).on('touchend', '.agent-drawer-handle', function() {
+		if (drawer_touch_current_y - drawer_touch_start_y > 80) {
+			close_agent_detail();
+		}
+		drawer_touch_start_y				= 0;
+		drawer_touch_current_y				= 0;
+	});
 
 	// ===== Agent 1: 分数 =====
 	function render_score_agent() {
@@ -1157,6 +1202,27 @@
 		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}
 	</script>
+
+	<!-- Agent Bottom Drawer · 放 body 末尾确保 position:fixed 正确 -->
+	<div id="agent_drawer_overlay" class="agent-drawer-overlay" onclick="close_agent_detail()"></div>
+	<div id="agent_drawer" class="agent-drawer">
+		<div class="agent-drawer-handle"></div>
+		<div class="flex items-center justify-between px-4 py-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border-bottom: 1px solid #E5DDD0;">
+			<div class="flex items-center gap-2 flex-1 min-w-0">
+				<span id="agent_detail_icon" class="text-xl flex-shrink-0">&#x1F4CA;</span>
+				<div class="flex-1 min-w-0">
+					<div id="agent_detail_title" class="text-sm font-bold text-dark truncate">分数 Agent</div>
+					<div id="agent_detail_subtitle" class="text-[10px] text-muted truncate">位次换算引擎 &middot; 基于 5 年真实数据</div>
+				</div>
+			</div>
+			<button onclick="close_agent_detail()" class="w-8 h-8 flex items-center justify-center rounded-full cursor-pointer flex-shrink-0" style="background: white; border: 1px solid #E5DDD0;">
+				<span class="text-base" style="color: #8A8A8A;">&times;</span>
+			</button>
+		</div>
+		<div id="agent_detail_body" class="px-4 py-4 text-[13px]">
+			<!-- Dynamic content -->
+		</div>
+	</div>
 
 </body>
 </html>
