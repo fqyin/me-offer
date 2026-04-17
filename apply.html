@@ -523,8 +523,8 @@
 						<div>&#x2728; Claude 4.5 深度风险分析报告（PDF 附加）</div>
 						<div>&#x2728; 每所学校 5 年大小年波动趋势图</div>
 						<div>&#x2728; 专业冷热度排名 + 就业薪资路径</div>
-						<div>&#x2728; 人工规划师 30 分钟视频复核</div>
-						<div>&#x2728; 72 小时方案不满意全额退款</div>
+						<div>&#x2728; 6 Agent 多次交叉验证</div>
+						<div>&#x2728; AI 全天候答疑 &middot; 无限重算</div>
 					</div>
 					<button onclick="trigger_pay(1999)" class="w-full py-2.5 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">升级 AI 终审 &middot; 测试期 ¥10 &#x2192;</button>
 				</div>
@@ -596,8 +596,8 @@
 						<div>&#x2713; <strong style="color: #C9A96E;">Claude 4.5 深度风险报告</strong>（PDF 附加）</div>
 						<div>&#x2713; 每校 <strong>5 年大小年波动</strong> + 专业冷热</div>
 						<div>&#x2713; <strong>个性化职业路径规划</strong></div>
-						<div>&#x2713; 人工规划师 <strong>30 分钟视频复核</strong></div>
-						<div>&#x2713; <strong>72h 方案不满意 &middot; 全额退款</strong></div>
+						<div>&#x2713; <strong>6 Agent 多次交叉验证</strong></div>
+						<div>&#x2713; <strong>AI 全天候答疑 &middot; 无限重算</strong></div>
 					</div>
 					<button onclick="trigger_pay(1999)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">&#xFFE5;10 测试开通 AI 终审 &#x2192;</button>
 				</div>
@@ -653,13 +653,13 @@
 						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
 					</div>
 					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-						<div class="py-2 px-2">人工复核 30 分钟</div>
+						<div class="py-2 px-2">Claude 4.5 推理</div>
 						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
 						<div class="py-2 px-2 text-center" style="color: #C94A4A; background: #FDF8F0;">&#x2717;</div>
-						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
+						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713; 多轮</div>
 					</div>
 					<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-						<div class="py-2 px-2">72h 满意保障</div>
+						<div class="py-2 px-2">6 Agent 验证</div>
 						<div class="py-2 px-2 text-center" style="color: #C94A4A;">&#x2717;</div>
 						<div class="py-2 px-2 text-center" style="color: #C94A4A; background: #FDF8F0;">&#x2717;</div>
 						<div class="py-2 px-2 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
@@ -1540,7 +1540,7 @@ function apply_unlock_level(level, order_id, silent) {
 	if (level === 'review') {
 		$('#review_upgrade_panel').addClass('hidden-section');	// 隐藏升级提示
 		render_deep_analysis();
-		render_manual_review_booking(order_id);
+		render_ai_agent_chat(order_id);
 	} else {
 		// 精准档 · 显示向 ¥1999 升级的小 panel
 		$('#review_upgrade_panel').removeClass('hidden-section');
@@ -1555,7 +1555,7 @@ function apply_unlock_level(level, order_id, silent) {
 function render_unlock_success_panel(level, order_id) {
 	let is_review							= level === 'review';
 	let title								= is_review ? '✓ AI 终审服务已开通' : '✓ 精准方案已解锁';
-	let subtitle							= is_review ? 'Claude 4.5 深度报告 + 人工复核预约' : '96 志愿完整可见 · PDF 可下载';
+	let subtitle							= is_review ? 'Claude 4.5 深度报告 + 6 Agent 交叉验证' : '96 志愿完整可见 · PDF 可下载';
 	let bg									= is_review ? '#1A1A1A' : 'linear-gradient(135deg, #FDF8F0, #F5EAD5)';
 	let text_color							= is_review ? 'white' : '#1A1A1A';
 	let sub_color							= is_review ? '#AAAAAA' : '#666';
@@ -1659,20 +1659,26 @@ function build_deep_analysis_html(res, top_chong) {
 	$('#deep_analysis_card').html(deep_html);
 }
 
-function render_manual_review_booking(order_id) {
-	// ¥1999 独占：人工规划师复核预约入口
+function render_ai_agent_chat(order_id) {
+	// ¥1999 独占：AI Agent 全天候答疑入口
 	let html								= '<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #FEF3C7, #FFE5B0); border: 1px solid #C9A96E;">' +
 		'<div class="flex items-center gap-2 mb-2">' +
-			'<span class="text-lg">&#x1F468;&#x200D;&#x1F393;</span>' +
-			'<div class="text-sm font-bold text-dark">人工规划师 30 分钟视频复核</div>' +
+			'<span class="text-lg">&#x1F916;</span>' +
+			'<div class="text-sm font-bold text-dark">AI 智能体全天候答疑</div>' +
+			'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: #22C55E; color: white;">24/7 在线</span>' +
 		'</div>' +
 		'<p class="text-[11px] leading-relaxed mb-3" style="color: #8B6914;">'  +
-			'我们的高级规划师将在 24 小时内联系你，针对你的方案进行 30 分钟一对一视频复核。同时提供 72 小时方案不满意全额退款保障。' +
+			'Claude 4.5 为你提供 24 小时 AI 答疑：可追问风险细节、调整志愿、重新生成方案。每次对话都会结合你的 96 志愿方案。' +
 		'</p>' +
-		'<div class="flex gap-2">' +
-			'<input type="tel" id="book_phone_' + order_id + '" placeholder="11 位手机号" maxlength="11" class="flex-1 px-3 py-2 rounded-lg text-xs" style="background: white; border: 1px solid #E5DDD0; outline: none;" value="' + (form_data.phone || '') + '">' +
-			'<button onclick="submit_manual_booking(\'' + order_id + '\')" class="py-2 px-4 rounded-lg text-xs font-bold text-white cursor-pointer" style="background: #C94A4A;">预约复核</button>' +
+		'<div class="rounded-lg p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' +
+			'<div class="text-[11px] font-semibold text-dark mb-2">常见追问示例：</div>' +
+			'<div class="space-y-1 text-[11px]" style="color: #8B6914;">' +
+				'<div>&#x1F4AC; "我想把山东大学换成哈工大，帮我调整一下"</div>' +
+				'<div>&#x1F4AC; "我的分数再多 5 分能上什么学校？"</div>' +
+				'<div>&#x1F4AC; "爸妈希望我选医学，你建议我怎么跟他们沟通？"</div>' +
+			'</div>' +
 		'</div>' +
+		'<button onclick="open_ai_chat(\'' + order_id + '\')" class="w-full py-2.5 rounded-lg text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">&#x1F4AC; 开启 AI 答疑对话</button>' +
 	'</div>';
 
 	if ($('#manual_review_card').length === 0) {
@@ -1682,28 +1688,9 @@ function render_manual_review_booking(order_id) {
 	}
 }
 
-function submit_manual_booking(order_id) {
-	let phone								= $('#book_phone_' + order_id).val().replace(/\D/g, '');
-	if (phone.length !== 11) {
-		alert('请输入 11 位手机号');
-		return;
-	}
-	$.ajax({
-		url:		'/api/waitlist',
-		method:		'POST',
-		contentType: 'application/json',
-		data:		JSON.stringify({
-			email:		phone + '@manual-booking.me-offer',
-			type:		'result',
-			form_data:	{order_id: order_id, phone: phone, type: 'manual_review'}
-		}),
-		success: function() {
-			alert('✓ 已提交预约！\n\n规划师将在 24 小时内通过手机 ' + phone.slice(0, 3) + '****' + phone.slice(-4) + ' 联系你。');
-		},
-		error: function() {
-			alert('预约失败，请联系客服 info@me-offer.com');
-		}
-	});
+function open_ai_chat(order_id) {
+	// MVP 阶段：对话功能开发中，引导到客服
+	alert('AI 对话通道开发中，下一版本上线。\n\n如需立即追问，请联系客服微信 meoffer_cs，我们会把你的问题通过 Claude 4.5 回复。');
 }
 
 function render_all_volunteers() {
