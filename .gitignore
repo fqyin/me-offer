@@ -1,0 +1,5 @@
+.wrangler/
+.claude/
+PLAN_*.md
+node_modules/
+*.log
