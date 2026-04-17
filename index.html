@@ -35,6 +35,22 @@
 		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 		.scroll-x::-webkit-scrollbar { display: none; }
 		.bar-chart-segment { display: flex; flex-direction: column; align-items: center; }
+
+		.agent-tile { transition: all 0.2s; }
+		.agent-tile:hover { border-color: #C9A96E !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,169,110,0.2); }
+		.agent-tile.active { border-color: #8B6914 !important; background: #FDF8F0 !important; }
+
+		.hidden-agent { display: none; }
+		.agent-input { width: 100%; padding: 10px 12px; border-radius: 10px; background: #FDF8F0; border: 1px solid #E5DDD0; font-size: 13px; outline: none; }
+		.agent-input:focus { border-color: #C9A96E; }
+		.agent-btn { padding: 10px 20px; border-radius: 10px; background: #8B6914; color: white; font-size: 12px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; }
+		.agent-btn:hover { background: #6D5210; }
+		.agent-btn-gold { background: #C9A96E; }
+		.agent-btn-gold:hover { background: #B08F4A; }
+		.trend-bar { display: inline-block; width: 8px; border-radius: 2px; vertical-align: bottom; transition: height 0.3s; }
+		.mini-chip { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; margin: 2px 3px; background: #FDF8F0; color: #8B6914; cursor: pointer; border: 1px solid #E5DDD0; }
+		.mini-chip:hover { background: #F5EAD5; }
+		.mini-chip.active { background: #8B6914; color: white; border-color: #8B6914; }
 	</style>
 </head>
 <body class="bg-cream">
@@ -156,67 +172,87 @@
 				<span class="text-lg font-bold text-dark">志愿 AI 智能体</span>
 				<span class="text-[10px] text-muted ml-2">6 Gaokao Agents</span>
 			</div>
-			<p class="text-xs text-muted mb-4">训练自近 5 年全国 2,800 所高校 · 10万+ 专业组数据</p>
+			<p class="text-xs text-muted mb-4">训练自 5 年全国 2,868 所高校 &middot; 96,342 条真实投档数据 &middot; <span style="color: #22C55E; font-weight: 600;">点击卡片体验 &middot; 免费</span></p>
 			<div class="grid grid-cols-2 gap-3" id="gaokao_agents">
-				<!-- Agent 1 -->
-				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-					<div class="flex items-start gap-1 mb-2">
+				<!-- Agent 1: Score -->
+				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="score" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start justify-between mb-2">
 						<span class="text-2xl">&#x1F4CA;</span>
-						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-2"></span>
 					</div>
 					<div class="text-sm font-bold text-dark mb-0.5">分数 Agent</div>
 					<div class="text-[10px] italic mb-1" style="color: #8B6914;">SCORE</div>
-					<div class="text-[11px] text-muted leading-snug">位次换算 · 5 年分数段对标</div>
+					<div class="text-[11px] text-muted leading-snug">位次换算 &middot; 5 年等效分对照</div>
+					<div class="text-[10px] mt-1.5" style="color: #22C55E;">&#x1F449; 点击试算</div>
 				</div>
-				<!-- Agent 2 -->
-				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-					<div class="flex items-start gap-1 mb-2">
+				<!-- Agent 2: School -->
+				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="school" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start justify-between mb-2">
 						<span class="text-2xl">&#x1F3EB;</span>
-						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-2"></span>
 					</div>
 					<div class="text-sm font-bold text-dark mb-0.5">院校 Agent</div>
 					<div class="text-[10px] italic mb-1" style="color: #8B6914;">SCHOOL</div>
-					<div class="text-[11px] text-muted leading-snug">2,800 所高校实时录取线匹配</div>
+					<div class="text-[11px] text-muted leading-snug">2,868 所高校 5 年走势</div>
+					<div class="text-[10px] mt-1.5" style="color: #22C55E;">&#x1F449; 点击查询</div>
 				</div>
-				<!-- Agent 3 -->
-				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-					<div class="flex items-start gap-1 mb-2">
+				<!-- Agent 3: Major -->
+				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="major" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start justify-between mb-2">
 						<span class="text-2xl">&#x1F4DA;</span>
-						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-2"></span>
 					</div>
 					<div class="text-sm font-bold text-dark mb-0.5">专业 Agent</div>
 					<div class="text-[10px] italic mb-1" style="color: #8B6914;">MAJOR</div>
-					<div class="text-[11px] text-muted leading-snug">兴趣 + 就业前景 + 薪资图谱</div>
+					<div class="text-[11px] text-muted leading-snug">兴趣 + 就业 + 薪资图谱</div>
+					<div class="text-[10px] mt-1.5" style="color: #22C55E;">&#x1F449; 点击查看</div>
 				</div>
-				<!-- Agent 4 -->
-				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-					<div class="flex items-start gap-1 mb-2">
+				<!-- Agent 4: Probability -->
+				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="probability" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start justify-between mb-2">
 						<span class="text-2xl">&#x1F3AF;</span>
-						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-2"></span>
 					</div>
 					<div class="text-sm font-bold text-dark mb-0.5">概率 Agent</div>
 					<div class="text-[10px] italic mb-1" style="color: #8B6914;">PROBABILITY</div>
-					<div class="text-[11px] text-muted leading-snug">每个志愿的录取概率精算</div>
+					<div class="text-[11px] text-muted leading-snug">输入分数+学校 算录取概率</div>
+					<div class="text-[10px] mt-1.5" style="color: #22C55E;">&#x1F449; 点击试算</div>
 				</div>
-				<!-- Agent 5 -->
-				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-					<div class="flex items-start gap-1 mb-2">
+				<!-- Agent 5: Risk -->
+				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="risk" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start justify-between mb-2">
 						<span class="text-2xl">&#x26A0;&#xFE0F;</span>
-						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-2"></span>
 					</div>
 					<div class="text-sm font-bold text-dark mb-0.5">风险 Agent</div>
 					<div class="text-[10px] italic mb-1" style="color: #8B6914;">RISK</div>
-					<div class="text-[11px] text-muted leading-snug">滑档 · 退档 · 调剂风险预警</div>
+					<div class="text-[11px] text-muted leading-snug">大小年 + 滑档 + 调剂预警</div>
+					<div class="text-[10px] mt-1.5" style="color: #22C55E;">&#x1F449; 点击看案例</div>
 				</div>
-				<!-- Agent 6 -->
-				<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-					<div class="flex items-start gap-1 mb-2">
+				<!-- Agent 6: Submit -->
+				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="submit" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-start justify-between mb-2">
 						<span class="text-2xl">&#x1F4CB;</span>
-						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-1"></span>
+						<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot mt-2"></span>
 					</div>
 					<div class="text-sm font-bold text-dark mb-0.5">填报 Agent</div>
 					<div class="text-[10px] italic mb-1" style="color: #8B6914;">SUBMIT</div>
-					<div class="text-[11px] text-muted leading-snug">96 志愿排序 · 一键导出报表</div>
+					<div class="text-[11px] text-muted leading-snug">96 志愿规则 + 填报策略</div>
+					<div class="text-[10px] mt-1.5" style="color: #22C55E;">&#x1F449; 点击了解</div>
+				</div>
+			</div>
+
+			<!-- Agent Detail Panel -->
+			<div id="agent_detail" class="hidden-agent rounded-2xl mt-4 fade-in" style="background: white; border: 1px solid #C9A96E; overflow: hidden;">
+				<div class="flex items-center justify-between px-4 py-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5);">
+					<div class="flex items-center gap-2">
+						<span id="agent_detail_icon" class="text-xl">&#x1F4CA;</span>
+						<span id="agent_detail_title" class="text-sm font-bold text-dark">分数 Agent</span>
+					</div>
+					<button onclick="close_agent_detail()" class="text-muted hover:text-dark text-lg cursor-pointer">&times;</button>
+				</div>
+				<div id="agent_detail_body" class="px-4 py-4 text-[13px]">
+					<!-- Dynamic content -->
 				</div>
 			</div>
 		</section>
@@ -624,10 +660,493 @@
 			return;
 		}
 
-		// TODO: Phase 2 对接 Cloudflare Worker API 存储 waitlist
-		console.log('waitlist submit:', current_waitlist_type, email);
-		alert('已留位成功，上线第一时间通知你。');
-		close_waitlist();
+		// 调 Waitlist API
+		$.ajax({
+			url:		'/api/waitlist',
+			method:		'POST',
+			contentType: 'application/json',
+			data:		JSON.stringify({email: email, type: current_waitlist_type}),
+			success: function() {
+				alert('✓ 已留位成功！上线第一时间通知你。');
+				close_waitlist();
+			},
+			error: function() {
+				alert('留位失败，请重试');
+			}
+		});
+	}
+
+
+	// ==================== 6 AI Agent 交互 ====================
+	const AGENT_META						= {
+		score:			{icon: '\u1F4CA', title: '分数 Agent · 位次换算'},
+		school:			{icon: '\u1F3EB', title: '院校 Agent · 5 年走势'},
+		major:			{icon: '\u1F4DA', title: '专业 Agent · 就业薪资'},
+		probability:	{icon: '\u1F3AF', title: '概率 Agent · 录取试算'},
+		risk:			{icon: '\u26A0\uFE0F', title: '风险 Agent · 大小年案例'},
+		submit:			{icon: '\u1F4CB', title: '填报 Agent · 规则策略'}
+	};
+	let probability_try_count				= 0;
+
+	$(document).on('click', '.agent-tile', function() {
+		let agent							= $(this).data('agent');
+		open_agent_detail(agent);
+	});
+
+	function open_agent_detail(agent) {
+		$('.agent-tile').removeClass('active');
+		$('.agent-tile[data-agent="' + agent + '"]').addClass('active');
+
+		let meta							= AGENT_META[agent];
+		$('#agent_detail_icon').html(meta.icon);
+		$('#agent_detail_title').text(meta.title);
+		$('#agent_detail_body').html('<div class="text-center text-muted text-xs py-4">加载中...</div>');
+		$('#agent_detail').removeClass('hidden-agent');
+
+		setTimeout(function() {
+			$('#agent_detail')[0].scrollIntoView({behavior: 'smooth', block: 'start'});
+		}, 100);
+
+		// 6 个 agent 分发
+		if (agent === 'score') render_score_agent();
+		else if (agent === 'school') render_school_agent();
+		else if (agent === 'major') render_major_agent();
+		else if (agent === 'probability') render_probability_agent();
+		else if (agent === 'risk') render_risk_agent();
+		else if (agent === 'submit') render_submit_agent();
+	}
+
+	function close_agent_detail() {
+		$('#agent_detail').addClass('hidden-agent');
+		$('.agent-tile').removeClass('active');
+	}
+
+	// ===== Agent 1: 分数 =====
+	function render_score_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">输入分数即时看山东 2025 位次 + 5 年等效分</div>' +
+			'<div class="flex gap-2 mb-3">' +
+				'<input id="score_agent_input" type="number" inputmode="numeric" class="agent-input flex-1" placeholder="例如 578" min="150" max="750">' +
+				'<button class="agent-btn" onclick="query_score_agent()">试算</button>' +
+			'</div>' +
+			'<div id="score_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+
+		$('#score_agent_input').on('keydown', function(e) {
+			if (e.key === 'Enter') query_score_agent();
+		});
+	}
+
+	function query_score_agent() {
+		let score							= parseInt($('#score_agent_input').val());
+		if (isNaN(score) || score < 150 || score > 750) {
+			$('#score_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入 150-750 之间的有效分数</div>');
+			return;
+		}
+
+		$('#score_agent_result').html('<div class="text-center text-muted text-xs py-2">查询中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=score&score=' + score,
+			method:	'GET',
+			success: function(res) {
+				render_score_result(res);
+			},
+			error: function() {
+				$('#score_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">查询失败</div>');
+			}
+		});
+	}
+
+	function render_score_result(res) {
+		let equiv_html						= '';
+		let years							= [2024, 2023, 2022, 2021];
+		for (let y of years) {
+			let eq							= res.equivalent[y];
+			if (eq) {
+				equiv_html					+= '<div class="flex items-center justify-between py-1.5 border-b" style="border-color: #F3F4F6;">' +
+					'<span class="text-[12px] text-muted">' + y + ' 年</span>' +
+					'<span class="text-[12px]"><strong style="color: #8B6914;">' + eq.score + ' 分</strong> / 位次 ' + eq.rank.toLocaleString() + '</span>' +
+				'</div>';
+			}
+		}
+
+		let subj_html						= '';
+		for (let s of (res.subject_ranks || [])) {
+			subj_html						+= '<div class="text-center rounded-lg py-2 px-1" style="background: #FDF8F0;">' +
+				'<div class="text-[10px] text-muted">' + s.name + '</div>' +
+				'<div class="text-sm font-bold" style="color: #8B6914;">' + s.rank.toLocaleString() + '</div>' +
+			'</div>';
+		}
+
+		let html							= '<div class="rounded-xl p-4 mb-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5);">' +
+			'<div class="text-[11px] text-muted mb-1">你的分数 ' + res.score + ' 分 &middot; 2025 山东位次</div>' +
+			'<div class="text-3xl font-black" style="color: #8B6914;">' + res.rank.toLocaleString() + '</div>' +
+			'<div class="text-[10px] mt-1" style="color: #8B6914;">基于考试院一分一段表</div>' +
+		'</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">📊 5 年等效分对照</div>' +
+		'<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' + equiv_html + '</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">🧪 选科位次（同分数不同科）</div>' +
+		'<div class="grid grid-cols-3 gap-2 mb-3">' + subj_html + '</div>' +
+		'<button class="agent-btn agent-btn-gold w-full" style="width: 100%; padding: 12px;" onclick="goto_apply(\'free\')">基于这个分数生成 96 志愿 &rarr;</button>';
+
+		$('#score_agent_result').html(html);
+	}
+
+	// ===== Agent 2: 院校 =====
+	function render_school_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">输入院校名查看 5 年录取位次走势（基于山东考试院真实数据）</div>' +
+			'<div class="flex gap-2 mb-3">' +
+				'<input id="school_agent_input" type="text" class="agent-input flex-1" placeholder="例如：山东大学 / 清华 / 浙大">' +
+				'<button class="agent-btn" onclick="query_school_agent()">查询</button>' +
+			'</div>' +
+			'<div id="school_agent_hot" class="mb-3"></div>' +
+			'<div id="school_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+
+		$('#school_agent_input').on('keydown', function(e) {
+			if (e.key === 'Enter') query_school_agent();
+		});
+
+		// 预加载热门
+		$.ajax({
+			url: '/api/agent_data?agent=school&keyword=',
+			method: 'GET',
+			success: function(res) {
+				if (res.items && res.items.length > 0) {
+					let html				= '<div class="text-[11px] text-muted mb-1">热门院校：</div><div>';
+					for (let s of res.items.slice(0, 8)) {
+						html				+= '<span class="mini-chip" onclick="$(\'#school_agent_input\').val(\'' + s.school_name + '\'); query_school_agent()">' + s.school_name + '</span>';
+					}
+					html					+= '</div>';
+					$('#school_agent_hot').html(html);
+				}
+			}
+		});
+	}
+
+	function query_school_agent() {
+		let keyword							= $('#school_agent_input').val().trim();
+		if (keyword.length < 2) {
+			$('#school_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入至少 2 个字符</div>');
+			return;
+		}
+
+		$('#school_agent_result').html('<div class="text-center text-muted text-xs py-2">查询中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=school&keyword=' + encodeURIComponent(keyword),
+			method:	'GET',
+			success: function(res) {
+				render_school_result(res);
+			},
+			error: function() {
+				$('#school_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">查询失败</div>');
+			}
+		});
+	}
+
+	function render_school_result(res) {
+		if (res.type === 'none') {
+			$('#school_agent_result').html('<div class="text-[12px] text-muted text-center py-3">未找到"' + res.keyword + '"相关数据</div>');
+			return;
+		}
+
+		let d								= res.detail;
+		let trend_bars						= '';
+		let max_rank						= Math.max(...d.trend.map(t => t.min_rank));
+
+		for (let t of d.trend) {
+			let bar_height					= Math.round((t.min_rank / max_rank) * 80);
+			trend_bars						+= '<div class="text-center">' +
+				'<div class="text-[10px] font-bold mb-1" style="color: #8B6914;">' + t.min_rank.toLocaleString() + '</div>' +
+				'<div class="mx-auto rounded-t-md" style="width: 24px; height: ' + bar_height + 'px; background: linear-gradient(to top, #8B6914, #C9A96E);"></div>' +
+				'<div class="text-[10px] mt-1 text-muted">' + t.year + '</div>' +
+			'</div>';
+		}
+
+		let top_majors_html					= '';
+		let shown_majors					= new Set();
+		for (let m of (d.top_majors || [])) {
+			if (shown_majors.has(m.group_name)) continue;
+			shown_majors.add(m.group_name);
+			if (shown_majors.size > 5) break;
+			top_majors_html					+= '<div class="flex items-center justify-between py-1.5 border-b" style="border-color: #F3F4F6;">' +
+				'<span class="text-[12px] text-dark truncate" style="max-width: 60%;">' + escape_html_idx(m.group_name) + '</span>' +
+				'<span class="text-[12px]"><strong style="color: #8B6914;">' + m.min_rank.toLocaleString() + '</strong> <span class="text-[10px] text-muted">(' + m.year + ')</span></span>' +
+			'</div>';
+		}
+
+		let html							= '<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #C9A96E;">' +
+			'<div class="text-sm font-bold text-dark">' + escape_html_idx(d.school_name) + '</div>' +
+			'<div class="text-[10px] text-muted">院校代码：' + escape_html_idx(d.school_code) + '</div>' +
+		'</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">📈 5 年最低录取位次走势</div>' +
+		'<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' +
+			'<div class="flex items-end justify-around gap-2" style="height: 120px;">' + trend_bars + '</div>' +
+		'</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">🏆 热门专业（5 年录取最难）</div>' +
+		'<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' + top_majors_html + '</div>' +
+		'<button class="agent-btn agent-btn-gold w-full" style="width: 100%; padding: 12px;" onclick="goto_apply(\'free\')">用 AI 匹配这所学校 &rarr;</button>';
+
+		$('#school_agent_result').html(html);
+	}
+
+	// ===== Agent 3: 专业 =====
+	function render_major_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">热门 20 专业 &middot; 就业率 + 起薪 + 趋势（基于麦可思公开数据）</div>' +
+			'<div class="mb-3">' +
+				'<span class="mini-chip active" data-cat="" onclick="filter_major_cat(\'\')">全部</span>' +
+				'<span class="mini-chip" data-cat="理工" onclick="filter_major_cat(\'理工\')">理工</span>' +
+				'<span class="mini-chip" data-cat="经管" onclick="filter_major_cat(\'经管\')">经管</span>' +
+				'<span class="mini-chip" data-cat="医学" onclick="filter_major_cat(\'医学\')">医学</span>' +
+				'<span class="mini-chip" data-cat="文法" onclick="filter_major_cat(\'文法\')">文法</span>' +
+			'</div>' +
+			'<div id="major_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+		filter_major_cat('');
+	}
+
+	function filter_major_cat(cat) {
+		$('#agent_detail_body .mini-chip').removeClass('active');
+		$('#agent_detail_body .mini-chip[data-cat="' + cat + '"]').addClass('active');
+
+		$('#major_agent_result').html('<div class="text-center text-muted text-xs py-2">加载中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=major' + (cat ? '&category=' + encodeURIComponent(cat) : ''),
+			method:	'GET',
+			success: function(res) {
+				render_major_list(res);
+			}
+		});
+	}
+
+	function render_major_list(res) {
+		let html							= '';
+		let trend_color						= {'热门': '#22C55E', '稳定': '#8B6914', '放缓': '#F59E0B', '饱和': '#F59E0B', '转型': '#F59E0B', '下滑': '#C94A4A'};
+
+		for (let m of res.items) {
+			let color						= trend_color[m.trend] || '#8B6914';
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center justify-between mb-1">' +
+					'<div class="flex items-center gap-2">' +
+						'<span class="text-[10px] font-bold" style="color: #8B6914;">#' + m.rank + '</span>' +
+						'<span class="text-sm font-bold text-dark">' + m.name + '</span>' +
+					'</div>' +
+					'<span class="text-[10px] px-2 py-0.5 rounded-full" style="background: ' + color + '22; color: ' + color + ';">' + m.trend + '</span>' +
+				'</div>' +
+				'<div class="flex items-center gap-3 text-[11px] mb-1">' +
+					'<span>起薪 <strong style="color: #8B6914;">¥' + m.salary_avg.toLocaleString() + '</strong></span>' +
+					'<span>就业率 <strong style="color: #8B6914;">' + m.employment + '%</strong></span>' +
+				'</div>' +
+				'<div class="text-[11px] text-muted">' + m.note + '</div>' +
+			'</div>';
+		}
+
+		$('#major_agent_result').html(html);
+	}
+
+	// ===== Agent 4: 概率 =====
+	function render_probability_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">输入分数 + 心仪学校，立即看你的录取概率（<span style="color:#C94A4A;font-weight:600;">每日免费 3 次</span>，想看全部 96 志愿 → 生成完整方案）</div>' +
+			'<div class="flex gap-2 mb-2">' +
+				'<input id="prob_score" type="number" inputmode="numeric" class="agent-input" style="width: 100px;" placeholder="分数" min="150" max="750">' +
+				'<input id="prob_school" type="text" class="agent-input flex-1" placeholder="心仪学校">' +
+				'<button class="agent-btn" onclick="query_probability_agent()">试算</button>' +
+			'</div>' +
+			'<div id="prob_agent_counter" class="text-[11px] text-muted mb-2">今日剩余 3 次</div>' +
+			'<div id="prob_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+		update_probability_counter();
+	}
+
+	function update_probability_counter() {
+		try {
+			let today						= new Date().toDateString();
+			let key							= 'meoffer_prob_try_' + today;
+			let used						= parseInt(localStorage.getItem(key) || '0');
+			probability_try_count			= used;
+			let left						= Math.max(0, 3 - used);
+			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'precision\')">生成完整 96 志愿（¥299 无限次）</a>');
+		} catch (e) {}
+	}
+
+	function query_probability_agent() {
+		let score							= parseInt($('#prob_score').val());
+		let school							= $('#prob_school').val().trim();
+
+		if (isNaN(score) || score < 150 || score > 750) {
+			$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入正确分数</div>');
+			return;
+		}
+		if (school.length < 2) {
+			$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入学校名</div>');
+			return;
+		}
+
+		// 检查次数
+		let today							= new Date().toDateString();
+		let key								= 'meoffer_prob_try_' + today;
+		let used							= parseInt(localStorage.getItem(key) || '0');
+		if (used >= 3) {
+			$('#prob_agent_result').html('<div class="rounded-xl p-4 text-center" style="background: #1A1A1A;">' +
+				'<div class="text-base font-bold text-white mb-2">&#x1F389; 今日试算次数已用完</div>' +
+				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">¥299 精准方案：完整 96 志愿 + 无限次重算 + PDF 下载</div>' +
+				'<button class="agent-btn agent-btn-gold" style="padding: 12px 24px;" onclick="goto_apply(\'precision\')">立即生成完整方案 &rarr;</button>' +
+			'</div>');
+			return;
+		}
+
+		$('#prob_agent_result').html('<div class="text-center text-muted text-xs py-2">AI 计算中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=probability&score=' + score + '&school=' + encodeURIComponent(school),
+			method:	'GET',
+			success: function(res) {
+				if (res.error) {
+					$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">' + res.error + '</div>');
+					return;
+				}
+
+				// 计数 +1
+				try {
+					localStorage.setItem(key, String(used + 1));
+				} catch (e) {}
+				update_probability_counter();
+
+				render_probability_result(res);
+			},
+			error: function() {
+				$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">计算失败</div>');
+			}
+		});
+	}
+
+	function render_probability_result(res) {
+		let tier_color						= {'冲': '#C94A4A', '稳': '#8B6914', '保': '#22C55E'};
+		let tier_bg							= {'冲': '#FEECEC', '稳': '#FDF4E5', '保': '#E8F7EE'};
+
+		let html							= '<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #C9A96E;">' +
+			'<div class="text-[11px] text-muted">你的分数 ' + res.user_score + ' 分 &middot; 山东位次 <strong>' + res.user_rank.toLocaleString() + '</strong></div>' +
+			'<div class="text-sm font-bold text-dark mt-1">' + escape_html_idx(res.school) + ' 各专业录取概率</div>' +
+		'</div>';
+
+		for (let r of res.results) {
+			let color						= tier_color[r.tier];
+			let bg							= tier_bg[r.tier];
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center justify-between mb-1">' +
+					'<span class="text-[12px] font-semibold text-dark truncate" style="max-width: 65%;">' + escape_html_idx(r.group_name) + '</span>' +
+					'<span class="text-[11px] px-2 py-0.5 rounded-full font-semibold" style="background: ' + bg + '; color: ' + color + ';">' + r.tier + ' ' + r.prob + '%</span>' +
+				'</div>' +
+				'<div class="text-[10px] text-muted">2025 最低位次 ' + r.min_rank.toLocaleString() + ' &middot; 计划 ' + r.plan_count + ' 人</div>' +
+			'</div>';
+		}
+
+		$('#prob_agent_result').html(html);
+	}
+
+	// ===== Agent 5: 风险 =====
+	function render_risk_agent() {
+		$('#agent_detail_body').html('<div class="text-center text-muted text-xs py-2">加载中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=risk',
+			method:	'GET',
+			success: function(res) {
+				render_risk_content(res);
+			}
+		});
+	}
+
+	function render_risk_content(res) {
+		let html							= '<div class="mb-3 text-[12px] text-muted">志愿填报 3 大风险 + 真实历史案例</div>';
+
+		// Topics
+		for (let t of res.topics) {
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center gap-2 mb-1">' +
+					'<span class="text-lg">' + t.icon + '</span>' +
+					'<span class="text-sm font-bold text-dark">' + t.title + '</span>' +
+				'</div>' +
+				'<div class="text-[12px] text-muted leading-relaxed">' + t.desc + '</div>' +
+			'</div>';
+		}
+
+		// Big-small year cases
+		if (res.big_small_year_cases && res.big_small_year_cases.length > 0) {
+			html							+= '<div class="text-[12px] font-bold mb-2 mt-4 text-dark">📉 真实大小年案例（2024 → 2025）</div>';
+			for (let c of res.big_small_year_cases) {
+				let diff_str				= c.diff > 0 ? '+' + c.diff.toLocaleString() : c.diff.toLocaleString();
+				html						+= '<div class="rounded-xl p-3 mb-2" style="background: #FDF8F0; border: 1px solid #E5DDD0;">' +
+					'<div class="text-[12px] font-semibold text-dark mb-1">' + escape_html_idx(c.school_name) + '</div>' +
+					'<div class="text-[11px] text-muted mb-1">' + escape_html_idx(c.group_a || '') + '</div>' +
+					'<div class="flex items-center justify-between text-[11px]">' +
+						'<span>2024：位次 <strong>' + c.rank_2024.toLocaleString() + '</strong></span>' +
+						'<span style="color: #C94A4A;">→</span>' +
+						'<span>2025：位次 <strong style="color: #C94A4A;">' + c.rank_2025.toLocaleString() + '</strong></span>' +
+						'<span class="text-[10px] rounded px-1.5 py-0.5" style="background: #FEECEC; color: #C94A4A;">' + diff_str + '</span>' +
+					'</div>' +
+				'</div>';
+			}
+		}
+
+		html								+= '<div class="rounded-xl p-4 mt-4" style="background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">' +
+			'<div class="flex items-center gap-2 mb-2">' +
+				'<span class="text-lg">&#x1F52C;</span>' +
+				'<span class="text-sm font-bold text-white">深度风险分析</span>' +
+				'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201,169,110,0.2); color: #C9A96E;">Claude 4.6</span>' +
+			'</div>' +
+			'<div class="text-[11px] leading-relaxed mb-3" style="color: #DDDDDD;">针对你的分数和偏好，AI 终审服务会为你生成：大小年波动分析 + 退档风险排查 + 人工规划师 30 分钟视频复核 + 72h 满意保障</div>' +
+			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看 AI 终审服务 &middot; ¥1,999 &rarr;</button>' +
+		'</div>';
+
+		$('#agent_detail_body').html(html);
+	}
+
+	// ===== Agent 6: 填报 =====
+	function render_submit_agent() {
+		$.ajax({
+			url:	'/api/agent_data?agent=submit',
+			method:	'GET',
+			success: function(res) {
+				render_submit_content(res);
+			}
+		});
+	}
+
+	function render_submit_content(res) {
+		let html							= '<div class="mb-3 text-[12px] text-muted">山东新高考 96 志愿规则 + AI 最优冲稳保策略</div>';
+
+		for (let r of res.rules) {
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center gap-2 mb-1">' +
+					'<span class="text-lg">' + r.icon + '</span>' +
+					'<span class="text-sm font-bold text-dark">' + r.title + '</span>' +
+				'</div>' +
+				'<div class="text-[12px] text-muted leading-relaxed">' + r.desc + '</div>' +
+			'</div>';
+		}
+
+		// 冲稳保图解
+		html								+= '<div class="text-[12px] font-bold mb-2 mt-4 text-dark">⚖️ 最优冲稳保比例</div>' +
+			'<div class="rounded-xl p-4" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-end justify-center gap-4 mb-2" style="height: 80px;">' +
+					'<div class="text-center"><div class="text-[10px] font-bold" style="color: #C94A4A;">24</div><div class="rounded-t-md" style="width: 48px; height: 32px; background: #C94A4A;"></div><div class="text-[10px] mt-1" style="color: #C94A4A;">冲 25%</div></div>' +
+					'<div class="text-center"><div class="text-[10px] font-bold" style="color: #C9A96E;">48</div><div class="rounded-t-md" style="width: 48px; height: 60px; background: #C9A96E;"></div><div class="text-[10px] mt-1" style="color: #8B6914;">稳 50%</div></div>' +
+					'<div class="text-center"><div class="text-[10px] font-bold" style="color: #22C55E;">24</div><div class="rounded-t-md" style="width: 48px; height: 32px; background: #22C55E;"></div><div class="text-[10px] mt-1" style="color: #22C55E;">保 25%</div></div>' +
+				'</div>' +
+				'<p class="text-[11px] text-muted text-center">AI 按此比例自动排序 96 志愿</p>' +
+			'</div>' +
+			'<button class="agent-btn agent-btn-gold" style="width: 100%; padding: 12px; margin-top: 12px;" onclick="goto_apply(\'free\')">立即填表体验 AI 填报 &rarr;</button>';
+
+		$('#agent_detail_body').html(html);
+	}
+
+	// 工具
+	function escape_html_idx(str) {
+		if (!str) return '';
+		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}
 	</script>
 
