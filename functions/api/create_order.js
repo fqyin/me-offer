@@ -15,9 +15,11 @@ export async function onRequestPost(context) {
 	}
 
 	const plan								= body.plan || 'precision';
+	// 测试期价格：所有档位统一 ¥10，原价 ¥299 / ¥1999
+	// 正式上线时恢复 29900 / 199900
 	const PLAN_AMOUNT						= {
-		precision:						29900,		// ¥299 分
-		review:							199900		// ¥1999 分
+		precision:						1000,		// ¥10 测试价（原 ¥299）
+		review:							1000		// ¥10 测试价（原 ¥1999）
 	};
 
 	if (!PLAN_AMOUNT[plan]) {
