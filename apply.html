@@ -429,7 +429,7 @@
 			<div class="mb-4">
 				<div class="text-[10px] tracking-widest text-muted uppercase mb-1">STEP 4 / 4 &middot; AI ANALYSIS</div>
 				<h2 class="text-2xl font-black text-dark mb-1">6 个 AI 智能体正在工作</h2>
-				<p class="text-xs text-muted">Claude 4.6 深度推理 &middot; 预计 60-90 秒</p>
+				<p class="text-xs text-muted">Claude 4.5 深度推理 + 96,342 条真实投档数据 &middot; 预计 60-90 秒</p>
 			</div>
 
 			<!-- Agent Cards Grid -->
@@ -495,7 +495,7 @@
 				<div class="flex items-center gap-2 mb-2">
 					<span class="text-base">&#x1F9E0;</span>
 					<div class="text-sm font-bold text-white">AI 个性化洞察</div>
-					<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">Claude 4.6</span>
+					<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201, 169, 110, 0.2); color: #C9A96E;">Claude 4.5</span>
 				</div>
 				<div class="space-y-2 text-[12px] leading-relaxed" id="insight_list" style="color: #D4D4D4;">
 					<!-- Dynamically populated -->
@@ -520,7 +520,7 @@
 						<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: #C94A4A; color: white;">¥1,999</span>
 					</div>
 					<div class="space-y-1.5 mb-3 text-[11px]" style="color: #DDDDDD;">
-						<div>&#x2728; Claude 4.6 深度风险分析报告（PDF 附加）</div>
+						<div>&#x2728; Claude 4.5 深度风险分析报告（PDF 附加）</div>
 						<div>&#x2728; 每所学校 5 年大小年波动趋势图</div>
 						<div>&#x2728; 专业冷热度排名 + 就业薪资路径</div>
 						<div>&#x2728; 人工规划师 30 分钟视频复核</div>
@@ -591,7 +591,7 @@
 					</div>
 					<div class="space-y-1.5 mb-3 text-[12px] text-white">
 						<div>&#x2713; 包含 ¥299 精准方案所有内容</div>
-						<div>&#x2713; <strong style="color: #C9A96E;">Claude 4.6 深度风险报告</strong>（PDF 附加）</div>
+						<div>&#x2713; <strong style="color: #C9A96E;">Claude 4.5 深度风险报告</strong>（PDF 附加）</div>
 						<div>&#x2713; 每校 <strong>5 年大小年波动</strong> + 专业冷热</div>
 						<div>&#x2713; <strong>个性化职业路径规划</strong></div>
 						<div>&#x2713; 人工规划师 <strong>30 分钟视频复核</strong></div>
@@ -743,16 +743,18 @@ const AGENT_SCRIPT								= [
 	},
 	{
 		agent: 'risk',
-		duration: 16000,
+		duration: 18000,
 		logs: [
-			{delay: 200, text: '[05] ▸ 启动 风险 Agent (Claude 4.6)', color: '#C9A96E'},
-			{delay: 1000, text: '    ├─ 调用 Claude Opus 4.6 推理...', color: '#888'},
-			{delay: 3500, text: '    ├─ 扫描滑档风险点...', color: '#888'},
-			{delay: 6000, text: '    ├─ 发现 3 个潜在退档原因', color: '#C94A4A'},
-			{delay: 8500, text: '    ├─ 分析调剂可能性...', color: '#888'},
-			{delay: 11000, text: '    ├─ 检测专业组"大小年"波动...', color: '#888'},
-			{delay: 13000, text: '    ├─ 生成个性化风险提示 4 条', color: '#FFF'},
-			{delay: 14500, text: '    └─ ✓ 风险分析完成', color: '#22C55E'}
+			{delay: 200, text: '[05] ▸ 启动 风险 Agent (Claude Sonnet 4.5)', color: '#C9A96E'},
+			{delay: 1200, text: '    ├─ 向 Anthropic API 发送推理请求...', color: '#888'},
+			{delay: 2800, text: '    ├─ Claude 接收用户画像（性格+兴趣+分数+位次）', color: '#888'},
+			{delay: 4500, text: '    ├─ 深度推理开始 (这是最耗时的一步)', color: '#F59E0B'},
+			{delay: 6500, text: '    ├─ [推理中] 扫描滑档风险点...', color: '#888'},
+			{delay: 9000, text: '    ├─ [推理中] 分析专业兴趣契合度...', color: '#888'},
+			{delay: 11500, text: '    ├─ [推理中] 检测位次梯度合理性...', color: '#888'},
+			{delay: 13500, text: '    ├─ 生成个性化洞察 JSON 流式返回', color: '#C9A96E'},
+			{delay: 15500, text: '    ├─ 解析为 5 条结构化建议', color: '#FFF'},
+			{delay: 17000, text: '    └─ ✓ Claude 4.5 推理完成', color: '#22C55E'}
 		]
 	},
 	{
@@ -1242,9 +1244,27 @@ function show_results() {
 
 function render_insight_card() {
 	let insights							= (api_result_insights && api_result_insights.insights) || [];
+	let source								= (api_result_insights && api_result_insights.source) || '';
+
+	// 根据 source 动态改徽章（真实 Claude vs 规则兜底）
+	let badge_text							= 'Claude 4.5';
+	let badge_bg							= 'rgba(201, 169, 110, 0.2)';
+	let badge_color							= '#C9A96E';
+
+	if (source && source.indexOf('claude') >= 0) {
+		badge_text							= '✓ 真实 Claude 4.5';
+		badge_bg							= 'rgba(34, 197, 94, 0.2)';
+		badge_color							= '#22C55E';
+	} else if (source === 'rules' || source === 'rules_fallback' || source === 'error_fallback') {
+		badge_text							= 'AI 规则推理';
+		badge_bg							= 'rgba(201, 169, 110, 0.15)';
+		badge_color							= '#8B6914';
+	}
+
+	$('#insight_card > div:first-child > span.ml-auto').css({background: badge_bg, color: badge_color}).text(badge_text);
 
 	if (insights.length === 0) {
-		$('#insight_list').html('<span style="color: #888;">填写更多个性化信息可得到更精准推荐 &middot; <a style="color: #C9A96E;" onclick="goto_step(3)">去补充 &#x2192;</a></span>');
+		$('#insight_list').html('<span style="color: #888;">填写更多个性化信息可得到更精准推荐 &middot; <a style="color: #C9A96E; cursor: pointer;" onclick="goto_step(3)">去补充 &#x2192;</a></span>');
 		return;
 	}
 
@@ -1361,7 +1381,7 @@ function trigger_pay(amount) {
 	}
 
 	let plan								= amount === 299 ? 'precision' : 'review';
-	let description							= plan === 'precision' ? '96 志愿精准方案 · PDF 下载 · 无限重算' : 'Claude 4.6 深度终审 · 72h 满意保障';
+	let description							= plan === 'precision' ? '96 志愿精准方案 · PDF 下载 · 无限重算' : 'Claude 4.5 深度终审 · 72h 满意保障';
 	let product_name						= plan === 'precision' ? 'Me Offer 精准志愿方案' : 'Me Offer AI 终审服务';
 
 	// 先创建订单（我们的 D1 订单记录）
@@ -1478,7 +1498,7 @@ function apply_unlock_level(level, order_id, silent) {
 function render_unlock_success_panel(level, order_id) {
 	let is_review							= level === 'review';
 	let title								= is_review ? '✓ AI 终审服务已开通' : '✓ 精准方案已解锁';
-	let subtitle							= is_review ? 'Claude 4.6 深度报告 + 人工复核预约' : '96 志愿完整可见 · PDF 可下载';
+	let subtitle							= is_review ? 'Claude 4.5 深度报告 + 人工复核预约' : '96 志愿完整可见 · PDF 可下载';
 	let bg									= is_review ? '#1A1A1A' : 'linear-gradient(135deg, #FDF8F0, #F5EAD5)';
 	let text_color							= is_review ? 'white' : '#1A1A1A';
 	let sub_color							= is_review ? '#AAAAAA' : '#666';
@@ -1719,7 +1739,7 @@ function build_pdf_via_html(order_id, vols) {
 		'</table>' +
 		'<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:10px;color:#888;line-height:1.6;">' +
 			'<div><strong>数据来源：</strong>山东省教育招生考试院公开数据（2024-2025）</div>' +
-			'<div><strong>算法：</strong>Me Offer AI 位次匹配引擎 + Claude 4.6 个性化推理</div>' +
+			'<div><strong>算法：</strong>Me Offer AI 位次匹配引擎 + Claude 4.5 个性化推理</div>' +
 			'<div><strong>免责声明：</strong>本方案为 AI 参考建议，最终志愿填报以山东省教育招生考试院官方系统为准。Me Offer 不对录取结果作任何承诺。</div>' +
 			'<div><strong>客服：</strong>info@me-offer.com</div>' +
 		'</div>'

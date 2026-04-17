@@ -25,6 +25,10 @@ export async function onRequestPost(context) {
 	const user_prompt						= build_prompt(body);
 
 	try {
+		// 15 秒超时保护 · 超时自动降级规则
+		const controller					= new AbortController();
+		const timeout_id					= setTimeout(() => controller.abort(), 15000);
+
 		const resp							= await fetch('https://api.anthropic.com/v1/messages', {
 			method:		'POST',
 			headers:	{
@@ -37,8 +41,11 @@ export async function onRequestPost(context) {
 				max_tokens:		1024,
 				system:			'你是中国高考志愿填报专家。基于用户真实数据给出 3-5 条关键洞察。每条 JSON 格式：{"type": "match|risk|strength|warning", "title": "一句话标题", "content": "具体建议(50字内)"}。只返回 JSON 数组。',
 				messages:		[{role: 'user', content: user_prompt}]
-			})
+			}),
+			signal:		controller.signal
 		});
+
+		clearTimeout(timeout_id);
 
 		if (!resp.ok) {
 			const err						= await resp.text();
