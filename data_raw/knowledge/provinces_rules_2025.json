@@ -1,0 +1,552 @@
+{
+	"_meta": {
+		"version":		"2025-v1",
+		"updated_at":	"2026-04-17",
+		"sources":		[
+			"https://jyt.ln.gov.cn/",
+			"https://www.sdzk.cn/",
+			"https://eea.gd.gov.cn/",
+			"https://gaokao.chsi.com.cn/",
+			"https://gaokao.eol.cn/"
+		],
+		"note":			"各省考试院官方公布规则整理 · 每年 3-5 月需更新"
+	},
+
+	"provinces":	[
+		{
+			"code":			"shandong",
+			"name":			"山东省",
+			"name_short":	"山东",
+			"reform_year":	2020,
+			"reform_type":	"3+3",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "普通类常规批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true},
+				{"batch": "提前批", "volunteer_count": 2, "unit": "有序志愿", "parallel": false},
+				{"batch": "艺术类", "volunteer_count": 60, "unit": "专业+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 24, "wen": 48, "bao": 24, "ratio": "25/50/25"},
+			"subject_select":	"6 选 3（物/化/生/政/史/地）",
+			"special_notes":	[
+				"位次优先 · 遵循志愿 · 一轮投档",
+				"不服从调剂可能滑档，建议全部填满",
+				"专业组内不存在调剂（每个志愿=独立专业）"
+			],
+			"data_status":	"complete",
+			"recommended_priority":	1
+		},
+		{
+			"code":			"hebei",
+			"name":			"河北省",
+			"name_short":	"河北",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true},
+				{"batch": "提前批", "volunteer_count": 10, "unit": "专业+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 24, "wen": 48, "bao": 24, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["与山东同模式 · 扩展成本最低"],
+			"data_status":	"pending",
+			"recommended_priority":	2
+		},
+		{
+			"code":			"liaoning",
+			"name":			"辽宁省",
+			"name_short":	"辽宁",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 112, "unit": "专业+学校", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 60, "unit": "专业+学校", "parallel": true},
+				{"batch": "本科提前批", "volunteer_count": 2, "unit": "有序+4 个专业", "parallel": false}
+			],
+			"chongwenbao":		{"chong": 28, "wen": 56, "bao": 28, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["全国志愿数最多省（112 个），填报需更精细"],
+			"data_status":	"pending",
+			"recommended_priority":	2
+		},
+		{
+			"code":			"chongqing",
+			"name":			"重庆市",
+			"name_short":	"重庆",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 24, "wen": 48, "bao": 24, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["直辖市 · 西南地区高考重镇"],
+			"data_status":	"pending",
+			"recommended_priority":	3
+		},
+		{
+			"code":			"qinghai",
+			"name":			"青海省",
+			"name_short":	"青海",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 96, "unit": "专业+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 24, "wen": 48, "bao": 24, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["2025 新高考改革首年"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"tianjin",
+			"name":			"天津市",
+			"name_short":	"天津",
+			"reform_year":	2020,
+			"reform_type":	"3+3",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 96, "unit": "专业(类)+学校", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 96, "unit": "专业(类)+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 24, "wen": 48, "bao": 24, "ratio": "25/50/25"},
+			"subject_select":	"6 选 3",
+			"special_notes":	["直辖市 · 与山东同模式"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"zhejiang",
+			"name":			"浙江省",
+			"name_short":	"浙江",
+			"reform_year":	2017,
+			"reform_type":	"3+3",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "普通类第一段", "volunteer_count": 80, "unit": "专业+学校", "parallel": true, "note": "分 3 段录取"},
+				{"batch": "普通类第二段", "volunteer_count": 80, "unit": "专业+学校", "parallel": true},
+				{"batch": "普通类第三段", "volunteer_count": 80, "unit": "专业+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 20, "wen": 40, "bao": 20, "ratio": "25/50/25"},
+			"subject_select":	"7 选 3（含技术）",
+			"special_notes":	["分 3 段填报 · 每段都有录取机会", "选考 7 选 3 含技术科目"],
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"hainan",
+			"name":			"海南省",
+			"name_short":	"海南",
+			"reform_year":	2020,
+			"reform_type":	"3+3",
+			"model":		"专业+院校",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 80, "unit": "专业(类)+学校", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 60, "unit": "专业(类)+学校", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 20, "wen": 40, "bao": 20, "ratio": "25/50/25"},
+			"subject_select":	"6 选 3",
+			"special_notes":	["赋分特色"],
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+
+		{
+			"code":			"guangdong",
+			"name":			"广东省",
+			"name_short":	"广东",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组 × 6 专业+调剂", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 45, "unit": "院校专业组 × 6 专业+调剂", "parallel": true},
+				{"batch": "提前批", "volunteer_count": 8, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	[
+				"每组内 6 个专业 + 是否服从调剂",
+				"组内会调剂到不想去的专业，建议勾选服从",
+				"一所大学可能有多个专业组（选科要求不同）"
+			],
+			"data_status":	"pending",
+			"recommended_priority":	3
+		},
+		{
+			"code":			"jiangsu",
+			"name":			"江苏省",
+			"name_short":	"江苏",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组 × 6 专业+调剂", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 40, "unit": "院校专业组 × 6 专业+调剂", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["教育大省 · 高分段竞争激烈"],
+			"data_status":	"pending",
+			"recommended_priority":	3
+		},
+		{
+			"code":			"fujian",
+			"name":			"福建省",
+			"name_short":	"福建",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"hubei",
+			"name":			"湖北省",
+			"name_short":	"湖北",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科普通批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["武汉高校集群"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"hunan",
+			"name":			"湖南省",
+			"name_short":	"湖南",
+			"reform_year":	2021,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"jiangxi",
+			"name":			"江西省",
+			"name_short":	"江西",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"guangxi",
+			"name":			"广西壮族自治区",
+			"name_short":	"广西",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"guizhou",
+			"name":			"贵州省",
+			"name_short":	"贵州",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+
+		{
+			"code":			"anhui",
+			"name":			"安徽省",
+			"name_short":	"安徽",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"gansu",
+			"name":			"甘肃省",
+			"name_short":	"甘肃",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"sichuan",
+			"name":			"四川省",
+			"name_short":	"四川",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批 A 段", "volunteer_count": 20, "unit": "院校专业组", "parallel": true},
+				{"batch": "本科批 B 段", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["分 A/B 段 · 不同位次考生区分"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"shaanxi",
+			"name":			"陕西省",
+			"name_short":	"陕西",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科提前批 B 段", "volunteer_count": 45, "unit": "院校专业组", "parallel": true},
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["2025 新高考首年 · 西安高校集群"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"shanxi",
+			"name":			"山西省",
+			"name_short":	"山西",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"yunnan",
+			"name":			"云南省",
+			"name_short":	"云南",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+
+		{
+			"code":			"beijing",
+			"name":			"北京市",
+			"name_short":	"北京",
+			"reform_year":	2020,
+			"reform_type":	"3+3",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科普通批", "volunteer_count": 30, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科普通批", "volunteer_count": 20, "unit": "学校 × 1 专业", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 8, "wen": 15, "bao": 7, "ratio": "25/50/25"},
+			"subject_select":	"6 选 3",
+			"special_notes":	["首都 · 志愿数相对少 · 竞争激烈"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+		{
+			"code":			"shanghai",
+			"name":			"上海市",
+			"name_short":	"上海",
+			"reform_year":	2017,
+			"reform_type":	"3+3",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科提前批", "volunteer_count": 20, "unit": "院校专业组", "parallel": false},
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组 × 6 专业+调剂", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"6 选 3",
+			"special_notes":	["首批改革省 · 新高考发源地之一"],
+			"data_status":	"pending",
+			"recommended_priority":	4
+		},
+
+		{
+			"code":			"henan",
+			"name":			"河南省",
+			"name_short":	"河南",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 48, "unit": "院校专业组", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 48, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 24, "bao": 12, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"special_notes":	["2025 新高考首年 · 全国考生最多省（百万+）"],
+			"data_status":	"pending",
+			"recommended_priority":	2
+		},
+		{
+			"code":			"hebei_north",
+			"name":			"河北省(北部)",
+			"hidden":		true,
+			"note":			"与 hebei 同规则，仅高考分数段不同"
+		},
+
+		{
+			"code":			"jilin",
+			"name":			"吉林省",
+			"name_short":	"吉林",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+		{
+			"code":			"heilongjiang",
+			"name":			"黑龙江省",
+			"name_short":	"黑龙江",
+			"reform_year":	2024,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 40, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 10, "wen": 20, "bao": 10, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		},
+
+		{
+			"code":			"neimenggu",
+			"name":			"内蒙古自治区",
+			"name_short":	"内蒙古",
+			"reform_year":	null,
+			"reform_type":	"传统文理",
+			"model":		"院校志愿",
+			"batches":	[
+				{"batch": "本科一批", "volunteer_count": 6, "unit": "院校+6专业", "parallel": true, "note": "动态排名"},
+				{"batch": "本科二批", "volunteer_count": 10, "unit": "院校+6专业", "parallel": true},
+				{"batch": "专科批", "volunteer_count": 10, "unit": "院校+6专业", "parallel": true}
+			],
+			"chongwenbao":		null,
+			"subject_select":	"文理分科",
+			"special_notes":	["唯一保留传统文理分科", "动态排名 · 特色投档"],
+			"data_status":	"not_supported",
+			"recommended_priority":	9
+		},
+		{
+			"code":			"xinjiang",
+			"name":			"新疆维吾尔自治区",
+			"name_short":	"新疆",
+			"reform_year":	null,
+			"reform_type":	"传统文理",
+			"model":		"院校志愿",
+			"batches":	[
+				{"batch": "本科一批", "volunteer_count": 9, "unit": "院校+6专业", "parallel": true},
+				{"batch": "本科二批", "volunteer_count": 12, "unit": "院校+6专业", "parallel": true}
+			],
+			"chongwenbao":		null,
+			"subject_select":	"文理分科",
+			"special_notes":	["暂未改革 · 双语教学特殊政策"],
+			"data_status":	"not_supported",
+			"recommended_priority":	9
+		},
+		{
+			"code":			"xizang",
+			"name":			"西藏自治区",
+			"name_short":	"西藏",
+			"reform_year":	null,
+			"reform_type":	"传统文理",
+			"model":		"院校志愿",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 10, "unit": "院校+6专业", "parallel": true}
+			],
+			"chongwenbao":		null,
+			"subject_select":	"文理分科",
+			"special_notes":	["民族特色加分 · 少数民族单列"],
+			"data_status":	"not_supported",
+			"recommended_priority":	9
+		},
+		{
+			"code":			"ningxia",
+			"name":			"宁夏回族自治区",
+			"name_short":	"宁夏",
+			"reform_year":	2025,
+			"reform_type":	"3+1+2",
+			"model":		"院校专业组",
+			"batches":	[
+				{"batch": "本科批", "volunteer_count": 45, "unit": "院校专业组", "parallel": true}
+			],
+			"chongwenbao":		{"chong": 12, "wen": 22, "bao": 11, "ratio": "25/50/25"},
+			"subject_select":	"物/历 2 选 1 + 化/生/政/地 4 选 2",
+			"data_status":	"pending",
+			"recommended_priority":	5
+		}
+	]
+}
