@@ -83,28 +83,114 @@ export async function onRequestPost(context) {
 }
 
 
+// 用户输入字段的中文映射（避免 Claude 看到英文 key）
+const SUBJECT_MAP					= {
+	physics: '物理', chemistry: '化学', biology: '生物',
+	politics: '政治', history: '历史', geography: '地理',
+	chinese: '语文', math: '数学', english: '英语'
+};
+
+const PERSONALITY_MAP				= {
+	social: '外向善社交', introvert: '内向爱思考', logical: '逻辑思维强',
+	creative: '创意想象丰富', detail: '细致耐心', leader: '有领导力',
+	handson: '动手能力强', independent: '独立自主'
+};
+
+const HOBBY_MAP						= {
+	reading: '阅读写作', math: '数理竞赛', programming: '编程电脑',
+	sports: '体育运动', music: '音乐', art: '绘画设计',
+	science: '科学实验', debate: '辩论演讲', film: '影视摄影',
+	game: '游戏策划', business: '商业经济', nature: '户外自然'
+};
+
+const STRENGTH_MAP					= SUBJECT_MAP;		// 强项用同一套
+
+const TALENT_MAP					= {
+	olympic: '学科竞赛获奖', art_cert: '艺术等级证书', sports_cert: '体育特长',
+	publish: '作品发表', leadership: '学生干部经历', volunteer: '志愿服务',
+	patent: '专利/创新成果', none: '无'
+};
+
+const HEALTH_MAP					= {
+	normal: '身体健康', myopia: '高度近视', color_blind: '色盲色弱',
+	height_short: '身高偏矮', other: '其他'
+};
+
+const CITY_MAP						= {
+	beijing: '北京', shanghai: '上海', gz_sz: '广州/深圳',
+	jiangzhe: '江浙（南京/苏州/杭州）', shandong: '山东本省',
+	chengyu: '成都/重庆', wuhan: '武汉', xian: '西安', unlimited: '不限'
+};
+
+const MAJOR_MAP						= {
+	tech: '理工科', medical: '医学', econ: '经管', liberal: '文法',
+	education: '师范教育', art: '艺术设计', agri: '农林', military: '军警',
+	unknown: '暂未决定'
+};
+
+const CAREER_MAP					= {
+	research: '科研学术', tech: '技术研发', finance: '金融商业',
+	public: '公共服务', creative: '创意文化', undecided: '未定'
+};
+
+
+function translate_array(arr, dict) {
+	if (!arr || arr.length === 0) return '';
+	return arr.map(k => dict[k] || k).join('、');
+}
+
+
 function build_prompt(body) {
 	const lines								= [];
-	lines.push('考生数据：');
-	lines.push('- 高考分数：' + body.score + '（山东 2025 考生位次约 ' + (body.rank || '未知') + '）');
-	if (body.subjects) lines.push('- 选科：' + body.subjects.join(', '));
-	if (body.personality && body.personality.length > 0) lines.push('- 性格特质：' + body.personality.join(', '));
-	if (body.hobbies && body.hobbies.length > 0) lines.push('- 兴趣爱好：' + body.hobbies.slice(0, 5).join(', '));
-	if (body.strengths && body.strengths.length > 0) lines.push('- 学科特长：' + body.strengths.join(', '));
-	if (body.talents && body.talents.length > 0) lines.push('- 特长奖项：' + body.talents.join(', '));
-	if (body.health && body.health.length > 0) lines.push('- 身体情况：' + body.health.join(', '));
-	if (body.cities && body.cities.length > 0) lines.push('- 意向城市：' + body.cities.join(', '));
-	if (body.majors && body.majors.length > 0) lines.push('- 专业方向：' + body.majors.join(', '));
-	if (body.career) lines.push('- 职业规划：' + body.career);
+	lines.push('高考考生基本信息：');
+	lines.push('- 分数：' + body.score + ' 分（2025 山东省位次约第 ' + (body.rank || '未知') + ' 名）');
+
+	const subjects_cn					= translate_array(body.subjects, SUBJECT_MAP);
+	if (subjects_cn) lines.push('- 选考科目：' + subjects_cn);
+
+	const personality_cn				= translate_array(body.personality, PERSONALITY_MAP);
+	if (personality_cn) lines.push('- 性格特质：' + personality_cn);
+
+	const hobbies_cn					= translate_array((body.hobbies || []).slice(0, 5), HOBBY_MAP);
+	if (hobbies_cn) lines.push('- 兴趣爱好：' + hobbies_cn);
+
+	const strengths_cn					= translate_array(body.strengths, STRENGTH_MAP);
+	if (strengths_cn) lines.push('- 学科特长：' + strengths_cn);
+
+	const talents_cn					= translate_array(body.talents, TALENT_MAP);
+	if (talents_cn) lines.push('- 特长奖项：' + talents_cn);
+
+	const health_cn						= translate_array(body.health, HEALTH_MAP);
+	if (health_cn) lines.push('- 身体情况：' + health_cn);
+
+	const cities_cn						= translate_array(body.cities, CITY_MAP);
+	if (cities_cn) lines.push('- 意向城市：' + cities_cn);
+
+	const majors_cn						= translate_array(body.majors, MAJOR_MAP);
+	if (majors_cn) lines.push('- 专业方向：' + majors_cn);
+
+	if (body.career) {
+		const career_keys				= body.career.split(',').filter(c => c.length > 0);
+		const career_cn					= translate_array(career_keys, CAREER_MAP);
+		if (career_cn) lines.push('- 职业规划：' + career_cn);
+	}
 
 	if (body.top_volunteers && body.top_volunteers.length > 0) {
-		lines.push('\nAI 推荐的前 5 个志愿：');
+		lines.push('\nAI 已为其推荐的前 5 个志愿：');
 		body.top_volunteers.slice(0, 5).forEach((v, i) => {
-			lines.push('  ' + (i + 1) + '. ' + v.school_name + ' - ' + v.group_name + ' (位次差 ' + v.diff + ', 概率 ' + v.prob + '%)');
+			const tier_name				= v.tier === 'chong' ? '冲' : v.tier === 'wen' ? '稳' : v.tier === 'bao' ? '保' : '';
+			lines.push('  ' + (i + 1) + '. ' + v.school_name + ' - ' + v.group_name +
+				(tier_name ? ' [' + tier_name + ']' : '') +
+				' (位次差 ' + v.diff + ', 概率 ' + v.prob + '%)');
 		});
 	}
 
-	lines.push('\n请生成 3-5 条关键洞察。合规要求：不承诺录取结果，不用"保""最""第一"等词。');
+	lines.push('\n请用中文生成 3-5 条简洁有洞察力的建议：');
+	lines.push('- 标题 10 字以内，具体不泛泛');
+	lines.push('- 内容每条 50 字以内，有数字或证据');
+	lines.push('- 合规要求：不承诺录取结果，不使用"保证""最""第一""包"等词');
+	lines.push('- 建议类型分布：至少 1 条 match（匹配优势）、1 条 risk（风险提醒）、可加 strength/warning');
+
 	return lines.join('\n');
 }
 
