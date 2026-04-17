@@ -99,6 +99,18 @@ export async function onRequestPost(context) {
 		if (body.level === '211' && (c.tier === '985' || c.tier === '211')) score_boost += 10;
 		if (body.level === 'city' && score_boost > 0) score_boost += 5;
 
+		// ⭐ 专业方向匹配（关键：避免医学意向 → 推荐土耳其语这种 bug）
+		if (body.majors && body.majors.length > 0 && c.group_name) {
+			const gn						= c.group_name;
+			const major_match				= check_major_match(body.majors, gn);
+
+			if (major_match === 'match') {
+				score_boost					+= 40;		// 强匹配，大幅加权
+			} else if (major_match === 'irrelevant') {
+				score_boost					-= 80;		// 明显不相关，重度降权
+			}
+		}
+
 		// 排除不符合的
 		if (body.remote === 'no' && is_remote_area(c.school_name)) {
 			score_boost						-= 30;
@@ -108,6 +120,14 @@ export async function onRequestPost(context) {
 		}
 		if (body.budget === 'tight' && (c.tier === '中外合作' || c.nature === '民办')) {
 			score_boost						-= 40;
+		}
+
+		// 身体限制硬过滤
+		if (body.health && body.health.includes('color_blind') && c.group_name) {
+			const gn						= c.group_name;
+			if (gn.includes('医学') || gn.includes('化学') || gn.includes('材料') || gn.includes('生物') || gn.includes('药学') || gn.includes('检验')) {
+				score_boost					-= 100;		// 色盲基本排除医学化工类
+			}
 		}
 
 		return {
@@ -212,6 +232,81 @@ async function fetch_candidates(db, rank_low, rank_high, body) {
 function is_remote_area(school_name) {
 	const remote_kw							= ['新疆', '西藏', '青海', '宁夏', '内蒙古', '甘肃', '云南', '贵州', '石河子', '海南', '延边', '黑龙江'];
 	return remote_kw.some(kw => school_name.includes(kw));
+}
+
+
+// 专业方向分类 · 用于过滤 "医学意向 推荐土耳其语" 这种错配
+const MAJOR_KEYWORDS						= {
+	tech:		['计算机', '软件', '人工智能', '大数据', '信息', '电子', '通信', '自动化', '机械', '电气', '能源', '物理', '数学', '统计', '工程', '材料', '土木', '建筑', '车辆', '航空', '船舶', '化工', '测绘', '采矿', '冶金', '光电', '核工程', '智能', '物联网', '机器人', '仪器', '地质', '水利', '环境工程', '交通'],
+	medical:	['医学', '医药', '护理', '药学', '药剂', '针灸', '中医', '中药', '医学技术', '医学影像', '临床', '口腔', '预防', '康复', '眼视光', '精神', '麻醉', '儿科', '妇产', '病理', '检验'],
+	econ:		['经济', '金融', '财政', '会计', '审计', '统计', '国际', '贸易', '商务', '市场', '营销', '工商管理', '企业管理', '保险', '投资', '财务', '税收', '资产'],
+	liberal:	['法学', '法律', '政治', '公共管理', '新闻', '传播', '广告', '广播', '编导', '汉语', '文学', '语言', '外国语', '英语', '日语', '德语', '法语', '俄语', '西班牙', '阿拉伯', '翻译', '历史', '考古', '哲学', '社会学', '民族', '宗教', '档案'],
+	education:	['教育', '师范', '学前', '小学教育', '中学教育', '特殊教育', '心理学'],
+	art:		['艺术', '美术', '设计', '音乐', '舞蹈', '戏剧', '影视', '导演', '表演', '摄影', '书法', '绘画', '雕塑', '动画'],
+	agri:		['农学', '园艺', '林学', '园林', '畜牧', '兽医', '水产', '动物', '植物', '茶学', '茶艺', '渔业', '蚕学', '草业'],
+	military:	['侦查', '公安', '治安', '警务', '国防', '武警', '军事', '海警', '反恐']
+};
+
+
+// 明显与主要方向无关的"小语种/冷门"关键词（默认会被推荐，但意向明确时应排除）
+const NICHE_KEYWORDS						= ['土耳其语', '印地语', '希伯来语', '斯瓦希里语', '越南语', '老挝语', '缅甸语', '泰语', '印尼语', '马来语', '波斯语', '孟加拉语', '蒙古语', '朝鲜语', '藏语', '维吾尔语', '哈萨克语'];
+
+
+function check_major_match(user_majors, group_name) {
+	// 返回 'match' 'neutral' 'irrelevant'
+
+	// 如果用户选了"还没想好" 或 空 · 不做匹配
+	if (!user_majors || user_majors.length === 0 || user_majors.includes('unknown')) {
+		return 'neutral';
+	}
+
+	// 收集用户意向方向的关键词
+	let user_keywords						= [];
+	for (const m of user_majors) {
+		if (MAJOR_KEYWORDS[m]) {
+			user_keywords					= user_keywords.concat(MAJOR_KEYWORDS[m]);
+		}
+	}
+
+	if (user_keywords.length === 0) {
+		return 'neutral';
+	}
+
+	// 检查是否匹配
+	for (const kw of user_keywords) {
+		if (group_name.includes(kw)) {
+			return 'match';
+		}
+	}
+
+	// 检查是否是小语种/冷门（与主要方向无关）
+	for (const niche of NICHE_KEYWORDS) {
+		if (group_name.includes(niche)) {
+			return 'irrelevant';
+		}
+	}
+
+	// 在用户意向类别里做反向匹配：比如选医学但专业是"农学/林学" → irrelevant
+	// 遍历其他没选的类别的关键词，如果匹配了说明是别的方向
+	const selected_cats						= new Set(user_majors);
+	let other_cats_matches					= 0;
+	for (const [cat, keywords] of Object.entries(MAJOR_KEYWORDS)) {
+		if (selected_cats.has(cat)) continue;
+		for (const kw of keywords) {
+			if (group_name.includes(kw)) {
+				other_cats_matches++;
+				break;
+			}
+		}
+	}
+
+	// 如果匹配了 2+ 个其他类别说明明显错配
+	if (other_cats_matches >= 2) return 'irrelevant';
+
+	// 匹配 1 个其他类别但没匹配用户的意向 → irrelevant（用户意向明确时严格过滤）
+	if (other_cats_matches >= 1 && user_majors.length <= 2) return 'irrelevant';
+
+	return 'neutral';
 }
 
 

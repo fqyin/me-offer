@@ -887,7 +887,37 @@ function fetch_real_rank(score) {
 }
 
 function render_rank_hint(score, rank) {
-	$('#score_rank_text').html('&#x1F4CA; 你在山东省约排 <strong>' + rank.toLocaleString() + '</strong> 名 &middot; 基于 2025 考试院官方数据');
+	let eq									= form_data.equivalent || {};
+	let eq_2024								= eq['2024'] ? eq['2024'].score : null;
+	let eq_2023								= eq['2023'] ? eq['2023'].score : null;
+	let eq_2022								= eq['2022'] ? eq['2022'].score : null;
+	let eq_2021								= eq['2021'] ? eq['2021'].score : null;
+
+	// 推断本科线（山东 2025 一段线约 437）
+	let line_status							= '';
+	if (score >= 600) line_status			= '<span style="color:#C94A4A;">&#x2B50; 高分段（约 5% 考生）</span>';
+	else if (score >= 540) line_status		= '<span style="color:#8B6914;">&#x1F3AF; 良好（一段线 +100 以上）</span>';
+	else if (score >= 480) line_status		= '<span style="color:#8B6914;">&#x1F3AF; 稳定达本科线</span>';
+	else if (score >= 437) line_status		= '<span style="color:#F59E0B;">&#x26A0;&#xFE0F; 接近一段线</span>';
+	else line_status						= '<span style="color:#C94A4A;">&#x26A0;&#xFE0F; 低于一段线 437</span>';
+
+	let html								= '<div style="color:#8B6914;font-weight:600;">&#x1F4CA; 你在山东省约排 <strong>' + rank.toLocaleString() + '</strong> 名</div>' +
+		'<div style="color:#666;margin-top:3px;">' + line_status + '</div>';
+
+	// 等效分
+	if (eq_2024 || eq_2023 || eq_2022 || eq_2021) {
+		html								+= '<div style="color:#8B6914;margin-top:6px;font-size:10px;">历年等效分 ';
+		let eq_parts						= [];
+		if (eq_2024) eq_parts.push('2024 <strong>' + eq_2024 + '</strong>');
+		if (eq_2023) eq_parts.push('2023 <strong>' + eq_2023 + '</strong>');
+		if (eq_2022) eq_parts.push('2022 <strong>' + eq_2022 + '</strong>');
+		if (eq_2021) eq_parts.push('2021 <strong>' + eq_2021 + '</strong>');
+		html								+= eq_parts.join(' / ') + '</div>';
+	}
+
+	html									+= '<div style="color:#AAA;margin-top:4px;font-size:9px;">基于 2025 山东省教育招生考试院官方一分一段表</div>';
+
+	$('#score_rank_text').html(html);
 	$('#score_hint').fadeIn(200);
 }
 
@@ -1419,17 +1449,18 @@ function trigger_pay(amount) {
 					order_id:	order.order_id,
 					product_id:	'me-offer-' + plan + (TEST_MODE ? '-test' : ''),
 					source:		'me-offer',
-					on_success: function(paid_order_id) {
+					onSuccess: function(paid_data) {
+						console.log('[Pay] success:', paid_data);
 						// 把付款成功回写自己的订单
 						$.ajax({
 							url:		'/api/mark_paid',
 							method:		'POST',
 							contentType: 'application/json',
-							data:		JSON.stringify({order_id: order.order_id, external_id: paid_order_id})
+							data:		JSON.stringify({order_id: order.order_id, external_id: (paid_data && paid_data.order_id) || order.order_id})
 						});
 						unlock_full_plan(order.order_id, amount);
 					},
-					on_fail: function(err) {
+					onFail: function(err) {
 						alert('支付失败：' + (err || '请稍后重试'));
 					}
 				});
