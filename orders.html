@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Me Offer · 订单查询</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = { theme: { extend: { colors: {
+			brand: '#8B6914', gold: '#C9A96E', danger: '#C94A4A', cream: '#FDF8F0', dark: '#1A1A1A', muted: '#8A8A8A'
+		}}}};
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+		.status-paid { background: #DCFCE7; color: #166534; }
+		.status-pending { background: #FEF3C7; color: #92400E; }
+		.status-refunded { background: #FEE2E2; color: #991B1B; }
+	</style>
+</head>
+<body class="bg-cream">
+	<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-16">
+		<nav class="px-4 pt-4 pb-3">
+			<div class="flex items-center gap-2">
+				<a href="index.html" class="w-8 h-8 flex items-center justify-center rounded-full" style="background: white; border: 1px solid #E5DDD0;">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+				</a>
+				<span class="text-base font-bold text-dark">订单查询</span>
+			</div>
+		</nav>
+
+		<section class="px-4 pt-4">
+			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
+				<label class="text-sm font-semibold text-dark mb-2 block">订单号</label>
+				<input type="text" id="input_order_id" placeholder="输入订单号 MO..." class="w-full px-3 py-2.5 rounded-xl text-sm mb-3" style="background: #FDF8F0; border: 1px solid #E5DDD0; outline: none;">
+				<button onclick="query_order()" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #8B6914;">查询订单</button>
+			</div>
+
+			<div id="order_result" class="hidden rounded-2xl p-4" style="background: white; border: 1px solid #E5DDD0;">
+				<div id="order_body"></div>
+			</div>
+
+			<div id="order_error" class="hidden rounded-2xl p-4" style="background: #FEE2E2; border: 1px solid #FCA5A5;">
+				<div class="text-sm font-semibold" style="color: #991B1B;" id="error_text"></div>
+			</div>
+		</section>
+
+		<section class="px-4 pt-6">
+			<div class="rounded-xl p-3" style="background: #FDF8F0; border: 1px solid #E5DDD0;">
+				<div class="text-[11px] font-bold mb-1" style="color: #8B6914;">客服支持</div>
+				<div class="text-[10px] text-muted leading-relaxed">遇到问题？微信 <strong>meoffer_cs</strong> 或邮件 <strong>info@me-offer.com</strong>，工作日 24 小时内回复。</div>
+			</div>
+		</section>
+	</div>
+
+<script>
+function main() {
+	let url_params							= new URLSearchParams(window.location.search);
+	let order_id							= url_params.get('id');
+	if (order_id) {
+		$('#input_order_id').val(order_id);
+		query_order();
+	}
+}
+$(document).ready(main);
+
+function query_order() {
+	let order_id							= $('#input_order_id').val().trim();
+	$('#order_result').addClass('hidden');
+	$('#order_error').addClass('hidden');
+
+	if (!order_id) {
+		show_error('请输入订单号');
+		return;
+	}
+
+	$.ajax({
+		url:		'/api/order?order_id=' + encodeURIComponent(order_id),
+		method:		'GET',
+		success: function(res) {
+			render_order(res.order);
+		},
+		error: function(xhr) {
+			let msg							= '订单不存在或已过期';
+			try {
+				let err						= JSON.parse(xhr.responseText);
+				msg							= err.error || msg;
+			} catch (e) {}
+			show_error(msg);
+		}
+	});
+}
+
+function render_order(order) {
+	let plan_name							= order.plan_type === 'review' ? 'AI 终审服务' : '精准志愿方案';
+	let status_label						= {pending: '待支付', paid: '已支付', refunded: '已退款'}[order.status] || order.status;
+	let status_class						= 'status-' + (order.status || 'pending');
+	let amount_yuan							= (order.amount / 100).toFixed(2);
+
+	let html								= '<div class="text-[10px] tracking-widest text-muted uppercase mb-1">ORDER</div>' +
+		'<div class="text-base font-bold text-dark mb-3">' + order.order_id + '</div>' +
+		'<div class="space-y-2 text-[13px]">' +
+			row_item('方案', plan_name) +
+			row_item('金额', '¥ ' + amount_yuan) +
+			row_item('手机', order.user_phone || '') +
+			row_item('创建时间', order.created_at || '') +
+			(order.paid_at ? row_item('支付时间', order.paid_at) : '') +
+			'<div class="flex items-center justify-between py-1"><span class="text-muted">状态</span><span class="px-2 py-0.5 rounded-full text-[11px] font-semibold ' + status_class + '">' + status_label + '</span></div>' +
+		'</div>';
+
+	$('#order_body').html(html);
+	$('#order_result').removeClass('hidden');
+}
+
+function row_item(label, value) {
+	return '<div class="flex items-center justify-between py-1"><span class="text-muted">' + label + '</span><span class="text-dark font-medium">' + (value || '') + '</span></div>';
+}
+
+function show_error(msg) {
+	$('#error_text').text(msg);
+	$('#order_error').removeClass('hidden');
+}
+</script>
+</body>
+</html>
