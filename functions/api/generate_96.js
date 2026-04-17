@@ -74,23 +74,24 @@ export async function onRequestPost(context) {
 
 		// 个性化偏好加权
 		let score_boost						= 0;
-		if (body.cities && body.cities.length > 0) {
-			const city_map					= {
-				'beijing': '北京',		'shanghai': '上海',		'gz_sz': ['广州', '深圳'],
-				'jiangzhe': ['南京', '杭州', '苏州', '无锡'],		'shandong': ['济南', '青岛', '烟台', '威海'],
-				'chengyu': ['成都', '重庆'],	'wuhan': '武汉',	'xian': '西安'
-			};
+
+		// ⭐ 城市偏好（严格加权/降权 · 避免山东意向推荐外省学校）
+		if (body.cities && body.cities.length > 0 && !body.cities.includes('unlimited')) {
+			const school_region				= identify_school_region(c.school_name);
+			let city_matched				= false;
+
 			for (const city_key of body.cities) {
-				if (city_key === 'unlimited') continue;
-				const city_names			= city_map[city_key];
-				if (!city_names) continue;
-				const names_arr				= Array.isArray(city_names) ? city_names : [city_names];
-				for (const cn of names_arr) {
-					if ((c.school_city || '').includes(cn) || c.school_name.includes(cn)) {
-						score_boost			+= 10;
-						break;
-					}
+				if (city_key === school_region) {
+					city_matched			= true;
+					break;
 				}
+			}
+
+			if (city_matched) {
+				score_boost					+= 80;		// 本省/意向城市大幅加权
+			} else {
+				// 非意向地区全部降权（包括 unknown 未识别城市）
+				score_boost					-= 50;
 			}
 		}
 
@@ -232,6 +233,99 @@ async function fetch_candidates(db, rank_low, rank_high, body) {
 function is_remote_area(school_name) {
 	const remote_kw							= ['新疆', '西藏', '青海', '宁夏', '内蒙古', '甘肃', '云南', '贵州', '石河子', '海南', '延边', '黑龙江'];
 	return remote_kw.some(kw => school_name.includes(kw));
+}
+
+
+// 基于学校名识别所在区域（用于城市偏好匹配）
+// 返回和前端 city chips 对应的 key: beijing/shanghai/gz_sz/jiangzhe/shandong/chengyu/wuhan/xian/unknown
+function identify_school_region(school_name) {
+	if (!school_name) return 'unknown';
+	const n									= school_name;
+
+	// 山东本省（齐鲁大地 · 使用多字关键词避免 '鲁''海大''山大' 单字误匹配）
+	const sd_keywords						= [
+		'山东', '齐鲁', '青岛', '济南', '烟台', '潍坊', '威海', '临沂', '泰山', '济宁',
+		'聊城', '菏泽', '德州', '滨州', '鲁东', '东营', '日照', '淄博', '枣庄',
+		'哈尔滨工业大学(威海)', '北京交通大学(威海)', '中国石油大学(华东)',
+		'中央美术学院青岛', '中国海洋大学'
+	];
+	for (const kw of sd_keywords) {
+		if (n.includes(kw)) return 'shandong';
+	}
+
+	// 北京
+	const bj_keywords						= [
+		'北京', '北大', '清华', '人大', '北航', '北师', '北理', '北邮', '北科',
+		'北化', '北交', '北工', '北语', '北外', '北林', '首都', '对外经贸',
+		'中国政法', '中国传媒', '中央财经', '中央民族', '中央音乐', '中央戏剧',
+		'中国人民', '中国农业', '中国矿业(北京)', '中国矿业大学(北京)', '中国地质(北京)',
+		'中国地质大学(北京)', '中国石油(北京)', '中国石油大学(北京)', '中央美术',
+		'北电', '北影', '国际关系', '外交学院', '华北电力大学(北京)', '华北电力(北京)'
+	];
+	for (const kw of bj_keywords) {
+		if (n.includes(kw)) return 'beijing';
+	}
+
+	// 上海
+	const sh_keywords						= [
+		'上海', '复旦', '交大', '同济', '华师', '华东师范', '华东政法', '华东理工',
+		'东华', '上财', '外经', '上外', '上科'
+	];
+	for (const kw of sh_keywords) {
+		if (n.includes(kw)) return 'shanghai';
+	}
+
+	// 广州/深圳
+	const gz_sz_keywords					= [
+		'广州', '深圳', '中山大学', '暨南', '华南理工', '华南师范', '华南农业',
+		'广东工业', '广东外语', '广州大学', '南方科技', '南方医科', '香港中文大学(深圳)',
+		'汕头', '广东', '岭南'
+	];
+	for (const kw of gz_sz_keywords) {
+		if (n.includes(kw)) return 'gz_sz';
+	}
+
+	// 江浙（长三角）
+	const jiangzhe_keywords					= [
+		'南京', '苏州', '无锡', '杭州', '宁波', '浙江', '浙大', '南大',
+		'东南大学', '河海', '江南', '苏大', '常州', '镇江', '徐州',
+		'扬州', '南通', '温州', '义乌', '湖州', '嘉兴', '南师', '南航',
+		'南京理工', '南京邮电', '南京工业', '南京信息', '南京师范', '南京林业', '南京农业',
+		'南京中医药', '南京医科', '中国药科', '南京艺术', '西交利物浦', '宁波诺丁汉'
+	];
+	for (const kw of jiangzhe_keywords) {
+		if (n.includes(kw)) return 'jiangzhe';
+	}
+
+	// 成都/重庆
+	const chengyu_keywords					= [
+		'成都', '重庆', '川大', '四川', '西南', '电子科技', '西华', '成都理工',
+		'西南交大', '西南财经', '西南政法', '西南石油', '西南民族'
+	];
+	for (const kw of chengyu_keywords) {
+		if (n.includes(kw)) return 'chengyu';
+	}
+
+	// 武汉
+	const wuhan_keywords					= [
+		'武汉', '华中', '武大', '中南财经', '中国地质大学(武汉)', '中国地质(武汉)',
+		'华中科技', '华中师范', '华中农业', '武汉理工', '中南民族', '湖北工业', '湖北大学'
+	];
+	for (const kw of wuhan_keywords) {
+		if (n.includes(kw)) return 'wuhan';
+	}
+
+	// 西安
+	const xian_keywords						= [
+		'西安', '西交', '西北工业', '西北大学', '西电', '西工大', '长安大学',
+		'陕西师范', '西北农林', '西安建筑', '西安电子', '西安理工', '西北政法',
+		'陕西科技', '西安石油', '西安美术', '西安外国语', '空军军医', '第四军医'
+	];
+	for (const kw of xian_keywords) {
+		if (n.includes(kw)) return 'xian';
+	}
+
+	return 'unknown';
 }
 
 
