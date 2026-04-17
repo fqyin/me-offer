@@ -453,6 +453,15 @@
 
 		<!-- Step 5: Results (with paywall) -->
 		<section id="step_5" class="hidden-section px-4 pt-5 pb-6">
+			<!-- Demo Mode Banner -->
+			<div class="rounded-xl px-3 py-2.5 mb-4" style="background: linear-gradient(135deg, #FFF7E6, #FFEBD0); border: 1px solid #C9A96E;">
+				<div class="flex items-center gap-2 mb-1">
+					<span class="text-base">&#x1F6E0;&#xFE0F;</span>
+					<div class="text-[11px] font-bold" style="color: #8B6914;">Demo 预览版 &middot; 数据准备中</div>
+				</div>
+				<div class="text-[10px] leading-snug" style="color: #8B6914;">以下为产品形态预览。真实数据正在整理山东 2020-2025 六年录取，预计 2026 年 5 月正式上线，届时开放付费。</div>
+			</div>
+
 			<div class="mb-4">
 				<div class="text-[10px] tracking-widest text-muted uppercase mb-1">ANALYSIS COMPLETE</div>
 				<h2 class="text-2xl font-black text-dark mb-1">你的 96 志愿方案已生成</h2>
@@ -508,16 +517,18 @@
 				<div id="volunteer_list"></div>
 			</div>
 
-			<!-- Unlock Callout -->
-			<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 1px solid #C9A96E;">
-				<div class="flex items-center gap-3 mb-2">
-					<span class="text-2xl">&#x1F512;</span>
-					<div>
-						<div class="text-sm font-bold text-dark">还剩 93 个志愿待解锁</div>
-						<div class="text-[11px] text-muted">包含完整排序 &middot; 录取概率 &middot; PDF 下载</div>
+			<!-- Waitlist Callout (Demo mode) -->
+			<div class="rounded-2xl p-4 mb-4" style="background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">
+				<div class="flex items-center gap-3 mb-3">
+					<span class="text-2xl">&#x1F680;</span>
+					<div class="flex-1">
+						<div class="text-sm font-bold text-white">正式上线前优先通知我</div>
+						<div class="text-[11px]" style="color: #AAAAAA;">留下邮箱 &middot; 真实数据完成时第一时间推送 &middot; 首批用户享 5 折优惠</div>
 					</div>
 				</div>
-				<button onclick="show_paywall()" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">解锁完整方案 &#x2192;</button>
+				<input type="email" id="result_email" placeholder="输入邮箱 example@qq.com" class="w-full px-3 py-2.5 rounded-xl text-sm mb-2" style="background: #2F2F2F; border: 1px solid #444; color: white; outline: none;">
+				<button onclick="submit_result_waitlist()" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;">留位 &middot; 优先通知 &#x2192;</button>
+				<p class="text-center text-[10px] mt-2" style="color: #888;">预计 2026 年 5 月正式开放付费</p>
 			</div>
 		</section>
 
@@ -1148,6 +1159,21 @@ function unlock_full_plan(order_id, amount) {
 	setTimeout(function() {
 		alert('PDF 已发送到你的手机：' + form_data.phone);
 	}, 2000);
+}
+
+// ==================== Demo Mode Waitlist ====================
+function submit_result_waitlist() {
+	let email								= $('#result_email').val().trim();
+
+	if (email.length < 5 || email.indexOf('@') < 0) {
+		alert('请输入正确的邮箱地址');
+		return;
+	}
+
+	// TODO: Phase 2 对接 Cloudflare Worker API 存储 waitlist
+	console.log('result_waitlist submit:', email, form_data);
+	alert('✓ 留位成功！\n\n我们会在真实数据上线时第一时间邮件通知你，并额外赠送 5 折优惠券。');
+	$('#result_email').val('');
 }
 </script>
 
