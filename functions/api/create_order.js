@@ -15,11 +15,14 @@ export async function onRequestPost(context) {
 	}
 
 	const plan								= body.plan || 'precision';
-	// 测试期价格：所有档位统一 ¥1，原价 ¥299 / ¥1999
-	// 正式上线时恢复 29900 / 199900
+	// 三档漏斗付费模式（2026-04-17）
+	// trial ¥1 = 解锁 96 志愿预览（不含 PDF）· 低门槛拉转化
+	// precision ¥99 = 完整方案 + PDF + AI 对话 · 主打爆款
+	// review ¥1999 = 终审 + 大小年深度 + 6 Agent 交叉验证 · 尊享档
 	const PLAN_AMOUNT						= {
-		precision:						100,		// ¥1 测试价（原 ¥299）
-		review:							100			// ¥1 测试价（原 ¥1999）
+		trial:							100,		// ¥1
+		precision:						9900,		// ¥99
+		review:							199900		// ¥1999
 	};
 
 	if (!PLAN_AMOUNT[plan]) {

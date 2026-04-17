@@ -97,7 +97,7 @@
 			<div class="rounded-xl px-3 py-2.5 flex items-center gap-2" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1px solid #C94A4A;">
 				<span class="text-base flex-shrink-0">&#x1F525;</span>
 				<div class="flex-1">
-					<div class="text-[11px] font-bold" style="color: #C94A4A;">内测期限时优惠 &middot; 全部服务统一 ¥1</div>
+					<div class="text-[11px] font-bold" style="color: #C94A4A;">&#x1F525; 限时爆款 &middot; ¥1 看完整 96 志愿</div>
 					<div class="text-[10px] leading-tight" style="color: #8B6914;">山东 2025 真实数据 &middot; 96,342 条记录 &middot; Claude 4.5 真实分析</div>
 				</div>
 				<button onclick="goto_apply('free')" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold text-white cursor-pointer" style="background: #C94A4A;">立即体验</button>
@@ -285,74 +285,89 @@
 				<span class="text-lg font-bold text-dark">三档方案</span>
 				<span class="text-[10px] text-muted ml-2">Choose Plan</span>
 			</div>
-			<p class="text-xs text-muted mb-4">按需选择 &middot; 从免费试算到 AI 终审</p>
+			<p class="text-xs text-muted mb-4">从免费预览到 AI 终审 &middot; 四档阶梯</p>
 
-			<!-- Plan 1: Trial -->
+			<!-- Plan 1: Free Preview -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 1px solid #E5DDD0;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">免费试算</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">免费预览</span>
 				</div>
-				<div class="text-base font-bold text-dark mb-1 mt-1">AI 分数对标</div>
-				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">TRIAL &middot; FREE</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">输入分数省份，AI 立即生成 10 所推荐院校 + 5 年录取趋势图。</p>
+				<div class="text-base font-bold text-dark mb-1 mt-1">免费预览</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">FREE</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">输入分数即时位次换算 + 前 3 志愿清晰展示 + 5 条 AI 个性化洞察</p>
 				<div class="flex items-baseline gap-2 mb-4">
 					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;0</span>
-					<span class="text-sm line-through text-muted">&#xFFE5;39</span>
 					<span class="text-xs ml-1" style="color: #8B6914;">完全免费</span>
+				</div>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('free')">立即免费体验 &#x2192;</button>
+			</div>
+
+			<!-- Plan 2: Trial ¥1 (爆款引流) -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #F59E0B;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: linear-gradient(135deg, #F59E0B, #D97706);">&#x1F525; 爆款试算</span>
+				</div>
+				<div class="text-base font-bold text-dark mb-1 mt-1">完整志愿预览</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">TRIAL &middot; 低门槛</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">¥1 看完整 96 个志愿（24 冲 / 48 稳 / 24 保）+ 每个志愿的录取概率 + 位次差。</p>
+				<div class="flex items-baseline gap-2 mb-4">
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;1</span>
+					<span class="text-sm line-through text-muted">&#xFFE5;9.9</span>
+					<span class="text-xs ml-1" style="color: #D97706;">限时体验价</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">全省位次换算</span>
+						<span class="text-xs text-dark">包含免费版所有内容</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">10 所推荐院校清单</span>
+						<span class="text-xs text-dark">完整 96 志愿清晰展示</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">5 年录取趋势可视化</span>
+						<span class="text-xs text-dark">每个志愿 录取概率 + 位次差</span>
+					</div>
+					<div class="flex items-center gap-2 opacity-60">
+						<span class="text-gray-400 text-xs">&#x00D7;</span>
+						<span class="text-xs text-muted">PDF 下载（需升级 ¥99）</span>
 					</div>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('free')">立即免费试算 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #F59E0B, #D97706);" onclick="goto_apply('trial')">&#xFFE5;1 看完整志愿 &#x2192;</button>
 			</div>
 
-			<!-- Plan 2: Precision (Recommended) -->
+			<!-- Plan 3: Precision ¥99 (Recommended) -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #C9A96E;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">内测 ¥1</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 &middot; 推荐</span>
 				</div>
 				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
 				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">全部 96 志愿精准排序，每个志愿带录取概率 + 冲稳保标记 + PDF 导出。</p>
+				<p class="text-xs text-muted leading-relaxed mb-3">完整 96 志愿 + PDF 下载 + Claude 4.5 AI 对话 + 无限次重算</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;1</span>
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;99</span>
 					<span class="text-sm line-through text-muted">原价 &#xFFE5;299</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">包含免费试算所有内容</span>
+						<span class="text-xs text-dark">包含 &#xFFE5;1 试算所有内容</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">96 志愿冲稳保智能排序</span>
+						<span class="text-xs text-dark"><strong>PDF 下载</strong> &middot; 可直接抄到考试院</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">每个志愿录取概率精算</span>
+						<span class="text-xs text-dark"><strong>AI 对话答疑</strong>（Claude 4.5 追问调整）</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">专业兴趣匹配 + 就业薪资</span>
+						<span class="text-xs text-dark"><strong>无限次重算</strong>（改偏好实时更新）</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">风险提示 &middot; 无限次重算</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">96 志愿表 PDF 下载 &middot; 可直接抄写</span>
+						<span class="text-xs text-dark">个性化风险深度洞察</span>
 					</div>
 				</div>
 				<!-- Bar Chart -->
@@ -376,20 +391,20 @@
 					</div>
 					<p class="text-[10px] text-muted text-center leading-snug">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">生成 96 志愿方案 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">&#xFFE5;99 解锁精准方案 &#x2192;</button>
 			</div>
 
-			<!-- Plan 3: AI Review -->
+			<!-- Plan 4: AI Review ¥1999 -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: #1A1A1A;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">内测 ¥1</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">尊享档</span>
 				</div>
 				<div class="text-base font-bold text-white mb-1 mt-1">AI 终审服务</div>
 				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
-				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.5 多轮深度推理 + 6 Agent 交叉验证 + 全天候 AI 答疑。一次试算，无限优化。</p>
+				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.5 多轮深度推理 + 6 Agent 交叉验证 + 大小年波动报告 + 72h 退款保障</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black text-white">&#xFFE5;1</span>
-					<span class="text-sm line-through" style="color: #666666;">原价 &#xFFE5;1,999</span>
+					<span class="text-3xl font-black text-white">&#xFFE5;1,999</span>
+					<span class="text-sm line-through" style="color: #666666;">名师 &#xFFE5;17,999</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
@@ -1024,7 +1039,7 @@
 			let used						= parseInt(localStorage.getItem(key) || '0');
 			probability_try_count			= used;
 			let left						= Math.max(0, 3 - used);
-			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'precision\')">生成完整 96 志愿（内测 ¥1 无限次）</a>');
+			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'trial\')">¥1 看完整 96 志愿</a>');
 		} catch (e) {}
 	}
 
@@ -1048,7 +1063,7 @@
 		if (used >= 3) {
 			$('#prob_agent_result').html('<div class="rounded-xl p-4 text-center" style="background: #1A1A1A;">' +
 				'<div class="text-base font-bold text-white mb-2">&#x1F389; 今日试算次数已用完</div>' +
-				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">内测 ¥1 精准方案：完整 96 志愿 + 无限次重算 + PDF 下载</div>' +
+				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">¥1 先看完整 96 志愿，确定好了再 ¥99 解锁 PDF 下载</div>' +
 				'<button class="agent-btn agent-btn-gold" style="padding: 12px 24px;" onclick="goto_apply(\'precision\')">立即生成完整方案 &rarr;</button>' +
 			'</div>');
 			return;
@@ -1155,7 +1170,7 @@
 				'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201,169,110,0.2); color: #C9A96E;">Claude 4.5</span>' +
 			'</div>' +
 			'<div class="text-[11px] leading-relaxed mb-3" style="color: #DDDDDD;">AI 终审服务会为你深度生成：大小年波动分析 + 退档风险排查 + Claude 4.5 多轮推理 + 6 Agent 交叉验证</div>' +
-			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看 AI 终审服务 &middot; 内测 ¥1 &rarr;</button>' +
+			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看 AI 终审服务 &middot; ¥1,999 &rarr;</button>' +
 		'</div>';
 
 		$('#agent_detail_body').html(html);
