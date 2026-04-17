@@ -27,15 +27,9 @@ export async function onRequestPost(context) {
 	}
 
 	const amount							= PLAN_AMOUNT[plan];
+	// 手机号改为可选：付费时不强制要求，付费后用户可主动补充
 	const phone								= (body.phone || '').replace(/\D/g, '').slice(0, 11);
 	const email								= body.email || '';
-
-	// 宽容校验：11 位数字 + 以 1 开头就放行（兼容 130-199 号段）
-	if (phone.length !== 11 || phone[0] !== '1') {
-		return json_response({
-			error:		'手机号格式错误（需 11 位数字以 1 开头），当前：' + (body.phone || '[空]')
-		}, 400);
-	}
 
 	const order_id							= generate_order_id();
 	const form_data_json					= JSON.stringify(body.form_data || {});
