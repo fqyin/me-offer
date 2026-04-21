@@ -6,6 +6,7 @@
 <title>AI 黄金解析 · 高考 AI 陪跑社区</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="questions_data.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 html { overflow-x: hidden; }
@@ -25,7 +26,7 @@ html { overflow-x: hidden; }
 .answer-reveal { background: linear-gradient(135deg, #1A1A1A, #2A2A2A); color: white; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; }
 .diff-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
 .variant-box { background: #F5F0E8; border-radius: 10px; padding: 12px; margin-top: 8px; }
-.variant-diagram { background: white; border: 1px dashed #C9A96E; border-radius: 8px; padding: 12px; margin: 8px 0; text-align: center; font-family: 'Courier New', monospace; font-size: 11px; color: #3A3A3A; }
+.variant-diagram { background: white; border: 1px dashed #C9A96E; border-radius: 8px; padding: 12px; margin: 8px 0; text-align: center; font-family: 'Courier New', monospace; font-size: 11px; color: #3A3A3A; line-height: 1.6; }
 .parent-box { background: linear-gradient(135deg, #FDF8F0, #FBEFD6); border-radius: 10px; padding: 14px; }
 .chain-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #E5DDD0; }
 .chain-step:last-child { border-bottom: none; }
@@ -55,7 +56,7 @@ html { overflow-x: hidden; }
 			<span id="q_type_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#F5EAD5;color:#8B6914;">选择题</span>
 			<span id="q_score_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#FDF8F0;color:#8B6914;">2 分</span>
 		</div>
-		<h1 id="q_title" class="text-lg font-black text-dark mb-2">第 1 题 · 体重管理 · 能量代谢</h1>
+		<h1 id="q_title" class="text-lg font-black text-dark mb-2">第 1 题</h1>
 
 		<div class="flex items-center gap-2 mb-3">
 			<span class="text-[10px] text-muted">难度系数</span>
@@ -66,205 +67,100 @@ html { overflow-x: hidden; }
 		</div>
 	</section>
 
-	<!-- 题干 -->
-	<section class="px-4 pb-3">
+	<!-- 题干 + 选项 + 答案 -->
+	<section class="px-4 pb-3" id="q_stem_section">
 		<div class="text-[10px] text-muted mb-2 uppercase tracking-widest">原题</div>
-		<div id="q_stem" class="stem-box">健康人进食后，血糖浓度升高，一段时间内通过调节可以降低血糖。体重管理是健康管理的重要组成部分，科学减重应以能量负平衡为基础。下列关于体重管理与能量代谢的叙述，<strong>错误的是</strong>：</div>
-
-		<div id="q_options" class="option-list">
-			<div class="option-item">A. 摄入能量少于消耗能量，体重逐渐减轻</div>
-			<div class="option-item">B. 减重期间，机体优先分解脂肪供能</div>
-			<div class="option-item correct">C. 长期能量负平衡不会导致基础代谢率变化 <span style="color:#C94A4A;">&nbsp;&larr; 错误选项</span></div>
-			<div class="option-item">D. 合理运动可提高能量消耗并改善胰岛素敏感性</div>
-		</div>
-
-		<div class="answer-reveal mt-3">
-			<span style="color:#C9A96E;">正确答案：</span> <span class="ml-1" style="font-size:18px;">C</span>
-			<div class="text-[10px] mt-1" style="color:#AAAAAA;">（"长期能量负平衡会降低基础代谢率"是普遍生理现象，故 C 错）</div>
-		</div>
+		<div id="q_stem" class="stem-box"></div>
+		<div id="q_options" class="option-list"></div>
+		<div id="q_answer" class="answer-reveal mt-3"></div>
 	</section>
 
 	<!-- 8 维度解析 -->
-	<section class="px-4 pb-5">
+	<section class="px-4 pb-5" id="q_dims_section">
 		<div class="flex items-center gap-3 mb-3 mt-4">
 			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
 			<span class="text-[10px] tracking-widest text-muted uppercase">AI 黄金解析 &middot; 8 维度</span>
 			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
 		</div>
 
-		<!-- 1 · 考点定位 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#FDF8F0;">&#x1F3AF;</span>
-				<span class="dim-title">1 · 考点定位</span>
+				<span class="dim-title">1 &middot; 考点定位</span>
 			</div>
-			<div class="dim-body">
-				本题考查 <strong>动物生理学 &middot; 稳态与调节模块</strong>，具体涉及：
-				<br>&bull; <strong>能量代谢平衡</strong>（摄入 vs 消耗）
-				<br>&bull; <strong>基础代谢率（BMR）的可塑性</strong>
-				<br>&bull; <strong>胰岛素敏感性与运动的关系</strong>
-				<br>
-				<br>核心知识点：<strong>能量负平衡 &rarr; BMR 代偿性下降</strong>（"节能模式"）。
-			</div>
+			<div id="dim_kaodian" class="dim-body"></div>
 		</div>
 
-		<!-- 2 · 看穿逻辑 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#FDF8F0;">&#x1F441;&#xFE0F;</span>
-				<span class="dim-title">2 · 看穿逻辑</span>
+				<span class="dim-title">2 &middot; 看穿逻辑</span>
 			</div>
-			<div class="dim-body">
-				出题人挖的坑：<strong>学生容易把"长期"和"短期"混淆</strong>。
-				<br>
-				<br>&bull; 短期（几天）：BMR 变化不明显 &rarr; 容易误选 C 为"正确"
-				<br>&bull; 长期（数月）：身体启动代偿机制，BMR 显著下降 &rarr; C 是错误
-				<br>
-				<br>这道题在考 <strong>"稳态的动态性"</strong>，而不是"稳态的绝对性"。这是新高考生物的核心命题方向。
-			</div>
+			<div id="dim_luoji" class="dim-body"></div>
 		</div>
 
-		<!-- 3 · 推理链 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#FDF8F0;">&#x1F9E9;</span>
-				<span class="dim-title">3 · 推理链</span>
+				<span class="dim-title">3 &middot; 推理链</span>
 			</div>
-			<div class="dim-body">
-				<div class="chain-step">
-					<div class="chain-num">1</div>
-					<div>读题抓关键词："<strong>长期</strong>"+"能量负平衡"+"<strong>不会</strong>导致 BMR 变化"</div>
-				</div>
-				<div class="chain-step">
-					<div class="chain-num">2</div>
-					<div>调用知识：长期热量限制 &rarr; 甲状腺激素(T3/T4)分泌下降 &rarr; 代谢减慢</div>
-				</div>
-				<div class="chain-step">
-					<div class="chain-num">3</div>
-					<div>逆推：C 说"不会变化"与生理事实矛盾 &rarr; C 为错误选项</div>
-				</div>
-				<div class="chain-step">
-					<div class="chain-num">4</div>
-					<div>验证其他：A（定义正确）、B（脂肪供能机制正确）、D（运动改善胰岛素敏感 &mdash; 常识）</div>
-				</div>
-				<div class="chain-step">
-					<div class="chain-num">5</div>
-					<div><strong>结论：选 C</strong></div>
-				</div>
-			</div>
+			<div id="dim_tuili" class="dim-body"></div>
 		</div>
 
-		<!-- 4 · 典型错解 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#FEECEC;">&#x26A0;&#xFE0F;</span>
-				<span class="dim-title">4 · 典型错解</span>
+				<span class="dim-title">4 &middot; 典型错解</span>
 			</div>
-			<div class="dim-body">
-				<strong style="color:#C94A4A;">错解 1（误选 B）</strong>：以为"优先分解脂肪"是错的
-				<br>&rarr; 实际上减重初期糖原先耗尽，之后脂肪是主供能源，B 正确。
-				<br>
-				<br><strong style="color:#C94A4A;">错解 2（误选 D）</strong>：怀疑"胰岛素敏感性"
-				<br>&rarr; 运动改善胰岛素敏感性是 2023-2024 考纲新增要点，D 正确。
-				<br>
-				<br><strong style="color:#C94A4A;">错解 3（跳过 C）</strong>：默认"稳态 = 不变"
-				<br>&rarr; 这是最典型的概念误区。<strong>稳态是动态平衡，不是绝对不变。</strong>
-			</div>
+			<div id="dim_cuojie" class="dim-body"></div>
 		</div>
 
-		<!-- 5 · 变式配图 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#F5EAD5;">&#x1F504;</span>
-				<span class="dim-title">5 · 变式练习（含配图）</span>
+				<span class="dim-title">5 &middot; 变式练习（含配图）</span>
 			</div>
-			<div class="dim-body">
-				<strong>变式题</strong>：某实验者连续 12 周每日减少 500 kcal 摄入，测得其基础代谢率变化如图：
-				<div class="variant-diagram">
-BMR (kcal/day)<br>
-1600 ┤■<br>
-1500 ┤ ■<br>
-1400 ┤&nbsp;&nbsp;■<br>
-1300 ┤&nbsp;&nbsp;&nbsp;■<br>
-1200 ┤&nbsp;&nbsp;&nbsp;&nbsp;■&nbsp;■&nbsp;■<br>
-1100 ┤<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──────────────<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;4&nbsp;&nbsp;8&nbsp;&nbsp;12 周
-				</div>
-				<strong>问：</strong>从第 0 周到第 8 周 BMR 下降约 <strong>25%</strong>，此现象的生理意义是？
-				<br>
-				<br><strong style="color:#8B6914;">参考答案</strong>：身体启动节能机制（甲状腺激素下调、瘦素下降），以减少能量消耗，适应长期能量短缺 &mdash;&mdash; <strong>这就是"减肥平台期"的生理本质</strong>。
-			</div>
+			<div id="dim_bianshi" class="dim-body"></div>
 		</div>
 
-		<!-- 6 · 命题趋势 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#FDF8F0;">&#x1F4C8;</span>
-				<span class="dim-title">6 · 命题趋势</span>
+				<span class="dim-title">6 &middot; 命题趋势</span>
 			</div>
-			<div class="dim-body">
-				<strong>近 5 年考情</strong>：
-				<br>&bull; 2021 北京：考细胞呼吸能量释放（基础）
-				<br>&bull; 2023 北京：考胰岛素分泌调节（进阶）
-				<br>&bull; 2024 北京：考运动与葡萄糖代谢（应用）
-				<br>&bull; <strong>2025 北京：考体重管理 &mdash; 首次联系"健康管理"热点</strong>
-				<br>
-				<br><strong>2026 预测</strong>：能量代谢题将继续贴近现实生活（糖尿病、肥胖防控、运动医学），考查"动态平衡"而非"静态记忆"。建议重点复习：<strong>激素网络调节 &middot; 代谢可塑性 &middot; 循证生活方式</strong>。
-			</div>
+			<div id="dim_qushi" class="dim-body"></div>
 		</div>
 
-		<!-- 7 · 解题心法 -->
 		<div class="dim-card">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#F5EAD5;">&#x1F9D8;</span>
-				<span class="dim-title">7 · 解题心法</span>
+				<span class="dim-title">7 &middot; 解题心法</span>
 			</div>
-			<div class="dim-body">
-				遇到稳态/调节类选择题，记住 <strong>"三字诀"</strong>：
-				<br>
-				<br>1. <strong>动</strong> &mdash; 稳态是"动态"平衡，别默认"不变"
-				<br>2. <strong>代</strong> &mdash; 身体会"代偿"，长期刺激必引起调节
-				<br>3. <strong>链</strong> &mdash; 激素不是孤立作用，注意"链式反应"
-				<br>
-				<br><strong>本题应用</strong>：看到"长期"+"不变"这种组合，90% 概率是陷阱。
-			</div>
+			<div id="dim_xinfa" class="dim-body"></div>
 		</div>
 
-		<!-- 8 · 家长翻译 -->
 		<div class="dim-card" style="background:linear-gradient(135deg,#FDF8F0,#FBEFD6);">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="dim-icon" style="background:#FFFFFF;">&#x1F46A;</span>
-				<span class="dim-title">8 · 家长翻译</span>
+				<span class="dim-title">8 &middot; 家长翻译</span>
 			</div>
-			<div class="dim-body">
-				<strong>给家长的大白话</strong>：
-				<br>
-				<br>这道题考的是 <strong>"为什么减肥越减越难减"</strong>。
-				<br>
-				<br>身体很聪明 &mdash; 你长期少吃，它会自动"省电"（降低基础代谢），让你即使少吃也不怎么瘦。这就是"减肥平台期"的科学原理。
-				<br>
-				<br><strong>孩子要理解的核心</strong>：身体的各种调节不是死板的"保持不变"，而是"灵活适应"。学生物就是学"身体怎么聪明地应对变化"。
-				<br>
-				<br><strong>学习建议</strong>：多联系生活（运动、饮食、睡眠），生物就不会死记硬背。
-			</div>
+			<div id="dim_parent" class="dim-body"></div>
 		</div>
 	</section>
 
 	<!-- 底部操作 -->
 	<section class="px-4 pb-5">
 		<div class="grid grid-cols-2 gap-2">
-			<a href="papers.html" class="block no-underline text-center rounded-xl py-3 text-[13px] font-semibold" style="background:white;border:1px solid #E5DDD0;color:#8B6914;">&larr; 返回真题列表</a>
+			<a id="prev_q_btn" href="question.html?id=1" class="block no-underline text-center rounded-xl py-3 text-[13px] font-semibold" style="background:white;border:1px solid #E5DDD0;color:#8B6914;">&larr; 上一题</a>
 			<a id="next_q_btn" href="question.html?id=2" class="block no-underline text-center rounded-xl py-3 text-[13px] font-semibold text-white" style="background:#8B6914;">下一题 &rarr;</a>
 		</div>
 	</section>
 
-	<!-- CTA -->
 	<section class="px-4 pb-8">
 		<div class="rounded-2xl p-4" style="background: #1A1A1A;">
 			<div class="text-white text-sm font-bold mb-1">&#x1F393; AI 陪跑社区</div>
 			<div class="text-[11px] mb-3" style="color: #C9A96E;">20 道北京 2025 生物真题，每题都配同款 8 维度 AI 黄金解析。全部免费。</div>
-			<a href="../index.html" class="block no-underline text-center rounded-xl py-2.5 text-[12px] font-semibold" style="background:#C9A96E;color:#1A1A1A;">返回社区主页 &rarr;</a>
+			<a href="papers.html" class="block no-underline text-center rounded-xl py-2.5 text-[12px] font-semibold" style="background:#C9A96E;color:#1A1A1A;">返回真题列表 &rarr;</a>
 		</div>
 	</section>
 
@@ -275,76 +171,129 @@ BMR (kcal/day)<br>
 </div>
 
 <script>
-const QUESTIONS_META						= {
-	1:	{ no: 1,  type: '选择题', score: 2,  diff: 0.88, level: 'easy',   title: '第 1 题 · 体重管理 · 能量代谢' },
-	2:	{ no: 2,  type: '选择题', score: 2,  diff: 0.82, level: 'easy',   title: '第 2 题 · 细胞结构基础' },
-	3:	{ no: 3,  type: '选择题', score: 2,  diff: 0.78, level: 'easy',   title: '第 3 题 · 光合作用过程' },
-	4:	{ no: 4,  type: '选择题', score: 2,  diff: 0.75, level: 'easy',   title: '第 4 题 · 有丝分裂判断' },
-	5:	{ no: 5,  type: '选择题', score: 2,  diff: 0.72, level: 'easy',   title: '第 5 题 · 遗传基本规律' },
-	6:	{ no: 6,  type: '选择题', score: 2,  diff: 0.70, level: 'easy',   title: '第 6 题 · 种群增长曲线' },
-	9:	{ no: 9,  type: '选择题', score: 2,  diff: 0.55, level: 'medium', title: '第 9 题 · 油菜素内酯调节' },
-	18:	{ no: 18, type: '实验题', score: 12, diff: 0.18, level: 'hard',   title: '第 18 题 · BG/GK 酶动力学压轴' }
-};
-
 function main() {
 	let url_params						= new URLSearchParams(window.location.search);
 	let q_id							= parseInt(url_params.get('id') || '1');
 
-	if (q_id !== 1) {
-		render_placeholder(q_id);
+	if (q_id < 1 || q_id > 20) {
+		q_id							= 1;
 	}
 
-	update_next_btn(q_id);
+	let q								= BIO_QUESTIONS_DATA[q_id];
+
+	if (!q) {
+		render_not_found();
+		return;
+	}
+
+	render_question(q);
+	update_nav_buttons(q_id);
 }
 
 main();
 
-function update_next_btn(q_id) {
-	let next_id							= q_id + 1;
-
-	if (next_id > 20) {
-		$('#next_q_btn').attr('href', 'papers.html').text('返回列表 &rarr;');
-	} else {
-		$('#next_q_btn').attr('href', 'question.html?id=' + next_id);
-	}
-}
-
-function render_placeholder(q_id) {
-	let meta							= QUESTIONS_META[q_id];
-
-	if (!meta) {
-		meta							= { no: q_id, type: '未知', score: 2, diff: 0.50, level: 'medium', title: '第 ' + q_id + ' 题' };
-	}
-
-	$('#q_title').text(meta.title);
-	$('#q_type_pill').text(meta.type);
-	$('#q_score_pill').text(meta.score + ' 分');
+function render_question(q) {
+	$('#q_title').text(q.title);
+	$('#q_type_pill').text(q.type);
+	$('#q_score_pill').text(q.score + ' 分');
 
 	let color							= '#22C55E';
 	let label							= '简单';
 
-	if (meta.level === 'medium') {
+	if (q.level === 'medium') {
 		color							= '#8B6914';
 		label							= '中等';
-	} else if (meta.level === 'hard') {
+	} else if (q.level === 'hard') {
 		color							= '#C94A4A';
 		label							= '压轴';
 	}
 
-	$('#q_diff_fill').css({ width: (meta.diff * 100) + '%', background: color });
-	$('#q_diff_val').text(meta.diff.toFixed(2) + ' ' + label).css('color', color);
+	$('#q_diff_fill').css({ width: (q.difficulty * 100) + '%', background: color });
+	$('#q_diff_val').text(q.difficulty.toFixed(2) + ' ' + label).css('color', color);
 
-	let stem_html						= '<div style="text-align:center;padding:24px 16px;">' +
-		'<div style="font-size:36px;margin-bottom:8px;">&#x1F527;</div>' +
-		'<div style="font-size:14px;font-weight:700;color:#8B6914;margin-bottom:4px;">此题 AI 解析正在生成中</div>' +
-		'<div style="font-size:11px;color:#8A8A8A;">生物教研专家正在审核中，上线第一时间通知你。</div>' +
-		'<div style="margin-top:12px;font-size:10px;color:#8A8A8A;">目前完整上线：第 1 题 · 体重管理</div>' +
-	'</div>';
+	$('#q_stem').html(q.stem);
 
-	$('#q_stem').removeClass('stem-box').css({ background: 'white', border: 'none' }).html(stem_html);
+	if (q.options && q.options.length > 0) {
+		let opt_html					= '';
+
+		for (let opt of q.options) {
+			let cls						= 'option-item';
+			let mark					= '';
+
+			if (opt.correct) {
+				cls						= 'option-item correct';
+				mark					= ' <span style="color:#C94A4A;">&nbsp;&larr; 正确选项</span>';
+			}
+
+			opt_html					= opt_html + '<div class="' + cls + '">' + opt.label + '. ' + opt.text + mark + '</div>';
+		}
+
+		$('#q_options').html(opt_html);
+
+		let ans_html					= '<span style="color:#C9A96E;">正确答案：</span> <span class="ml-1" style="font-size:18px;">' + q.answer + '</span>';
+
+		if (q.answer_note) {
+			ans_html					= ans_html + '<div class="text-[10px] mt-1" style="color:#AAAAAA;">（' + q.answer_note + '）</div>';
+		}
+
+		$('#q_answer').html(ans_html);
+	} else {
+		$('#q_options').html('');
+
+		let ans_html					= '<span style="color:#C9A96E;">本题为</span> <span class="ml-1">' + q.type + '</span>';
+
+		if (q.answer_note) {
+			ans_html					= ans_html + '<div class="text-[10px] mt-1" style="color:#AAAAAA;">（' + q.answer_note + '）</div>';
+		}
+
+		$('#q_answer').html(ans_html);
+	}
+
+	let d								= q.dimensions;
+
+	$('#dim_kaodian').html(d.kaodian || '');
+	$('#dim_luoji').html(d.luoji || '');
+
+	if (d.tuili_steps && d.tuili_steps.length > 0) {
+		let tuili_html					= '';
+
+		for (let i = 0; i < d.tuili_steps.length; i++) {
+			tuili_html					= tuili_html + '<div class="chain-step">' +
+				'<div class="chain-num">' + (i + 1) + '</div>' +
+				'<div>' + d.tuili_steps[i] + '</div>' +
+			'</div>';
+		}
+
+		$('#dim_tuili').html(tuili_html);
+	}
+
+	$('#dim_cuojie').html(d.cuojie || '');
+	$('#dim_bianshi').html(d.bianshi || '');
+	$('#dim_qushi').html(d.qushi || '');
+	$('#dim_xinfa').html(d.xinfa || '');
+	$('#dim_parent').html(d.parent_tr || '');
+}
+
+function update_nav_buttons(q_id) {
+	if (q_id <= 1) {
+		$('#prev_q_btn').attr('href', 'papers.html').html('&larr; 返回列表');
+	} else {
+		$('#prev_q_btn').attr('href', 'question.html?id=' + (q_id - 1));
+	}
+
+	if (q_id >= 20) {
+		$('#next_q_btn').attr('href', 'papers.html').html('返回列表 &rarr;');
+	} else {
+		$('#next_q_btn').attr('href', 'question.html?id=' + (q_id + 1));
+	}
+}
+
+function render_not_found() {
+	$('#q_title').text('题目未找到');
+	$('#q_stem').html('<div style="text-align:center;padding:24px;"><div style="font-size:36px;margin-bottom:8px;">&#x1F50D;</div><div style="color:#8B6914;">请从真题列表选择题目</div></div>');
 	$('#q_options').html('');
-	$('.answer-reveal').hide();
-	$('.dim-card').hide();
+	$('#q_answer').hide();
+	$('#q_dims_section').hide();
 }
 </script>
 
