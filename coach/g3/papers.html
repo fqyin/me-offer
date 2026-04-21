@@ -6,6 +6,8 @@
 <title>高三真题库 · 高考 AI 陪跑社区</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="biology_data.js"></script>
+<script src="math_data.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 html { overflow-x: hidden; }
@@ -15,6 +17,9 @@ html { overflow-x: hidden; }
 .no-underline { text-decoration: none; }
 .filter-chip { transition: all 0.15s; cursor: pointer; }
 .filter-chip.active { background: #8B6914 !important; color: white !important; }
+.subj-tab { transition: all 0.15s; cursor: pointer; }
+.subj-tab.active { background: #8B6914 !important; color: white !important; border-color: #8B6914 !important; }
+.subj-tab.locked { opacity: 0.5; cursor: not-allowed; }
 .q-card { transition: transform 0.2s, box-shadow 0.2s; }
 .q-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(139,105,20,0.1); }
 .difficulty-bar { height: 4px; border-radius: 2px; overflow: hidden; background: #F5F0E8; }
@@ -37,25 +42,44 @@ html { overflow-x: hidden; }
 	</nav>
 
 	<section class="px-4 pt-4 pb-3">
-		<h1 class="text-2xl font-black text-dark mb-1">北京 2025 · 生物</h1>
-		<p class="text-xs text-muted mb-3">20 道真题 &middot; AI 黄金解析 &middot; 生物教研专家审核</p>
+		<h1 class="text-2xl font-black text-dark mb-1">北京 2025 · 高三真题</h1>
+		<p class="text-xs text-muted mb-3">AI 黄金解析 &middot; 教研专家审核 &middot; 全部免费</p>
+	</section>
 
+	<!-- 科目切换 -->
+	<section class="px-4 pb-4">
+		<div class="text-[10px] text-muted mb-2 uppercase tracking-widest">选择科目</div>
+		<div class="flex flex-wrap gap-2">
+			<div class="subj-tab text-[11px] px-3 py-1.5 rounded-full" data-subject="biology" onclick="switch_subject('biology')" style="background:#F5F0E8;color:#8B6914;border:1px solid #E5DDD0;">&#x1F9EC; 生物</div>
+			<div class="subj-tab text-[11px] px-3 py-1.5 rounded-full" data-subject="math" onclick="switch_subject('math')" style="background:#F5F0E8;color:#8B6914;border:1px solid #E5DDD0;">&#x1F4D0; 数学</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x2699;&#xFE0F; 物理 &#x1F514;</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x1F9EA; 化学 &#x1F514;</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x1F4DD; 语文 &#x1F514;</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x1F1EC;&#x1F1E7; 英语 &#x1F514;</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x1F5FA;&#xFE0F; 地理 &#x1F514;</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x1F4DC; 历史 &#x1F514;</div>
+			<div class="subj-tab locked text-[11px] px-3 py-1.5 rounded-full" style="background:#F5F0E8;color:#8A8A8A;border:1px solid #E5DDD0;">&#x2696;&#xFE0F; 政治 &#x1F514;</div>
+		</div>
+	</section>
+
+	<!-- 统计 -->
+	<section class="px-4 pb-3">
 		<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">
 			<div class="grid grid-cols-4 gap-2">
 				<div class="text-center">
-					<div class="text-base font-black" style="color: #8B6914;">20</div>
+					<div class="text-base font-black" style="color: #8B6914;" id="stat_total">20</div>
 					<div class="text-[9px] text-muted">真题</div>
 				</div>
 				<div class="text-center">
-					<div class="text-base font-black" style="color: #22C55E;">6</div>
+					<div class="text-base font-black" style="color: #22C55E;" id="stat_easy">0</div>
 					<div class="text-[9px] text-muted">简单</div>
 				</div>
 				<div class="text-center">
-					<div class="text-base font-black" style="color: #8B6914;">9</div>
+					<div class="text-base font-black" style="color: #8B6914;" id="stat_medium">0</div>
 					<div class="text-[9px] text-muted">中等</div>
 				</div>
 				<div class="text-center">
-					<div class="text-base font-black" style="color: #C94A4A;">5</div>
+					<div class="text-base font-black" style="color: #C94A4A;" id="stat_hard">0</div>
 					<div class="text-[9px] text-muted">压轴</div>
 				</div>
 			</div>
@@ -63,20 +87,12 @@ html { overflow-x: hidden; }
 	</section>
 
 	<section class="px-4 pb-3">
-		<div class="text-[10px] text-muted mb-2 uppercase tracking-widest">按年份筛选</div>
-		<div class="flex flex-wrap gap-1.5 mb-3">
-			<span class="filter-chip active text-[10px] px-3 py-1 rounded-full" data-filter="year" data-value="2025" onclick="apply_filter('year', '2025')" style="background: #F5F0E8; color: #8B6914;">2025</span>
-			<span class="filter-chip text-[10px] px-3 py-1 rounded-full opacity-50" data-filter="year" data-value="2024" style="background: #F5F0E8; color: #8A8A8A;">2024 &#x1F514;</span>
-			<span class="filter-chip text-[10px] px-3 py-1 rounded-full opacity-50" data-filter="year" data-value="2023" style="background: #F5F0E8; color: #8A8A8A;">2023 &#x1F514;</span>
-			<span class="filter-chip text-[10px] px-3 py-1 rounded-full opacity-50" data-filter="year" data-value="2022" style="background: #F5F0E8; color: #8A8A8A;">2022 &#x1F514;</span>
-		</div>
-
 		<div class="text-[10px] text-muted mb-2 uppercase tracking-widest">按难度筛选</div>
 		<div class="flex flex-wrap gap-1.5 mb-4">
-			<span class="filter-chip active text-[10px] px-3 py-1 rounded-full" data-filter="diff" data-value="all" onclick="apply_filter('diff', 'all')" style="background: #F5F0E8; color: #8B6914;">全部</span>
-			<span class="filter-chip text-[10px] px-3 py-1 rounded-full" data-filter="diff" data-value="easy" onclick="apply_filter('diff', 'easy')" style="background: #F5F0E8; color: #8B6914;">简单 (0.70-1.00)</span>
-			<span class="filter-chip text-[10px] px-3 py-1 rounded-full" data-filter="diff" data-value="medium" onclick="apply_filter('diff', 'medium')" style="background: #F5F0E8; color: #8B6914;">中等 (0.40-0.69)</span>
-			<span class="filter-chip text-[10px] px-3 py-1 rounded-full" data-filter="diff" data-value="hard" onclick="apply_filter('diff', 'hard')" style="background: #F5F0E8; color: #8B6914;">压轴 (0.00-0.39)</span>
+			<span class="filter-chip active text-[10px] px-3 py-1 rounded-full" data-value="all" onclick="apply_filter('all')" style="background: #F5F0E8; color: #8B6914;">全部</span>
+			<span class="filter-chip text-[10px] px-3 py-1 rounded-full" data-value="easy" onclick="apply_filter('easy')" style="background: #F5F0E8; color: #8B6914;">简单</span>
+			<span class="filter-chip text-[10px] px-3 py-1 rounded-full" data-value="medium" onclick="apply_filter('medium')" style="background: #F5F0E8; color: #8B6914;">中等</span>
+			<span class="filter-chip text-[10px] px-3 py-1 rounded-full" data-value="hard" onclick="apply_filter('hard')" style="background: #F5F0E8; color: #8B6914;">压轴</span>
 		</div>
 	</section>
 
@@ -91,65 +107,115 @@ html { overflow-x: hidden; }
 	</section>
 
 	<footer class="px-4 pt-4 pb-6 text-center" style="border-top: 1px solid #E5DDD0; background: white;">
-		<p class="text-[10px] text-muted">&#xA9; 2026 Me Offer &middot; 高三真题库 &middot; 首发生物</p>
+		<p class="text-[10px] text-muted">&#xA9; 2026 Me Offer &middot; 高三真题库 &middot; 教研专家审核</p>
 	</footer>
 
 </div>
 
 <script>
-const QUESTIONS_SEED						= [
-	{ id: 1,  no: 1,  type: '选择题',	difficulty: 0.88, score: 2, title: '体重管理 · 能量代谢', tags: ['代谢','能量'], level: 'easy' },
-	{ id: 2,  no: 2,  type: '选择题',	difficulty: 0.82, score: 2, title: '细胞结构基础', tags: ['细胞'], level: 'easy' },
-	{ id: 3,  no: 3,  type: '选择题',	difficulty: 0.78, score: 2, title: '光合作用过程', tags: ['光合作用'], level: 'easy' },
-	{ id: 4,  no: 4,  type: '选择题',	difficulty: 0.75, score: 2, title: '有丝分裂判断', tags: ['细胞分裂'], level: 'easy' },
-	{ id: 5,  no: 5,  type: '选择题',	difficulty: 0.72, score: 2, title: '遗传基本规律', tags: ['遗传'], level: 'easy' },
-	{ id: 6,  no: 6,  type: '选择题',	difficulty: 0.70, score: 2, title: '种群增长曲线', tags: ['生态','种群'], level: 'easy' },
-	{ id: 7,  no: 7,  type: '选择题',	difficulty: 0.65, score: 2, title: '神经调节过程', tags: ['神经调节'], level: 'medium' },
-	{ id: 8,  no: 8,  type: '选择题',	difficulty: 0.60, score: 2, title: '免疫系统功能', tags: ['免疫'], level: 'medium' },
-	{ id: 9,  no: 9,  type: '选择题',	difficulty: 0.55, score: 2, title: '油菜素内酯调节', tags: ['植物激素'], level: 'medium' },
-	{ id: 10, no: 10, type: '选择题',	difficulty: 0.52, score: 2, title: 'DNA 复制机制', tags: ['DNA','复制'], level: 'medium' },
-	{ id: 11, no: 11, type: '选择题',	difficulty: 0.50, score: 2, title: '基因表达调控', tags: ['基因表达'], level: 'medium' },
-	{ id: 12, no: 12, type: '选择题',	difficulty: 0.47, score: 2, title: '生态系统能量流动', tags: ['生态','能量'], level: 'medium' },
-	{ id: 13, no: 13, type: '选择题',	difficulty: 0.44, score: 2, title: '生物进化证据', tags: ['进化'], level: 'medium' },
-	{ id: 14, no: 14, type: '选择题',	difficulty: 0.42, score: 2, title: '实验设计分析', tags: ['实验'], level: 'medium' },
-	{ id: 15, no: 15, type: '选择题',	difficulty: 0.40, score: 2, title: '内环境稳态调节', tags: ['稳态'], level: 'medium' },
-	{ id: 16, no: 16, type: '简答题',	difficulty: 0.35, score: 8, title: '细胞呼吸实验探究', tags: ['细胞呼吸','实验'], level: 'hard' },
-	{ id: 17, no: 17, type: '简答题',	difficulty: 0.30, score: 10,title: '遗传系谱分析', tags: ['遗传','概率'], level: 'hard' },
-	{ id: 18, no: 18, type: '实验题',	difficulty: 0.18, score: 12,title: 'BG/GK 酶动力学压轴', tags: ['酶','实验','压轴'], level: 'hard' },
-	{ id: 19, no: 19, type: '实验题',	difficulty: 0.22, score: 10,title: '植物激素综合应用', tags: ['激素','综合'], level: 'hard' },
-	{ id: 20, no: 20, type: '综合题',	difficulty: 0.15, score: 12,title: '生态工程与可持续发展', tags: ['生态','综合'], level: 'hard' }
-];
+const SUBJECT_DATA_MAP						= {
+	biology:	{ name: '生物', data_obj: 'BIOLOGY_DATA', total: 20 },
+	math:		{ name: '数学', data_obj: 'MATH_DATA',		total: 20 }
+};
 
-let current_filter							= { year: '2025', diff: 'all' };
+let current_subject							= 'biology';
+let current_filter							= 'all';
 
 function main() {
+	let url_params						= new URLSearchParams(window.location.search);
+	let subj							= url_params.get('subject') || 'biology';
+
+	if (!SUBJECT_DATA_MAP[subj]) {
+		subj							= 'biology';
+	}
+
+	current_subject						= subj;
+	update_subj_tabs();
+	render_stats();
 	render_questions();
 }
 
 main();
 
-function apply_filter(type, value) {
-	current_filter[type]					= value;
-	$('.filter-chip[data-filter="' + type + '"]').removeClass('active');
-	$('.filter-chip[data-filter="' + type + '"][data-value="' + value + '"]').addClass('active');
+function switch_subject(subj) {
+	if (!SUBJECT_DATA_MAP[subj]) return;
+
+	current_subject						= subj;
+	current_filter						= 'all';
+
+	let url								= new URL(window.location.href);
+	url.searchParams.set('subject', subj);
+	window.history.replaceState({}, '', url);
+
+	update_subj_tabs();
+	render_stats();
+
+	$('.filter-chip').removeClass('active');
+	$('.filter-chip[data-value="all"]').addClass('active');
 	render_questions();
 }
 
-function render_questions() {
-	let list								= QUESTIONS_SEED;
+function update_subj_tabs() {
+	$('.subj-tab').removeClass('active');
+	$('.subj-tab[data-subject="' + current_subject + '"]').addClass('active');
+}
 
-	if (current_filter.diff !== 'all') {
-		list								= list.filter(function(q) { return q.level === current_filter.diff; });
+function apply_filter(value) {
+	current_filter						= value;
+	$('.filter-chip').removeClass('active');
+	$('.filter-chip[data-value="' + value + '"]').addClass('active');
+	render_questions();
+}
+
+function get_current_data() {
+	let data_key						= SUBJECT_DATA_MAP[current_subject].data_obj;
+	return window[data_key] || {};
+}
+
+function render_stats() {
+	let data							= get_current_data();
+	let total							= 0;
+	let easy							= 0;
+	let medium							= 0;
+	let hard							= 0;
+
+	for (let k in data) {
+		let q							= data[k];
+		total++;
+
+		if (q.level === 'easy') easy++;
+		else if (q.level === 'medium') medium++;
+		else if (q.level === 'hard') hard++;
 	}
 
-	if (list.length === 0) {
+	$('#stat_total').text(total);
+	$('#stat_easy').text(easy);
+	$('#stat_medium').text(medium);
+	$('#stat_hard').text(hard);
+}
+
+function render_questions() {
+	let data							= get_current_data();
+	let items							= [];
+
+	for (let k in data) {
+		let q							= data[k];
+
+		if (current_filter === 'all' || q.level === current_filter) {
+			items.push(q);
+		}
+	}
+
+	items.sort(function(a, b) { return a.no - b.no; });
+
+	if (items.length === 0) {
 		$('#question_list').html('<div class="text-center text-muted text-xs py-8">该筛选条件下暂无真题</div>');
 		return;
 	}
 
-	let html_arr							= [];
+	let html_arr						= [];
 
-	for (let q of list) {
+	for (let q of items) {
 		let diff_color					= '#22C55E';
 		let diff_label					= '简单';
 
@@ -163,12 +229,13 @@ function render_questions() {
 
 		let diff_pct					= Math.round(q.difficulty * 100);
 		let tag_html					= '';
+		let tags						= q.knowledge_tags || q.tags || [];
 
-		for (let t of q.tags) {
-			tag_html						= tag_html + '<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#FDF8F0;color:#8B6914;">' + t + '</span>';
+		if (!tags.length && q.dimensions && q.dimensions.kaodian) {
+			tags						= [];
 		}
 
-		let card_html					= '<a href="question.html?id=' + q.id + '" class="q-card block no-underline rounded-xl p-3 mb-2" style="background:white;border:1px solid #E5DDD0;">' +
+		let card_html					= '<a href="question.html?subject=' + current_subject + '&id=' + q.no + '" class="q-card block no-underline rounded-xl p-3 mb-2" style="background:white;border:1px solid #E5DDD0;">' +
 			'<div class="flex items-center gap-2 mb-1">' +
 				'<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:#1A1A1A;color:white;">第 ' + q.no + ' 题</span>' +
 				'<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#F5F0E8;color:#8B6914;">' + q.type + '</span>' +
@@ -176,7 +243,6 @@ function render_questions() {
 				'<span class="ml-auto text-[10px] font-bold" style="color:' + diff_color + ';">' + diff_label + '</span>' +
 			'</div>' +
 			'<div class="text-sm font-bold text-dark mb-2">' + q.title + '</div>' +
-			'<div class="flex gap-1 mb-2 flex-wrap">' + tag_html + '</div>' +
 			'<div class="flex items-center gap-2">' +
 				'<span class="text-[9px] text-muted">难度系数</span>' +
 				'<div class="difficulty-bar flex-1">' +

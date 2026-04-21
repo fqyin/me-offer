@@ -6,7 +6,8 @@
 <title>AI 黄金解析 · 高考 AI 陪跑社区</title>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="questions_data.js"></script>
+<script src="biology_data.js"></script>
+<script src="math_data.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 html { overflow-x: hidden; }
@@ -42,11 +43,11 @@ html { overflow-x: hidden; }
 
 	<nav class="px-4 pt-3 pb-3" style="background: white; border-bottom: 1px solid #E5DDD0;">
 		<div class="flex items-center justify-between">
-			<a href="papers.html" class="flex items-center gap-1 no-underline">
+			<a id="back_to_papers" href="papers.html" class="flex items-center gap-1 no-underline">
 				<span class="text-sm" style="color: #8B6914;">&larr;</span>
 				<span class="text-[12px] font-semibold" style="color: #8B6914;">真题列表</span>
 			</a>
-			<div class="text-[12px] font-bold text-dark">&#x1F9EC; AI 黄金解析</div>
+			<div class="text-[12px] font-bold text-dark">AI 黄金解析</div>
 			<span class="text-[11px]" style="color: #8B6914;">&nbsp;</span>
 		</div>
 	</nav>
@@ -55,7 +56,7 @@ html { overflow-x: hidden; }
 	<section class="px-4 pt-4 pb-3">
 		<div class="flex items-center gap-2 mb-2">
 			<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:#1A1A1A;color:white;">北京 2025</span>
-			<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:#F5EAD5;color:#8B6914;">生物</span>
+			<span id="subject_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#F5EAD5;color:#8B6914;">生物</span>
 			<span id="q_type_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#F5EAD5;color:#8B6914;">选择题</span>
 			<span id="q_score_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#FDF8F0;color:#8B6914;">2 分</span>
 		</div>
@@ -162,33 +163,54 @@ html { overflow-x: hidden; }
 	<section class="px-4 pb-8">
 		<div class="rounded-2xl p-4" style="background: #1A1A1A;">
 			<div class="text-white text-sm font-bold mb-1">&#x1F393; AI 陪跑社区</div>
-			<div class="text-[11px] mb-3" style="color: #C9A96E;">20 道北京 2025 生物真题，每题都配同款 8 维度 AI 黄金解析。全部免费。</div>
-			<a href="papers.html" class="block no-underline text-center rounded-xl py-2.5 text-[12px] font-semibold" style="background:#C9A96E;color:#1A1A1A;">返回真题列表 &rarr;</a>
+			<div class="text-[11px] mb-3" style="color: #C9A96E;">北京 2025 真题，每题都配 8 维度 AI 黄金解析。全部免费。</div>
+			<a id="bottom_papers_link" href="papers.html" class="block no-underline text-center rounded-xl py-2.5 text-[12px] font-semibold" style="background:#C9A96E;color:#1A1A1A;">返回真题列表 &rarr;</a>
 		</div>
 	</section>
 
 	<footer class="px-4 pt-4 pb-6 text-center" style="border-top: 1px solid #E5DDD0; background: white;">
-		<p class="text-[10px] text-muted">&#xA9; 2026 Me Offer &middot; AI 黄金解析 &middot; 生物教研专家审核</p>
+		<p class="text-[10px] text-muted">&#xA9; 2026 Me Offer &middot; AI 黄金解析 &middot; 教研专家审核</p>
 	</footer>
 
 </div>
 
 <script>
+const SUBJECT_CONFIG						= {
+	biology:	{ name: '生物', data: 'BIOLOGY_DATA',	emoji: '\u1F9EC', total: 20 },
+	math:		{ name: '数学', data: 'MATH_DATA',		emoji: '\u1F4D0', total: 20 }
+};
+
+let current_subject							= 'biology';
+let current_total							= 20;
+
 function main() {
 	let url_params						= new URLSearchParams(window.location.search);
+	let subj_param						= url_params.get('subject') || 'biology';
+
+	if (!SUBJECT_CONFIG[subj_param]) {
+		subj_param						= 'biology';
+	}
+
+	current_subject						= subj_param;
+	current_total						= SUBJECT_CONFIG[subj_param].total;
+
 	let q_id							= parseInt(url_params.get('id') || '1');
 
-	if (q_id < 1 || q_id > 20) {
+	if (q_id < 1 || q_id > current_total) {
 		q_id							= 1;
 	}
 
-	let q								= BIO_QUESTIONS_DATA[q_id];
+	let data_obj						= window[SUBJECT_CONFIG[subj_param].data];
+	let q								= data_obj ? data_obj[q_id] : null;
 
 	if (!q) {
 		render_not_found();
 		return;
 	}
 
+	$('#subject_pill').text(SUBJECT_CONFIG[subj_param].name);
+	$('#back_to_papers').attr('href', 'papers.html?subject=' + subj_param);
+	$('#bottom_papers_link').attr('href', 'papers.html?subject=' + subj_param);
 	render_question(q);
 	update_nav_buttons(q_id);
 }
@@ -278,16 +300,19 @@ function render_question(q) {
 }
 
 function update_nav_buttons(q_id) {
+	let subj_qs							= 'subject=' + current_subject + '&';
+	let papers_url						= 'papers.html?subject=' + current_subject;
+
 	if (q_id <= 1) {
-		$('#prev_q_btn').attr('href', 'papers.html').html('&larr; 返回列表');
+		$('#prev_q_btn').attr('href', papers_url).html('&larr; 返回列表');
 	} else {
-		$('#prev_q_btn').attr('href', 'question.html?id=' + (q_id - 1));
+		$('#prev_q_btn').attr('href', 'question.html?' + subj_qs + 'id=' + (q_id - 1));
 	}
 
-	if (q_id >= 20) {
-		$('#next_q_btn').attr('href', 'papers.html').html('返回列表 &rarr;');
+	if (q_id >= current_total) {
+		$('#next_q_btn').attr('href', papers_url).html('返回列表 &rarr;');
 	} else {
-		$('#next_q_btn').attr('href', 'question.html?id=' + (q_id + 1));
+		$('#next_q_btn').attr('href', 'question.html?' + subj_qs + 'id=' + (q_id + 1));
 	}
 }
 
