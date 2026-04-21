@@ -24,7 +24,7 @@ INSERT INTO gaokao_questions (year, province, subject, paper_type, question_no, 
 (2025, '北京', 'biology', '北京卷', 19, '实验题', 0.22, 'hard',   10, '植物激素综合应用',          '["激素","综合"]'),
 (2025, '北京', 'biology', '北京卷', 20, '综合题', 0.15, 'hard',   12, '生态工程与可持续发展',      '["生态","综合"]');
 
--- 第 1 题完整 AI 黄金解析（贺校长背书）
+-- 第 1 题完整 AI 黄金解析（生物教研专家审核）
 INSERT INTO gaokao_ai_analysis (question_id, kaodian, luoji, qushi, xinfa, parent_tr, model_version, endorsed_by) VALUES
 (1,
  '动物生理学 · 稳态与调节模块。核心知识点：能量负平衡 → 基础代谢率 BMR 代偿性下降（节能模式）。',
@@ -33,4 +33,4 @@ INSERT INTO gaokao_ai_analysis (question_id, kaodian, luoji, qushi, xinfa, paren
  '三字诀：动（稳态是动态平衡）、代（身体会代偿）、链（激素链式反应）。看到"长期"+"不变"组合，90% 是陷阱。',
  '这道题考的是"为什么减肥越减越难减"。身体很聪明，长期少吃会自动省电（降 BMR），这就是"减肥平台期"的科学原理。孩子要理解：身体调节是"灵活适应"不是"保持不变"。',
  'me-offer-v1',
- '贺校长 · 特级教师');
+ '生物教研专家');
