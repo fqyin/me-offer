@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高考 AI 陪跑社区 · Me Offer</title>
+<meta name="description" content="三年全周期 AI 陪跑 · 高一打基础 · 高二练真题 · 高三冲刺 · 贺校长特级教师背书">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+html { overflow-x: hidden; }
+.bg-cream { background: #FAFAF7; }
+.text-dark { color: #1A1A1A; }
+.text-muted { color: #8A8A8A; }
+.no-underline { text-decoration: none; }
+.subject-card { transition: transform 0.2s, box-shadow 0.2s; }
+.subject-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(139,105,20,0.15); }
+.subject-card.locked { opacity: 0.6; cursor: not-allowed; }
+</style>
+</head>
+<body class="bg-cream">
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-16 relative">
+
+	<nav class="px-4 pt-3 pb-3" style="background: white; border-bottom: 1px solid #E5DDD0;">
+		<div class="flex items-center justify-between">
+			<a href="../index.html" class="flex items-center gap-1 no-underline">
+				<span class="text-sm" style="color: #8B6914;">&larr;</span>
+				<span class="text-[12px] font-semibold" style="color: #8B6914;">返回首页</span>
+			</a>
+			<div class="text-[12px] font-bold text-dark">&#x1F393; 高考 AI 陪跑社区</div>
+			<span id="top_auth_entry"></span>
+		</div>
+	</nav>
+
+	<section class="px-4 pt-5 pb-4">
+		<div class="text-[10px] tracking-widest text-muted uppercase mb-1">AI GAOKAO COACH</div>
+		<h1 class="text-3xl font-black leading-tight mb-1 text-dark">三年全周期陪跑</h1>
+		<h1 class="text-3xl font-black leading-tight mb-3" style="color: #8B6914;">AI 黄金解析</h1>
+		<p class="text-xs leading-relaxed mb-3" style="color: #5A5A5A;">高一打基础 &middot; 高二练真题 &middot; 高三冲刺。每道真题 8 个维度 AI 解析 &middot; 难度系数标注 &middot; 变式配图 &middot; 家长也看得懂。</p>
+
+		<div class="rounded-xl p-3 mb-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 1px solid #C9A96E;">
+			<div class="flex items-center gap-2 mb-1">
+				<span class="text-xl">&#x1F9EC;</span>
+				<div>
+					<div class="text-[11px] font-bold text-dark">贺校长 · 生物特级教师</div>
+					<div class="text-[9px] text-muted">30 年教龄 &middot; 命题研究员</div>
+				</div>
+				<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: #22C55E; color: white;">已背书</span>
+			</div>
+			<div class="text-[11px] leading-relaxed" style="color: #8B6914;">"AI 对北京 2025 生物真题的 8 维度解析质量，已通过权威教研验证。"</div>
+		</div>
+	</section>
+
+	<section class="px-4 pb-5">
+		<div class="flex items-center gap-3 mb-3">
+			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+			<span class="text-[10px] tracking-widest text-muted uppercase">GRADE LEVEL</span>
+			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+		</div>
+
+		<div onclick="show_waitlist('coach_g1')" class="rounded-2xl p-4 mb-3 cursor-pointer flex items-center gap-3" style="background: #F0F9F0; border: 1px solid #C5E5C5;">
+			<div class="text-3xl">&#x1F331;</div>
+			<div class="flex-1">
+				<div class="text-base font-bold text-dark mb-0.5">高一 · 打基础</div>
+				<div class="text-[11px] text-muted">章节精讲 &middot; 预习真题 &middot; 知识点图谱</div>
+			</div>
+			<div class="text-[10px] px-2 py-1 rounded-full" style="background: #C5E5C5; color: #166534;">即将上线</div>
+		</div>
+
+		<div onclick="show_waitlist('coach_g2')" class="rounded-2xl p-4 mb-3 cursor-pointer flex items-center gap-3" style="background: #F0F5FA; border: 1px solid #C5D5E5;">
+			<div class="text-3xl">&#x1F33F;</div>
+			<div class="flex-1">
+				<div class="text-base font-bold text-dark mb-0.5">高二 · 练真题</div>
+				<div class="text-[11px] text-muted">一轮复习 &middot; 专题突破 &middot; 真题改编</div>
+			</div>
+			<div class="text-[10px] px-2 py-1 rounded-full" style="background: #C5D5E5; color: #1E40AF;">即将上线</div>
+		</div>
+
+		<a href="g3/papers.html" class="block no-underline rounded-2xl p-4 mb-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 1px solid #C9A96E; box-shadow: 0 4px 20px rgba(139,105,20,0.15);">
+			<div class="flex items-center gap-3 mb-2">
+				<div class="text-3xl">&#x1F333;</div>
+				<div class="flex-1">
+					<div class="text-base font-bold text-dark mb-0.5">高三 · 冲刺 <span class="text-[10px] px-1.5 py-0.5 rounded ml-1" style="background: #C94A4A; color: white;">NEW</span></div>
+					<div class="text-[11px]" style="color: #8B6914;">真题库 &middot; 8 维度 AI 解析 &middot; 错题本 &middot; AI 陪练</div>
+				</div>
+			</div>
+			<div class="grid grid-cols-3 gap-2">
+				<div class="text-center rounded-lg py-2" style="background: white;">
+					<div class="text-sm font-black" style="color: #8B6914;">20</div>
+					<div class="text-[9px] text-muted">真题</div>
+				</div>
+				<div class="text-center rounded-lg py-2" style="background: white;">
+					<div class="text-sm font-black" style="color: #8B6914;">160</div>
+					<div class="text-[9px] text-muted">解析条目</div>
+				</div>
+				<div class="text-center rounded-lg py-2" style="background: white;">
+					<div class="text-sm font-black" style="color: #C94A4A;">免费</div>
+					<div class="text-[9px] text-muted">全开放</div>
+				</div>
+			</div>
+			<div class="text-center text-[12px] font-semibold mt-3" style="color: #8B6914;">点击进入高三真题库 &rarr;</div>
+		</a>
+	</section>
+
+	<section class="px-4 pb-5">
+		<div class="flex items-center gap-3 mb-3">
+			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+			<span class="text-[10px] tracking-widest text-muted uppercase">SUBJECTS · 科目</span>
+			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+		</div>
+
+		<div class="grid grid-cols-3 gap-2">
+			<a href="g3/papers.html?subject=biology" class="subject-card rounded-xl p-3 no-underline text-center" style="background: white; border: 1px solid #C9A96E;">
+				<div class="text-2xl mb-1">&#x1F9EC;</div>
+				<div class="text-[12px] font-bold text-dark">生物</div>
+				<div class="text-[9px] font-semibold mt-0.5" style="color: #22C55E;">&#x2713; 已上线</div>
+			</a>
+			<div onclick="show_waitlist('coach_math')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x1F4D0;</div>
+				<div class="text-[12px] font-bold text-dark">数学</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_physics')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x2699;&#xFE0F;</div>
+				<div class="text-[12px] font-bold text-dark">物理</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_chem')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x1F9EA;</div>
+				<div class="text-[12px] font-bold text-dark">化学</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_chinese')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x1F4DD;</div>
+				<div class="text-[12px] font-bold text-dark">语文</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_english')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x1F1EC;&#x1F1E7;</div>
+				<div class="text-[12px] font-bold text-dark">英语</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_geo')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x1F5FA;&#xFE0F;</div>
+				<div class="text-[12px] font-bold text-dark">地理</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_history')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x1F4DC;</div>
+				<div class="text-[12px] font-bold text-dark">历史</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+			<div onclick="show_waitlist('coach_politics')" class="subject-card locked rounded-xl p-3 text-center cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-1">&#x2696;&#xFE0F;</div>
+				<div class="text-[12px] font-bold text-dark">政治</div>
+				<div class="text-[9px] text-muted mt-0.5">&#x1F514; 即将</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="px-4 pb-5">
+		<div class="flex items-center gap-3 mb-3">
+			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+			<span class="text-[10px] tracking-widest text-muted uppercase">8 DIMENSIONS · 黄金解析</span>
+			<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
+		</div>
+
+		<div class="rounded-2xl p-4" style="background: white; border: 1px solid #E5DDD0;">
+			<div class="grid grid-cols-2 gap-2">
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F3AF;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">考点定位</div>
+						<div class="text-[9px] text-muted">考什么</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F441;&#xFE0F;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">看穿逻辑</div>
+						<div class="text-[9px] text-muted">为什么这么考</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F9E9;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">推理链</div>
+						<div class="text-[9px] text-muted">怎么想</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x26A0;&#xFE0F;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">典型错解</div>
+						<div class="text-[9px] text-muted">避坑</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F504;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">变式配图</div>
+						<div class="text-[9px] text-muted">举一反三</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F4C8;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">命题趋势</div>
+						<div class="text-[9px] text-muted">未来方向</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F9D8;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">解题心法</div>
+						<div class="text-[9px] text-muted">方法论</div>
+					</div>
+				</div>
+				<div class="flex items-center gap-2 p-2 rounded-lg" style="background: #FDF8F0;">
+					<span class="text-lg">&#x1F46A;</span>
+					<div>
+						<div class="text-[11px] font-bold text-dark">家长翻译</div>
+						<div class="text-[9px] text-muted">家长看得懂</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="px-4 pb-8">
+		<a href="g3/papers.html" class="block no-underline rounded-2xl p-4 text-center" style="background: #1A1A1A;">
+			<div class="text-white text-base font-bold mb-1">&#x1F680; 立即进入高三真题库</div>
+			<div class="text-[11px]" style="color: #C9A96E;">北京 2025 生物 20 题 &middot; 完整 AI 黄金解析</div>
+		</a>
+	</section>
+
+	<footer class="px-4 pt-4 pb-6 text-center" style="border-top: 1px solid #E5DDD0; background: white;">
+		<p class="text-[10px] text-muted">&#xA9; 2026 Me Offer &middot; AI 高考陪跑社区 &middot; 贺校长背书</p>
+	</footer>
+
+</div>
+
+<div id="waitlist_modal" class="fixed inset-0 hidden items-center justify-center z-50 px-4" style="background: rgba(0,0,0,0.5);">
+	<div class="bg-white rounded-2xl p-5 max-w-[360px] w-full">
+		<div class="flex items-start justify-between mb-3">
+			<div>
+				<div id="waitlist_title" class="text-base font-bold text-dark"></div>
+				<div id="waitlist_desc" class="text-[11px] text-muted mt-1"></div>
+			</div>
+			<button onclick="close_waitlist()" class="text-muted text-lg leading-none">&times;</button>
+		</div>
+		<input id="waitlist_email" type="email" class="w-full px-3 py-2 rounded-lg border text-[12px] mb-3" placeholder="留下邮箱，优先通知" style="border-color: #E5DDD0;">
+		<button onclick="submit_waitlist()" class="w-full py-2.5 rounded-lg text-[13px] font-semibold text-white" style="background: #8B6914;">立即留位 &rarr;</button>
+		<div class="text-[9px] text-muted text-center mt-2">仅用于上线通知 &middot; 不会骚扰</div>
+	</div>
+</div>
+
+<script>
+const WAITLIST_CONFIG						= {
+	coach_g1:		{ title: '\u1F331 高一 &middot; AI 陪跑', desc: '高一基础知识图谱 + 章节精讲 + 预习真题，预计 2026 年秋季上线。留邮箱优先通知。' },
+	coach_g2:		{ title: '\u1F33F 高二 &middot; AI 陪跑', desc: '高二一轮复习 + 专题突破 + 真题改编，预计 2026 年暑期上线。留邮箱优先通知。' },
+	coach_math:		{ title: '\u1F4D0 数学 &middot; AI 陪跑', desc: '数学真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_physics:	{ title: '\u2699\uFE0F 物理 &middot; AI 陪跑', desc: '物理真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_chem:		{ title: '\u1F9EA 化学 &middot; AI 陪跑', desc: '化学真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_chinese:	{ title: '\u1F4DD 语文 &middot; AI 陪跑', desc: '语文真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_english:	{ title: '\u1F1EC\u1F1E7 英语 &middot; AI 陪跑', desc: '英语真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_geo:		{ title: '\u1F5FA\uFE0F 地理 &middot; AI 陪跑', desc: '地理真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_history:	{ title: '\u1F4DC 历史 &middot; AI 陪跑', desc: '历史真题 AI 解析正在生成中，留邮箱首批体验。' },
+	coach_politics:	{ title: '\u2696\uFE0F 政治 &middot; AI 陪跑', desc: '政治真题 AI 解析正在生成中，留邮箱首批体验。' }
+};
+
+let current_waitlist_type					= '';
+
+function main() {
+	render_top_auth_entry();
+}
+
+main();
+
+function render_top_auth_entry() {
+	let token							= '';
+
+	try {
+		let auth_obj					= JSON.parse(localStorage.getItem('meoffer_auth') || '{}');
+		token							= auth_obj.token || '';
+	} catch(e) {}
+
+	let html_str						= '';
+
+	if (token) {
+		html_str						= '<a href="../dashboard.html" class="text-[11px] font-semibold no-underline" style="color: #8B6914;">&#x1F464; 我的</a>';
+	} else {
+		html_str						= '<a href="../dashboard.html" class="text-[11px] font-semibold no-underline" style="color: #8B6914;">登录</a>';
+	}
+
+	$('#top_auth_entry').html(html_str);
+}
+
+function show_waitlist(type) {
+	current_waitlist_type				= type;
+	let config							= WAITLIST_CONFIG[type];
+
+	if (config) {
+		$('#waitlist_title').html(config.title);
+		$('#waitlist_desc').html(config.desc);
+	}
+
+	$('#waitlist_modal').removeClass('hidden').addClass('flex');
+}
+
+function close_waitlist() {
+	$('#waitlist_modal').removeClass('flex').addClass('hidden');
+	$('#waitlist_email').val('');
+}
+
+function submit_waitlist() {
+	let email							= $('#waitlist_email').val().trim();
+
+	if (email.length < 5 || email.indexOf('@') < 0) {
+		alert('请输入正确的邮箱地址');
+		return;
+	}
+
+	$.ajax({
+		url:			'/api/waitlist',
+		method:			'POST',
+		contentType:	'application/json',
+		data:			JSON.stringify({ email: email, type: current_waitlist_type }),
+		success: function() {
+			alert('\u2713 已留位成功！上线第一时间通知你。');
+			close_waitlist();
+		},
+		error: function() {
+			alert('留位失败，请重试');
+		}
+	});
+}
+</script>
+
+</body>
+</html>

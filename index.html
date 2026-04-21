@@ -92,18 +92,6 @@
 
 	<div id="gaokao_app" class="max-w-[480px] mx-auto bg-cream min-h-screen pb-24 relative">
 
-		<!-- Launch Banner -->
-		<div class="px-4 pt-3">
-			<div class="rounded-xl px-3 py-2.5 flex items-center gap-2" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1px solid #C94A4A;">
-				<span class="text-base flex-shrink-0">&#x1F525;</span>
-				<div class="flex-1">
-					<div class="text-[11px] font-bold" style="color: #C94A4A;">&#x1F525; 限时爆款 &middot; ¥1 看完整 96 志愿</div>
-					<div class="text-[10px] leading-tight" style="color: #8B6914;">山东 2025 真实数据 &middot; 96,342 条记录 &middot; Claude 4.5 真实分析</div>
-				</div>
-				<button onclick="goto_apply('free')" class="flex-shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold text-white cursor-pointer" style="background: #C94A4A;">立即体验</button>
-			</div>
-		</div>
-
 		<!-- Section 1: Top Nav -->
 		<nav class="px-4 pt-3 pb-2">
 			<div class="flex items-center justify-between mb-3">
@@ -116,12 +104,9 @@
 						<div class="text-[10px] text-muted">AI 高考填报专家</div>
 					</div>
 				</div>
-				<div class="w-8 h-8 flex items-center justify-center cursor-pointer">
-					<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-						<rect y="3" width="20" height="2" rx="1" fill="#1A1A1A"/>
-						<rect y="9" width="20" height="2" rx="1" fill="#1A1A1A"/>
-						<rect y="15" width="20" height="2" rx="1" fill="#1A1A1A"/>
-					</svg>
+				<div class="flex items-center gap-3">
+					<a href="orders.html" class="text-[10px] font-semibold" style="color: #8B6914;">订单查询</a>
+					<span id="top_auth_entry"></span>
 				</div>
 			</div>
 			<div class="flex gap-2">
@@ -136,13 +121,9 @@
 			<div class="flex items-center gap-2 mb-3">
 				<span class="text-[10px] tracking-widest text-muted uppercase">AI ONE-CLICK GAOKAO · 一键志愿</span>
 			</div>
-			<div class="flex items-center gap-2 mb-4">
-				<span class="w-2 h-2 rounded-full bg-green-500 pulse-dot inline-block"></span>
-				<span class="inline-block px-3 py-1 rounded-full text-[11px] font-semibold text-white" style="background: #C94A4A;">2026 高考倒计时 · 志愿填报黄金窗口</span>
-			</div>
 			<h1 class="text-4xl font-black leading-tight mb-1 text-dark">不浪费一分</h1>
 			<h1 class="text-4xl font-black leading-tight mb-4" style="color: #C94A4A;">不滑档 不踩坑</h1>
-			<p class="text-sm leading-relaxed mb-6" style="color: #5A5A5A;">6 个 AI 智能体 &middot; Claude 4.5 深度推理 &middot; 基于公开录取数据 &middot; 2 分钟生成 96 志愿参考方案，精准到每一个专业组。</p>
+			<p class="text-sm leading-relaxed mb-6" style="color: #5A5A5A;">6 个 AI 智能体 &middot; Claude 4.5 深度推理 &middot; 基于山东考试院 2021-2025 五年真实数据 &middot; 2 分钟生成 96 志愿参考方案。</p>
 
 			<!-- Countdown Card -->
 			<div class="rounded-2xl p-4" style="background: #1A1A1A;">
@@ -168,46 +149,127 @@
 						<div class="text-[10px] text-muted uppercase tracking-wider">SEC</div>
 					</div>
 				</div>
-				<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，每一分都可能决定一所学校的档次。让 AI 帮你做好参考决策。</p>
+				<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，每一分都关键。让 AI 基于 5 年真实数据，辅助你做好参考决策。</p>
 			</div>
 		</section>
 
-		<!-- Section 3: Pricing Disruption -->
+		<!-- Section 3: 志愿管理工作台 演示 -->
 		<section class="px-4 pb-6">
 			<div class="flex items-center gap-3 mb-4">
 				<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
-				<span class="text-[10px] tracking-widest text-muted uppercase">PRICING DISRUPTION · 价格革命</span>
+				<span class="text-[10px] tracking-widest text-muted uppercase">VOLUNTEER WORKSPACE · 志愿管理工作台</span>
 				<div class="flex-1 h-px" style="background: #E5DDD0;"></div>
 			</div>
-			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
-				<div class="flex items-center gap-3">
-					<div class="flex-1 text-center">
-						<div class="text-xs text-muted mb-1">名师天花板</div>
-						<div class="text-xl font-bold line-through" style="color: #AAAAAA;">&#xFFE5;17,999</div>
-						<div class="text-[10px] text-muted mt-1">抢不到 &middot; 秒售罄</div>
-					</div>
-					<div class="text-xl" style="color: #C9A96E;">&#x2192;</div>
-					<div class="flex-1 text-center">
-						<div class="text-xs text-muted mb-1">Me Offer AI</div>
-						<div class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;299</div>
-						<div class="text-[10px] text-muted mt-1">即时 &middot; 无限改</div>
+
+			<!-- 工作台演示卡片（CSS 动画模拟界面） -->
+			<div class="rounded-2xl overflow-hidden mb-4" style="background: white; border: 1px solid #E5DDD0; box-shadow: 0 4px 20px rgba(139,105,20,0.08);">
+				<!-- 模拟顶栏 -->
+				<div style="padding:10px 12px;background:linear-gradient(135deg, #FDF8F0, #F5EAD5);border-bottom:1px solid #E5DDD0;">
+					<div class="flex items-center justify-between">
+						<div>
+							<div class="text-[11px] font-bold text-dark">📋 志愿管理工作台</div>
+							<div class="text-[9px] text-muted">585 分 · 位次 37,499 · 物化生</div>
+						</div>
+						<div class="flex gap-1">
+							<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#FEECEC;color:#C94A4A;">冲 24</span>
+							<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#FDF4E5;color:#8B6914;">稳 48</span>
+							<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#E8F7EE;color:#16A34A;">保 24</span>
+						</div>
 					</div>
 				</div>
+
+				<!-- 模拟两栏布局 -->
+				<div class="flex" style="min-height:180px;">
+					<!-- 左：候选池 -->
+					<div style="flex:1;background:#FAFAF7;padding:8px;border-right:1px solid #E5DDD0;">
+						<div class="text-[9px] font-bold mb-2" style="color:#8B6914;">🔍 AI 候选池</div>
+						<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:6px;margin-bottom:4px;position:relative;overflow:hidden;">
+							<div class="demo-card-shine"></div>
+							<div class="text-[10px] font-bold text-dark">山东大学（威海）</div>
+							<div class="text-[9px] text-muted">计算机类 · 位次 31,825</div>
+							<div class="flex items-center justify-between mt-1">
+								<span class="text-[9px] px-1.5 rounded" style="background:#C94A4A;color:white;">冲 40%</span>
+								<span class="text-[9px] px-1.5 rounded" style="background:#C9A96E;color:white;">+ 加入</span>
+							</div>
+						</div>
+						<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:6px;margin-bottom:4px;">
+							<div class="text-[10px] font-bold text-dark">青岛大学</div>
+							<div class="text-[9px] text-muted">电子信息 · 位次 37,421</div>
+							<div class="flex items-center justify-between mt-1">
+								<span class="text-[9px] px-1.5 rounded" style="background:#8B6914;color:white;">稳 72%</span>
+								<span class="text-[9px] px-1.5 rounded" style="background:#C9A96E;color:white;">+ 加入</span>
+							</div>
+						</div>
+					</div>
+					<!-- 右：我的志愿 -->
+					<div style="flex:1;padding:8px;">
+						<div class="text-[9px] font-bold mb-2" style="color:#C94A4A;">📝 我的志愿表</div>
+						<div style="background:#FDF8F0;border:1px solid #C9A96E;border-radius:6px;padding:6px;margin-bottom:4px;">
+							<div class="flex items-center gap-1 mb-0.5">
+								<span class="text-[8px] px-1" style="background:#F5F0E8;color:#8B6914;border-radius:2px;">01</span>
+								<span class="text-[10px] font-bold text-dark">山东大学（威海）</span>
+							</div>
+							<div class="text-[9px] text-muted">计算机类 · 40%</div>
+							<div class="flex justify-end gap-0.5 mt-1">
+								<span style="font-size:9px;color:#666;border:1px solid #ddd;padding:0 3px;border-radius:3px;">↓</span>
+								<span style="font-size:9px;color:#C94A4A;border:1px solid #FCA5A5;padding:0 3px;border-radius:3px;">×</span>
+							</div>
+						</div>
+						<div style="background:#FDF8F0;border:1px solid #C9A96E;border-radius:6px;padding:6px;">
+							<div class="flex items-center gap-1 mb-0.5">
+								<span class="text-[8px] px-1" style="background:#F5F0E8;color:#8B6914;border-radius:2px;">02</span>
+								<span class="text-[10px] font-bold text-dark">青岛大学</span>
+							</div>
+							<div class="text-[9px] text-muted">电子信息 · 72%</div>
+							<div class="flex justify-end gap-0.5 mt-1">
+								<span style="font-size:9px;color:#666;border:1px solid #ddd;padding:0 3px;border-radius:3px;">↑</span>
+								<span style="font-size:9px;color:#666;border:1px solid #ddd;padding:0 3px;border-radius:3px;">↓</span>
+								<span style="font-size:9px;color:#C94A4A;border:1px solid #FCA5A5;padding:0 3px;border-radius:3px;">×</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 底部特性 Bar -->
+				<div class="grid grid-cols-3 text-center" style="background:#FDF8F0;padding:8px 0;border-top:1px solid #E5DDD0;">
+					<div class="text-[9px]" style="color:#8B6914;">🔍 搜索 2868 所</div>
+					<div class="text-[9px]" style="color:#8B6914;">✏️ 随意调整</div>
+					<div class="text-[9px]" style="color:#8B6914;">💾 自动保存</div>
+				</div>
 			</div>
-			<div class="flex gap-3 mb-3">
-				<button class="flex-1 py-3 rounded-xl text-sm font-bold text-white" style="background: #C94A4A;" onclick="goto_apply('free')">立即免费试算 &#x2192;</button>
-				<button class="py-3 px-5 rounded-xl text-sm font-semibold" style="border: 2px solid #C9A96E; color: #8B6914; background: transparent;" onclick="scroll_to_plans()">查看方案</button>
-			</div>
-			<p class="text-center text-[11px] text-muted">已为 47,892 位山东考生生成参考方案</p>
+
+			<!-- 大红 CTA 按钮 -->
+			<button class="w-full py-4 rounded-xl text-base font-bold text-white mb-3" style="background:linear-gradient(135deg,#C94A4A,#8B1A1A);box-shadow:0 6px 20px rgba(201,74,74,0.35);cursor:pointer;" onclick="goto_apply('early_bird')">
+				🚀 立即体验 &middot; 搭建你的 96 志愿 →
+			</button>
+
+			<p class="text-center text-[11px] text-muted">基于山东考试院 2021-2025 五年真实数据 · Claude 4.5 AI 推理</p>
 		</section>
+
+		<style>
+			/* 候选池示意动画：从左到右的微光扫过 */
+			.demo-card-shine {
+				position: absolute;
+				top: 0; left: -100%;
+				width: 40%;
+				height: 100%;
+				background: linear-gradient(90deg, transparent, rgba(201,169,110,0.25), transparent);
+				animation: shine 2.5s infinite;
+			}
+			@keyframes shine {
+				0% { left: -40%; }
+				60% { left: 100%; }
+				100% { left: 100%; }
+			}
+		</style>
 
 		<!-- Section 4: 6 AI Agents -->
 		<section class="px-4 pb-6">
 			<div class="mb-1">
-				<span class="text-lg font-bold text-dark">志愿 AI 智能体</span>
+				<span class="text-lg font-bold text-dark">高考 AI 智能体</span>
 				<span class="text-[10px] text-muted ml-2">6 Gaokao Agents</span>
 			</div>
-			<p class="text-xs text-muted mb-4">训练自 5 年全国 2,868 所高校 &middot; 96,342 条真实投档数据 &middot; <span style="color: #22C55E; font-weight: 600;">点击卡片体验 &middot; 免费</span></p>
+			<p class="text-xs text-muted mb-4">覆盖全国 2,868 所高校 &middot; 96,342 条山东投档数据 &middot; 18,619 条一分一段 &middot; <span style="color: #22C55E; font-weight: 600;">点击卡片体验 &middot; 免费</span></p>
 			<div class="grid grid-cols-2 gap-3" id="gaokao_agents">
 				<!-- Agent 1: Score -->
 				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="score" style="background: white; border: 1px solid #E5DDD0;">
@@ -285,73 +347,41 @@
 				<span class="text-lg font-bold text-dark">三档方案</span>
 				<span class="text-[10px] text-muted ml-2">Choose Plan</span>
 			</div>
-			<p class="text-xs text-muted mb-4">从免费预览到 AI 终审 &middot; 四档阶梯</p>
+			<p class="text-xs text-muted mb-4">从早鸟体验到填报机构 AI 服务 &middot; 三档阶梯</p>
 
-			<!-- Plan 1: Free Preview -->
-			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 1px solid #E5DDD0;">
+			<!-- Plan 1: Early Bird · 早鸟体验 -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 2px solid #C9A96E;">
 				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold" style="background: #FDF8F0; color: #8B6914; border: 1px solid #E5DDD0;">免费预览</span>
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: linear-gradient(135deg, #F59E0B, #D97706);">&#x1F426; 早鸟价</span>
 				</div>
-				<div class="text-base font-bold text-dark mb-1 mt-1">免费预览</div>
-				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">FREE</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">输入分数即时位次换算 + 前 3 志愿清晰展示 + 5 条 AI 个性化洞察</p>
-				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;0</span>
-					<span class="text-xs ml-1" style="color: #8B6914;">完全免费</span>
+				<div class="text-base font-bold text-dark mb-1 mt-1">早鸟体验</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">EARLY BIRD · 限时尝鲜</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">志愿管理工作台 + AI 推荐 96 志愿 + 位次/分数/招生数据 + PDF 下载（可随时编辑）</p>
+				<div class="flex items-baseline gap-2 mb-1">
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;9.9</span>
+					<span class="text-sm line-through" style="color: #AAAAAA;">&#xFFE5;39</span>
+					<span class="text-[10px] ml-2 px-2 py-0.5 rounded" style="background: #FEF3C7; color: #D97706; font-weight: 600;">限时 75 折</span>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('free')">立即免费体验 &#x2192;</button>
+				<p class="text-[10px] text-muted mb-4">测试期限时优惠 &middot; 首批体验用户享 75 折</p>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #C94A4A, #8B1A1A);" onclick="goto_apply('early_bird')">&#x1F680; 立即体验 &#xFFE5;9.9 &#x2192;</button>
 			</div>
 
-			<!-- Plan 2: Trial ¥1 (爆款引流) -->
-			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #F59E0B;">
-				<div class="absolute top-3 right-3">
-					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: linear-gradient(135deg, #F59E0B, #D97706);">&#x1F525; 爆款试算</span>
-				</div>
-				<div class="text-base font-bold text-dark mb-1 mt-1">完整志愿预览</div>
-				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">TRIAL &middot; 低门槛</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">¥1 看完整 96 个志愿（24 冲 / 48 稳 / 24 保）+ 每个志愿的录取概率 + 位次差。</p>
-				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;1</span>
-					<span class="text-sm line-through text-muted">&#xFFE5;9.9</span>
-					<span class="text-xs ml-1" style="color: #D97706;">限时体验价</span>
-				</div>
-				<div class="space-y-2 mb-4">
-					<div class="flex items-center gap-2">
-						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">包含免费版所有内容</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">完整 96 志愿清晰展示</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">每个志愿 录取概率 + 位次差</span>
-					</div>
-					<div class="flex items-center gap-2 opacity-60">
-						<span class="text-gray-400 text-xs">&#x00D7;</span>
-						<span class="text-xs text-muted">PDF 下载（需升级 ¥99）</span>
-					</div>
-				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #F59E0B, #D97706);" onclick="goto_apply('trial')">&#xFFE5;1 看完整志愿 &#x2192;</button>
-			</div>
-
-			<!-- Plan 3: Precision ¥99 (Recommended) -->
+			<!-- Plan 2: Precision ¥199 (Recommended) -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #C9A96E;">
 				<div class="absolute top-3 right-3">
 					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 &middot; 推荐</span>
 				</div>
 				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
 				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">完整 96 志愿 + PDF 下载 + Claude 4.5 AI 对话 + 无限次重算</p>
+				<p class="text-xs text-muted leading-relaxed mb-3">完整 96 志愿 + PDF 下载 + Claude 4.5 AI 对话 + 可多次重算</p>
 				<div class="flex items-baseline gap-2 mb-4">
-					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;99</span>
-					<span class="text-sm line-through text-muted">原价 &#xFFE5;299</span>
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;199</span>
+					<span class="text-sm line-through text-muted">原价 &#xFFE5;399</span>
 				</div>
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">包含 &#xFFE5;1 试算所有内容</span>
+						<span class="text-xs text-dark">包含早鸟体验所有内容</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
@@ -363,7 +393,7 @@
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark"><strong>无限次重算</strong>（改偏好实时更新）</span>
+						<span class="text-xs text-dark"><strong>多次重算</strong>（改偏好实时更新）</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
@@ -391,17 +421,17 @@
 					</div>
 					<p class="text-[10px] text-muted text-center leading-snug">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">&#xFFE5;99 解锁精准方案 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">&#xFFE5;199 解锁精准方案 &#x2192;</button>
 			</div>
 
-			<!-- Plan 4: AI Review ¥1999 -->
+			<!-- Plan 3: AI Review ¥1999 -->
 			<div class="rounded-2xl p-4 mb-4 relative" style="background: #1A1A1A;">
 				<div class="absolute top-3 right-3">
 					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">尊享档</span>
 				</div>
-				<div class="text-base font-bold text-white mb-1 mt-1">AI 终审服务</div>
+				<div class="text-base font-bold text-white mb-1 mt-1">填报机构 AI 服务</div>
 				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
-				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.5 多轮深度推理 + 6 Agent 交叉验证 + 大小年波动报告 + 72h 退款保障</p>
+				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.5 多轮深度推理 + 6 Agent 交叉验证 + 大小年波动报告 + 72h 内可申请重做或退款（具体见服务条款）</p>
 				<div class="flex items-baseline gap-2 mb-4">
 					<span class="text-3xl font-black text-white">&#xFFE5;1,999</span>
 					<span class="text-sm line-through" style="color: #666666;">名师 &#xFFE5;17,999</span>
@@ -409,7 +439,7 @@
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-white">包含 &#xFFE5;299 精准方案所有内容</span>
+						<span class="text-xs text-white">包含 &#xFFE5;199 精准方案所有内容</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
@@ -442,118 +472,261 @@
 						<span class="text-white font-bold text-base">AI</span>
 					</div>
 					<div>
-						<div class="text-xs font-bold text-white mb-0.5">100% AI Agent 服务</div>
-						<div class="text-[11px]" style="color: #C9A96E;">无人工介入 &middot; 全流程算法驱动</div>
+						<div class="text-xs font-bold text-white mb-0.5">AI Agent 全程参与</div>
+						<div class="text-[11px]" style="color: #C9A96E;">算法驱动 &middot; 多轮推理</div>
 					</div>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;" onclick="goto_apply('review')">开通 AI 终审 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;" onclick="goto_apply('review')">开通填报机构 AI 服务 &#x2192;</button>
 			</div>
 		</section>
 
-		<!-- Section 6: Success Stories -->
+		<!-- Section 6: Data Sources / Trust -->
 		<section class="px-4 pb-6">
 			<div class="flex items-center justify-between mb-1">
 				<div>
-					<span class="text-lg font-bold text-dark">去年战报</span>
-					<span class="text-[10px] text-muted ml-2">2025 Stories</span>
+					<span class="text-lg font-bold text-dark">数据来源</span>
+					<span class="text-[10px] text-muted ml-2">Data Sources</span>
 				</div>
-				<span class="text-xs cursor-pointer" style="color: #8B6914;">更多案例 &#x2192;</span>
+				<a href="https://www.sdzk.cn" target="_blank" rel="noopener" class="text-xs cursor-pointer" style="color: #8B6914;">查看数据源 &#x2192;</a>
 			</div>
-			<div class="scroll-x mt-3">
-				<!-- Story 1 -->
+			<p class="text-xs text-muted mt-1 mb-3">所有数据来自官方公开渠道 · 每条记录附原始来源链接</p>
+			<div class="scroll-x">
+				<!-- Source 1: 山东考试院 -->
 				<div class="flex-shrink-0 rounded-2xl p-4" style="width: 300px; background: white; border: 1px solid #E5DDD0;">
 					<div class="flex items-center gap-2 mb-2">
-						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">L</div>
+						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">&#x1F3DB;&#xFE0F;</div>
 						<div>
-							<div class="text-sm font-bold text-dark">L 同学 · 山东</div>
-							<div class="text-[10px] text-muted">理科 627 分 / 省排 8,423</div>
+							<div class="text-sm font-bold text-dark">山东省教育招生考试院</div>
+							<div class="text-[10px] text-muted">sdzk.cn &middot; 官方权威</div>
 						</div>
 					</div>
 					<div class="rounded-lg px-3 py-2 mb-2" style="background: #FDF8F0;">
-						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 华中科技大学 计算机科学与技术</div>
+						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 96,342 条投档记录 &middot; 2021-2025 五年</div>
 					</div>
-					<p class="text-[11px] text-muted leading-relaxed">"第 3 志愿精准命中，比我自己选的稳档校高了 12 分线。"</p>
+					<p class="text-[11px] text-muted leading-relaxed">一分一段表 18,619 条 &middot; 2025 选科要求 PDF &middot; 每条数据附考试院原公告 URL。</p>
 				</div>
-				<!-- Story 2 -->
+				<!-- Source 2: 教育部 -->
 				<div class="flex-shrink-0 rounded-2xl p-4" style="width: 300px; background: white; border: 1px solid #E5DDD0;">
 					<div class="flex items-center gap-2 mb-2">
-						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">W</div>
+						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">&#x1F393;</div>
 						<div>
-							<div class="text-sm font-bold text-dark">W 同学 · 河南</div>
-							<div class="text-[10px] text-muted">文科 598 分 / 省排 1,87x</div>
+							<div class="text-sm font-bold text-dark">教育部 &middot; 软科</div>
+							<div class="text-[10px] text-muted">moe.gov.cn &middot; shanghairanking.cn</div>
 						</div>
 					</div>
 					<div class="rounded-lg px-3 py-2 mb-2" style="background: #FDF8F0;">
-						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 厦门大学 新闻传播学类</div>
+						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 2,868 所全国高校 &middot; 软科 2024 主榜</div>
 					</div>
-					<p class="text-[11px] text-muted leading-relaxed">"AI 帮我避开了一个历史上有大小年的专业组。"</p>
+					<p class="text-[11px] text-muted leading-relaxed">教育部《2024 年全国高等学校名单》&middot; 软科中国大学排名主榜 Top 594 对齐。</p>
 				</div>
 			</div>
 		</section>
 
-		<!-- Section 7: Comparison Matrix -->
+		<!-- Section 7: 高考 AI 陪跑社区 -->
 		<section class="px-4 pb-6">
 			<div class="mb-1">
-				<span class="text-lg font-bold text-dark">为什么不是别家？</span>
-				<span class="text-[10px] text-muted ml-2">Why Me Offer</span>
+				<span class="text-lg font-bold text-dark">&#x1F393; 高考 AI 陪跑社区</span>
+				<span class="text-[10px] text-muted ml-2">AI Gaokao Coach</span>
 			</div>
-			<p class="text-xs text-muted mb-4">一眼看清 Me Offer 和主流选项的差别</p>
+			<p class="text-xs text-muted mb-4">三年全周期陪跑 &middot; 高一打基础 &middot; 高二练真题 &middot; 高三冲刺</p>
 
-			<div class="rounded-2xl overflow-hidden" style="background: white; border: 1px solid #E5DDD0;">
-				<!-- Header Row -->
-				<div class="grid grid-cols-4 text-[11px] font-semibold" style="background: #FDF8F0; color: #8B6914;">
-					<div class="py-3 px-2 text-center">对比维度</div>
-					<div class="py-3 px-2 text-center">主流 AI 工具</div>
-					<div class="py-3 px-2 text-center">名师咨询</div>
-					<div class="py-3 px-2 text-center" style="background: #C9A96E; color: white;">Me Offer</div>
+			<!-- 三年分区入口 -->
+			<div class="grid grid-cols-3 gap-2 mb-4">
+				<div onclick="show_waitlist('coach_g1')" class="rounded-2xl p-3 cursor-pointer text-center" style="background: #F0F9F0; border: 1px solid #C5E5C5;">
+					<div class="text-2xl mb-1">&#x1F331;</div>
+					<div class="text-[12px] font-bold text-dark mb-0.5">高一</div>
+					<div class="text-[9px] text-muted">即将上线</div>
 				</div>
-				<!-- Rows -->
-				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-					<div class="py-2.5 px-2 text-dark">价格</div>
-					<div class="py-2.5 px-2 text-center text-muted">免费</div>
-					<div class="py-2.5 px-2 text-center text-muted">&#xFFE5;17,999</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #C94A4A; background: #FDF8F0;">内测 &#xFFE5;1</div>
+				<div onclick="show_waitlist('coach_g2')" class="rounded-2xl p-3 cursor-pointer text-center" style="background: #F0F5FA; border: 1px solid #C5D5E5;">
+					<div class="text-2xl mb-1">&#x1F33F;</div>
+					<div class="text-[12px] font-bold text-dark mb-0.5">高二</div>
+					<div class="text-[9px] text-muted">即将上线</div>
 				</div>
-				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-					<div class="py-2.5 px-2 text-dark">数据透明</div>
-					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 黑盒</div>
-					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 经验</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">&#x2713; 源头可查</div>
+				<a href="coach/index.html" class="rounded-2xl p-3 text-center block no-underline" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 1px solid #C9A96E;">
+					<div class="text-2xl mb-1">&#x1F333;</div>
+					<div class="text-[12px] font-bold mb-0.5" style="color: #8B6914;">高三</div>
+					<div class="text-[9px] font-semibold" style="color: #C94A4A;">&#x2705; 已上线</div>
+				</a>
+			</div>
+
+			<!-- 核心价值卡 · 北京 2025 生物首发 -->
+			<a href="coach/g3/question.html?id=1" class="block no-underline rounded-2xl overflow-hidden mb-3" style="background: white; border: 1px solid #E5DDD0; box-shadow: 0 4px 20px rgba(139,105,20,0.08);">
+				<div style="padding: 10px 12px; background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">
+					<div class="flex items-center justify-between">
+						<div class="flex items-center gap-2">
+							<span class="text-base">&#x1F9EC;</span>
+							<div>
+								<div class="text-[12px] font-bold text-white">高三真题库 &middot; 北京 2025 生物</div>
+								<div class="text-[9px]" style="color: #C9A96E;">AI 黄金解析 &middot; 首发 &middot; 贺校长背书</div>
+							</div>
+						</div>
+						<span class="text-[9px] px-2 py-0.5 rounded-full" style="background: #C94A4A; color: white;">NEW</span>
+					</div>
 				</div>
-				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-					<div class="py-2.5 px-2 text-dark">AI 推理深度</div>
-					<div class="py-2.5 px-2 text-center text-muted">国产通用大模型</div>
-					<div class="py-2.5 px-2 text-center text-muted">&#x2717;</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">Claude 4.5</div>
+				<div class="p-3">
+					<div class="grid grid-cols-4 gap-2 mb-3">
+						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
+							<div class="text-sm font-black" style="color: #8B6914;">20</div>
+							<div class="text-[9px] text-muted">真题</div>
+						</div>
+						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
+							<div class="text-sm font-black" style="color: #8B6914;">8</div>
+							<div class="text-[9px] text-muted">维度</div>
+						</div>
+						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
+							<div class="text-sm font-black" style="color: #8B6914;">0.01</div>
+							<div class="text-[9px] text-muted">难度</div>
+						</div>
+						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
+							<div class="text-sm font-black" style="color: #C94A4A;">免费</div>
+							<div class="text-[9px] text-muted">学习</div>
+						</div>
+					</div>
+					<div class="flex items-center gap-1.5 text-[10px] mb-2 text-muted flex-wrap">
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">考点定位</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">看穿逻辑</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">推理链</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">典型错解</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">变式配图</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">命题趋势</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">解题心法</span>
+						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">家长翻译</span>
+					</div>
+					<div class="rounded-lg p-2 text-[11px] mb-2" style="background: #FDF8F0; color: #8B6914;">
+						<span class="font-semibold">&#x1F393; 贺校长（特级教师 &middot; 30 年教龄）：</span>"AI 解析质量已通过权威验证"
+					</div>
+					<div class="text-center py-2 rounded-xl font-semibold text-[13px]" style="background: #8B6914; color: white;">立即体验生物真题 &rarr;</div>
 				</div>
-				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-					<div class="py-2.5 px-2 text-dark">96 志愿 PDF</div>
-					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 只有报告</div>
-					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 口头</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">&#x2713; 可直接抄</div>
-				</div>
-				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-					<div class="py-2.5 px-2 text-dark">个性化风险</div>
-					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">幻觉多</div>
-					<div class="py-2.5 px-2 text-center text-muted">凭经验</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">Agent 推理</div>
-				</div>
-				<div class="grid grid-cols-4 text-[11px] border-t" style="border-color: #E5DDD0;">
-					<div class="py-2.5 px-2 text-dark">即时可用</div>
-					<div class="py-2.5 px-2 text-center" style="color: #22C55E;">&#x2713;</div>
-					<div class="py-2.5 px-2 text-center" style="color: #C94A4A;">&#x2717; 秒售罄</div>
-					<div class="py-2.5 px-2 text-center font-semibold" style="color: #22C55E; background: #FDF8F0;">&#x2713; 2 分钟</div>
+			</a>
+
+			<!-- 科目覆盖 -->
+			<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-[11px] font-semibold text-dark mb-2">&#x1F4CA; 科目覆盖 &middot; 陆续上线</div>
+				<div class="flex flex-wrap gap-1.5">
+					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F9EC; 生物 &#x2705;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x1F4D0; 数学 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x2699;&#xFE0F; 物理 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x1F9EA; 化学 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x1F4DD; 语文 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x1F1EC;&#x1F1E7; 英语 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x1F5FA;&#xFE0F; 地理 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x1F4DC; 历史 &#x1F514;</span>
+					<span class="text-[10px] px-2 py-1 rounded-full" style="background: #F5F0E8; color: #8A8A8A;">&#x2696;&#xFE0F; 政治 &#x1F514;</span>
 				</div>
 			</div>
-			<p class="text-[10px] text-muted text-center mt-3">&#x2020; 对比信息基于 2025 年公开评测，如有偏差欢迎指正</p>
 		</section>
+
+		<!-- Section 7.5: 高考名师直播 -->
+		<section class="px-4 pb-8">
+			<div class="mb-1">
+				<span class="text-lg font-bold text-dark">&#x1F393; 高考名师直播</span>
+				<span class="text-[10px] text-muted ml-2">Live with Top Teachers</span>
+			</div>
+			<p class="text-xs text-muted mb-4">一线名师直播讲解 &middot; 实时答疑 &middot; 志愿填报黄金期陪跑</p>
+
+			<div class="grid grid-cols-2 gap-3">
+
+				<!-- 卡 1: 贺校长 · 生物 (招生中) -->
+				<a onclick="show_live_reserve('he_bio')" class="block rounded-2xl overflow-hidden cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="relative">
+						<div class="w-full h-24 flex items-center justify-center text-4xl" style="background: linear-gradient(135deg, #D1FAE5, #A7F3D0);">&#x1F9EC;</div>
+						<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: #C94A4A;">&#x1F525; 首席</span>
+						<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: linear-gradient(135deg, #D4A853, #C49642);">&#x1F4E1; 直播</span>
+					</div>
+					<div class="p-2.5">
+						<div class="flex items-center gap-1 mb-1.5">
+							<span class="px-1.5 py-0.5 text-[9px] font-bold rounded-full" style="background: #FEE2E2; color: #C94A4A;">&#x1F525; 招生中</span>
+							<span class="text-[9px] text-muted">&#x1F441; <span class="live-view-count" data-base="128">128</span> 人关注</span>
+						</div>
+						<p class="font-bold text-dark text-xs leading-tight mb-0.5">贺校长 &middot; 生物</p>
+						<p class="text-[10px] text-muted mb-1">特级教师 | &#x1F3EB; 30 年教龄</p>
+						<p class="text-[10px] text-muted truncate">&#x1F3C5; 高考生物命题研究 &middot; 选科指导</p>
+						<div class="mt-2 w-full py-1.5 text-center text-[11px] font-bold text-white rounded-lg" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">立即预约 &rsaquo;</div>
+					</div>
+				</a>
+
+				<!-- 卡 2: 数学名师 · 招募中 -->
+				<a onclick="show_live_reserve('recruit_math')" class="block rounded-2xl overflow-hidden cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="relative">
+						<div class="w-full h-24 flex items-center justify-center text-4xl" style="background: linear-gradient(135deg, #DBEAFE, #BFDBFE);">&#x1F4D0;</div>
+						<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: #F59E0B;">&#x1F4E2; 招募</span>
+						<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: linear-gradient(135deg, #D4A853, #C49642);">预约</span>
+					</div>
+					<div class="p-2.5">
+						<div class="flex items-center gap-1 mb-1.5">
+							<span class="px-1.5 py-0.5 text-[9px] font-bold rounded-full" style="background: #FEF3C7; color: #D97706;">&#x23F0; 即将开播</span>
+							<span class="text-[9px] text-muted">&#x1F441; <span class="live-view-count" data-base="86">86</span> 预约</span>
+						</div>
+						<p class="font-bold text-dark text-xs leading-tight mb-0.5">数学名师 &middot; 招募中</p>
+						<p class="text-[10px] text-muted mb-1">金牌教练 | &#x1F3EB; 全国特级</p>
+						<p class="text-[10px] text-muted truncate">&#x1F3C5; 新高考数学 &middot; 选填技巧</p>
+						<div class="mt-2 w-full py-1.5 text-center text-[11px] font-bold text-white rounded-lg" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">抢先预约 &rsaquo;</div>
+					</div>
+				</a>
+
+				<!-- 卡 3: 物理名师 · 招募中 -->
+				<a onclick="show_live_reserve('recruit_physics')" class="block rounded-2xl overflow-hidden cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="relative">
+						<div class="w-full h-24 flex items-center justify-center text-4xl" style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE);">&#x2699;&#xFE0F;</div>
+						<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: #F59E0B;">&#x1F4E2; 招募</span>
+						<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: linear-gradient(135deg, #D4A853, #C49642);">预约</span>
+					</div>
+					<div class="p-2.5">
+						<div class="flex items-center gap-1 mb-1.5">
+							<span class="px-1.5 py-0.5 text-[9px] font-bold rounded-full" style="background: #FEF3C7; color: #D97706;">&#x23F0; 即将开播</span>
+							<span class="text-[9px] text-muted">&#x1F441; <span class="live-view-count" data-base="62">62</span> 预约</span>
+						</div>
+						<p class="font-bold text-dark text-xs leading-tight mb-0.5">物理名师 &middot; 招募中</p>
+						<p class="text-[10px] text-muted mb-1">高考研究员 | &#x1F3EB; 命题组</p>
+						<p class="text-[10px] text-muted truncate">&#x1F3C5; 3+3 选物理 &middot; 赋分策略</p>
+						<div class="mt-2 w-full py-1.5 text-center text-[11px] font-bold text-white rounded-lg" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">抢先预约 &rsaquo;</div>
+					</div>
+				</a>
+
+				<!-- 卡 4: 化学名师 · 招募中 -->
+				<a onclick="show_live_reserve('recruit_chem')" class="block rounded-2xl overflow-hidden cursor-pointer" style="background: white; border: 1px solid #E5DDD0;">
+					<div class="relative">
+						<div class="w-full h-24 flex items-center justify-center text-4xl" style="background: linear-gradient(135deg, #FCE7F3, #FBCFE8);">&#x1F9EA;</div>
+						<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: #F59E0B;">&#x1F4E2; 招募</span>
+						<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 text-white text-[9px] font-bold rounded-full" style="background: linear-gradient(135deg, #D4A853, #C49642);">预约</span>
+					</div>
+					<div class="p-2.5">
+						<div class="flex items-center gap-1 mb-1.5">
+							<span class="px-1.5 py-0.5 text-[9px] font-bold rounded-full" style="background: #FEF3C7; color: #D97706;">&#x23F0; 即将开播</span>
+							<span class="text-[9px] text-muted">&#x1F441; <span class="live-view-count" data-base="54">54</span> 预约</span>
+						</div>
+						<p class="font-bold text-dark text-xs leading-tight mb-0.5">化学名师 &middot; 招募中</p>
+						<p class="text-[10px] text-muted mb-1">奥赛金牌 | &#x1F3EB; 重点校</p>
+						<p class="text-[10px] text-muted truncate">&#x1F3C5; 实验突破 &middot; 必拿分策略</p>
+						<div class="mt-2 w-full py-1.5 text-center text-[11px] font-bold text-white rounded-lg" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">抢先预约 &rsaquo;</div>
+					</div>
+				</a>
+
+			</div>
+
+			<p class="text-[10px] text-muted text-center mt-4">&#x2020; 所有直播均为免费公益讲解 &middot; 贺校长首播倒计时中 &middot; 其他学科持续招募</p>
+		</section>
+
+		<!-- Live Reserve Modal -->
+		<div id="live_reserve_modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" style="background: rgba(0,0,0,0.5);">
+			<div class="bg-white rounded-2xl p-5 max-w-sm w-full">
+				<div class="flex items-center justify-between mb-3">
+					<div class="text-base font-bold text-dark" id="live_reserve_title">预约直播</div>
+					<button onclick="close_live_reserve()" class="text-xl text-muted cursor-pointer">&times;</button>
+				</div>
+				<p class="text-xs text-muted mb-3" id="live_reserve_desc">留下手机号，开播前 30 分钟短信提醒你。</p>
+				<input id="live_reserve_phone" type="tel" placeholder="手机号" maxlength="11" class="w-full px-3 py-2.5 rounded-xl text-sm mb-3" style="background: #FDF8F0; border: 1px solid #E5DDD0; outline: none;">
+				<button onclick="submit_live_reserve()" class="w-full py-2.5 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #C94A4A, #8B1A1A);">立即预约</button>
+				<p class="text-[10px] text-muted text-center mt-2">仅用于开播通知 &middot; 不会骚扰</p>
+			</div>
+		</div>
 
 		<!-- Section 8: Footer Trust -->
 		<section class="px-4 pb-8">
 			<div class="flex items-center justify-center gap-3 mb-4 flex-wrap">
 				<span class="text-[10px] text-muted">公开数据溯源</span>
 				<span class="text-[10px] text-muted">&middot;</span>
-				<span class="text-[10px] text-muted">100% AI 服务</span>
+				<span class="text-[10px] text-muted">AI 驱动</span>
 				<span class="text-[10px] text-muted">&middot;</span>
 				<span class="text-[10px] text-muted">推理透明</span>
 			</div>
@@ -598,7 +771,7 @@
 
 		<!-- Floating Button -->
 		<div class="fixed bottom-6 right-6 z-40" style="max-width: 480px;">
-			<button onclick="goto_apply('free')" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer" style="background: linear-gradient(135deg, #C9A96E, #8B6914);" title="立即开始填报">
+			<button onclick="goto_apply('early_bird')" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer" style="background: linear-gradient(135deg, #C9A96E, #8B6914);" title="立即开始填报">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M12 20h9"></path>
 					<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -623,6 +796,14 @@
 		gongwuyuan: {
 			title: '\u1F3DB 一键考公 &middot; 公务员',
 			desc: '公务员版预计 2027 年春季上线。留下邮箱，优先内测。'
+		},
+		coach_g1: {
+			title: '\u1F331 高一 &middot; AI 陪跑',
+			desc: '高一基础知识图谱 + 章节精讲 + 预习真题，预计 2026 年秋季上线。留邮箱优先通知。'
+		},
+		coach_g2: {
+			title: '\u1F33F 高二 &middot; AI 陪跑',
+			desc: '高二一轮复习 + 专题突破 + 真题改编，预计 2026 年暑期上线。留邮箱优先通知。'
 		}
 	};
 
@@ -676,6 +857,34 @@
 		window.location.href					= target_url;
 	}
 
+
+	/* ============ 顶部登录入口 · 根据登录状态显示 ============ */
+	function render_top_auth_entry() {
+		let token								= '';
+		let nickname							= '';
+		try {
+			let auth_obj						= JSON.parse(localStorage.getItem('meoffer_auth') || '{}');
+			token							= auth_obj.token || '';
+			nickname						= auth_obj.nickname || '';
+		} catch(e) {}
+
+		let html								= '';
+		if (token) {
+			/* 已登录：显示小人头 + "我的" */
+			html							= '<a href="dashboard.html" class="text-[10px] font-semibold flex items-center gap-1" style="color: #8B6914;">' +
+				'<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#C9A96E,#8B6914);color:white;font-size:11px;text-align:center;line-height:18px;">👤</span>' +
+				'<span>我的</span>' +
+			'</a>';
+		} else {
+			/* 未登录：显示 "登录" */
+			html							= '<a href="dashboard.html" class="text-[10px] font-semibold" style="color: #8B6914;">登录</a>';
+		}
+		document.getElementById('top_auth_entry').innerHTML	= html;
+	}
+
+	/* 页面加载时渲染 */
+	document.addEventListener('DOMContentLoaded', render_top_auth_entry);
+
 	function show_waitlist(type) {
 		current_waitlist_type					= type;
 		let config								= WAITLIST_CONFIG[type];
@@ -692,6 +901,64 @@
 		$('#waitlist_modal').removeClass('flex').addClass('hidden');
 		$('#waitlist_email').val('');
 	}
+
+	/* ==================== 高考名师直播预约 ==================== */
+	const LIVE_RESERVE_CONFIG						= {
+		he_bio:			{ title: '预约 · 贺校长生物直播', desc: '贺校长（特级教师 · 30 年教龄）直播讲解高考生物命题规律与 2026 志愿选科建议。留下手机号，开播前 30 分钟短信提醒。' },
+		recruit_math:	{ title: '预约 · 数学名师直播', desc: '金牌数学教练正在招募中，确定后第一时间通知你。留手机号获得优先席位。' },
+		recruit_physics:{ title: '预约 · 物理名师直播', desc: '高考物理命题研究员直播招募中，留手机号获得首播通知。' },
+		recruit_chem:	{ title: '预约 · 化学名师直播', desc: '奥赛金牌化学名师直播招募中，留手机号获得首播通知。' }
+	};
+
+	let current_live_reserve_type					= '';
+
+	function show_live_reserve(type) {
+		current_live_reserve_type					= type;
+		let config									= LIVE_RESERVE_CONFIG[type];
+
+		if (config) {
+			$('#live_reserve_title').html(config.title);
+			$('#live_reserve_desc').html(config.desc);
+		}
+
+		$('#live_reserve_modal').removeClass('hidden').addClass('flex');
+	}
+
+	function close_live_reserve() {
+		$('#live_reserve_modal').removeClass('flex').addClass('hidden');
+		$('#live_reserve_phone').val('');
+	}
+
+	function submit_live_reserve() {
+		let phone									= $('#live_reserve_phone').val().trim();
+
+		if (!/^1[3-9]\d{9}$/.test(phone)) {
+			alert('请输入正确的 11 位手机号');
+			return;
+		}
+
+		try {
+			let key									= 'meoffer_live_reserve';
+			let list								= JSON.parse(localStorage.getItem(key) || '[]');
+			list.push({ type: current_live_reserve_type, phone: phone, at: Date.now() });
+			localStorage.setItem(key, JSON.stringify(list));
+		} catch (e) {}
+
+		alert('预约成功！开播前 30 分钟短信提醒你。');
+		close_live_reserve();
+	}
+
+	/* 在线/预约人数轻微抖动动画 */
+	function animate_live_view_count() {
+		$('.live-view-count').each(function() {
+			let base								= parseInt($(this).attr('data-base')) || 100;
+			let jitter								= Math.floor(Math.random() * 5) - 1;
+			let current								= parseInt($(this).text()) || base;
+			let next								= Math.max(base, current + jitter);
+			$(this).text(next);
+		});
+	}
+	setInterval(animate_live_view_count, 4000);
 
 	function submit_waitlist() {
 		let email								= $('#waitlist_email').val().trim();
@@ -1039,7 +1306,7 @@
 			let used						= parseInt(localStorage.getItem(key) || '0');
 			probability_try_count			= used;
 			let left						= Math.max(0, 3 - used);
-			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'trial\')">¥1 看完整 96 志愿</a>');
+			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'early_bird\')">¥9.9 看完整 96 志愿</a>');
 		} catch (e) {}
 	}
 
@@ -1063,7 +1330,7 @@
 		if (used >= 3) {
 			$('#prob_agent_result').html('<div class="rounded-xl p-4 text-center" style="background: #1A1A1A;">' +
 				'<div class="text-base font-bold text-white mb-2">&#x1F389; 今日试算次数已用完</div>' +
-				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">¥1 先看完整 96 志愿，确定好了再 ¥99 解锁 PDF 下载</div>' +
+				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">¥9.9 先看完整 96 志愿，确定好了再 ¥199 解锁 PDF 下载</div>' +
 				'<button class="agent-btn agent-btn-gold" style="padding: 12px 24px;" onclick="goto_apply(\'precision\')">立即生成完整方案 &rarr;</button>' +
 			'</div>');
 			return;
@@ -1169,8 +1436,8 @@
 				'<span class="text-sm font-bold text-white">深度风险分析</span>' +
 				'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201,169,110,0.2); color: #C9A96E;">Claude 4.5</span>' +
 			'</div>' +
-			'<div class="text-[11px] leading-relaxed mb-3" style="color: #DDDDDD;">AI 终审服务会为你深度生成：大小年波动分析 + 退档风险排查 + Claude 4.5 多轮推理 + 6 Agent 交叉验证</div>' +
-			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看 AI 终审服务 &middot; ¥1,999 &rarr;</button>' +
+			'<div class="text-[11px] leading-relaxed mb-3" style="color: #DDDDDD;">填报机构 AI 服务会为你深度生成：大小年波动分析 + 退档风险排查 + Claude 4.5 多轮推理 + 6 Agent 交叉验证</div>' +
+			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看填报机构 AI 服务 &middot; ¥1,999 &rarr;</button>' +
 		'</div>';
 
 		$('#agent_detail_body').html(html);
