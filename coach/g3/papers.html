@@ -15,6 +15,15 @@
 <script src="chinese_data.js"></script>
 <script src="english_data.js"></script>
 <script src="politics_data.js"></script>
+<script src="sd_biology_data.js"></script>
+<script src="sd_math_data.js"></script>
+<script src="sd_physics_data.js"></script>
+<script src="sd_chemistry_data.js"></script>
+<script src="sd_geography_data.js"></script>
+<script src="sd_history_data.js"></script>
+<script src="sd_chinese_data.js"></script>
+<script src="sd_english_data.js"></script>
+<script src="sd_politics_data.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 html { overflow-x: hidden; }
@@ -27,6 +36,8 @@ html { overflow-x: hidden; }
 .subj-tab { transition: all 0.15s; cursor: pointer; }
 .subj-tab.active { background: #8B6914 !important; color: white !important; border-color: #8B6914 !important; }
 .subj-tab.locked { opacity: 0.5; cursor: not-allowed; }
+.prov-tab { transition: all 0.15s; cursor: pointer; }
+.prov-tab.active { background: #C94A4A !important; color: white !important; border-color: #C94A4A !important; }
 .q-card { transition: transform 0.2s, box-shadow 0.2s; }
 .q-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(139,105,20,0.1); }
 .difficulty-bar { height: 4px; border-radius: 2px; overflow: hidden; background: #F5F0E8; }
@@ -49,8 +60,17 @@ html { overflow-x: hidden; }
 	</nav>
 
 	<section class="px-4 pt-4 pb-3">
-		<h1 class="text-2xl font-black text-dark mb-1">北京 2025 · 高三真题</h1>
+		<h1 class="text-2xl font-black text-dark mb-1"><span id="province_title">北京</span> 2025 · 高三真题</h1>
 		<p class="text-xs text-muted mb-3">AI 黄金解析 &middot; 教研专家审核 &middot; 全部免费</p>
+	</section>
+
+	<!-- 省份切换 -->
+	<section class="px-4 pb-3">
+		<div class="text-[10px] text-muted mb-2 uppercase tracking-widest">选择省份</div>
+		<div class="flex flex-wrap gap-2">
+			<div class="prov-tab text-[11px] px-3 py-1.5 rounded-full" data-province="beijing" onclick="switch_province('beijing')" style="background:#F5F0E8;color:#8B6914;border:1px solid #E5DDD0;">&#x1F3DB;&#xFE0F; 北京</div>
+			<div class="prov-tab text-[11px] px-3 py-1.5 rounded-full" data-province="shandong" onclick="switch_province('shandong')" style="background:#F5F0E8;color:#8B6914;border:1px solid #E5DDD0;">&#x26F0;&#xFE0F; 山东</div>
+		</div>
 	</section>
 
 	<!-- 科目切换 -->
@@ -120,30 +140,38 @@ html { overflow-x: hidden; }
 </div>
 
 <script>
-const SUBJECT_DATA_MAP						= {
-	biology:	{ name: '生物',		data_obj: 'BIOLOGY_DATA',	total: 20 },
-	math:		{ name: '数学',		data_obj: 'MATH_DATA',		total: 20 },
-	physics:	{ name: '物理',		data_obj: 'PHYSICS_DATA',	total: 20 },
-	chemistry:	{ name: '化学',		data_obj: 'CHEMISTRY_DATA',	total: 20 },
-	chinese:	{ name: '语文',		data_obj: 'CHINESE_DATA',	total: 15 },
-	english:	{ name: '英语',		data_obj: 'ENGLISH_DATA',	total: 35 },
-	geography:	{ name: '地理',		data_obj: 'GEOGRAPHY_DATA',	total: 20 },
-	history:	{ name: '历史',		data_obj: 'HISTORY_DATA',	total: 20 },
-	politics:	{ name: '政治',		data_obj: 'POLITICS_DATA',	total: 20 }
+const PROVINCE_MAP							= {
+	beijing:	{ name: '北京', prefix: '' },
+	shandong:	{ name: '山东', prefix: 'SD_' }
 };
 
+const TOTALS_MAP							= {
+	beijing:	{ biology: 20, math: 20, physics: 20, chemistry: 20, geography: 20, history: 20, chinese: 15, english: 35, politics: 20 },
+	shandong:	{ biology: 20, math: 22, physics: 15, chemistry: 15, geography: 15, history: 15, chinese: 23, english: 35, politics: 15 }
+};
+
+const SUBJECT_NAMES							= {
+	biology: '生物', math: '数学', physics: '物理', chemistry: '化学',
+	chinese: '语文', english: '英语', geography: '地理', history: '历史', politics: '政治'
+};
+
+let current_province						= 'beijing';
 let current_subject							= 'biology';
 let current_filter							= 'all';
 
 function main() {
 	let url_params						= new URLSearchParams(window.location.search);
+	let prov							= url_params.get('province') || 'beijing';
 	let subj							= url_params.get('subject') || 'biology';
 
-	if (!SUBJECT_DATA_MAP[subj]) {
-		subj							= 'biology';
-	}
+	if (!PROVINCE_MAP[prov]) prov = 'beijing';
+	if (!SUBJECT_NAMES[subj]) subj = 'biology';
 
+	current_province					= prov;
 	current_subject						= subj;
+
+	$('#province_title').text(PROVINCE_MAP[prov].name);
+	update_prov_tabs();
 	update_subj_tabs();
 	render_stats();
 	render_questions();
@@ -151,13 +179,33 @@ function main() {
 
 main();
 
+function switch_province(prov) {
+	if (!PROVINCE_MAP[prov]) return;
+
+	current_province					= prov;
+	current_filter						= 'all';
+
+	let url								= new URL(window.location.href);
+	url.searchParams.set('province', prov);
+	url.searchParams.set('subject', current_subject);
+	window.history.replaceState({}, '', url);
+
+	$('#province_title').text(PROVINCE_MAP[prov].name);
+	update_prov_tabs();
+	$('.filter-chip').removeClass('active');
+	$('.filter-chip[data-value="all"]').addClass('active');
+	render_stats();
+	render_questions();
+}
+
 function switch_subject(subj) {
-	if (!SUBJECT_DATA_MAP[subj]) return;
+	if (!SUBJECT_NAMES[subj]) return;
 
 	current_subject						= subj;
 	current_filter						= 'all';
 
 	let url								= new URL(window.location.href);
+	url.searchParams.set('province', current_province);
 	url.searchParams.set('subject', subj);
 	window.history.replaceState({}, '', url);
 
@@ -167,6 +215,11 @@ function switch_subject(subj) {
 	$('.filter-chip').removeClass('active');
 	$('.filter-chip[data-value="all"]').addClass('active');
 	render_questions();
+}
+
+function update_prov_tabs() {
+	$('.prov-tab').removeClass('active');
+	$('.prov-tab[data-province="' + current_province + '"]').addClass('active');
 }
 
 function update_subj_tabs() {
@@ -182,7 +235,8 @@ function apply_filter(value) {
 }
 
 function get_current_data() {
-	let data_key						= SUBJECT_DATA_MAP[current_subject].data_obj;
+	let prefix							= PROVINCE_MAP[current_province].prefix;
+	let data_key						= prefix + current_subject.toUpperCase() + '_DATA';
 	return window[data_key] || {};
 }
 
@@ -249,7 +303,7 @@ function render_questions() {
 			tags						= [];
 		}
 
-		let card_html					= '<a href="question.html?subject=' + current_subject + '&id=' + q.no + '" class="q-card block no-underline rounded-xl p-3 mb-2" style="background:white;border:1px solid #E5DDD0;">' +
+		let card_html					= '<a href="question.html?province=' + current_province + '&subject=' + current_subject + '&id=' + q.no + '" class="q-card block no-underline rounded-xl p-3 mb-2" style="background:white;border:1px solid #E5DDD0;">' +
 			'<div class="flex items-center gap-2 mb-1">' +
 				'<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:#1A1A1A;color:white;">第 ' + q.no + ' 题</span>' +
 				'<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#F5F0E8;color:#8B6914;">' + q.type + '</span>' +

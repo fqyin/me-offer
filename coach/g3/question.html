@@ -15,6 +15,15 @@
 <script src="chinese_data.js"></script>
 <script src="english_data.js"></script>
 <script src="politics_data.js"></script>
+<script src="sd_biology_data.js"></script>
+<script src="sd_math_data.js"></script>
+<script src="sd_physics_data.js"></script>
+<script src="sd_chemistry_data.js"></script>
+<script src="sd_geography_data.js"></script>
+<script src="sd_history_data.js"></script>
+<script src="sd_chinese_data.js"></script>
+<script src="sd_english_data.js"></script>
+<script src="sd_politics_data.js"></script>
 <style>
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 html { overflow-x: hidden; }
@@ -62,7 +71,7 @@ html { overflow-x: hidden; }
 	<!-- 题目头部 -->
 	<section class="px-4 pt-4 pb-3">
 		<div class="flex items-center gap-2 mb-2">
-			<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:#1A1A1A;color:white;">北京 2025</span>
+			<span class="province-label text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:#1A1A1A;color:white;">北京 2025</span>
 			<span id="subject_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#F5EAD5;color:#8B6914;">生物</span>
 			<span id="q_type_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#F5EAD5;color:#8B6914;">选择题</span>
 			<span id="q_score_pill" class="text-[10px] px-2 py-0.5 rounded-full" style="background:#FDF8F0;color:#8B6914;">2 分</span>
@@ -182,39 +191,55 @@ html { overflow-x: hidden; }
 </div>
 
 <script>
-const SUBJECT_CONFIG						= {
-	biology:	{ name: '生物', data: 'BIOLOGY_DATA',	emoji: '\u1F9EC', total: 20 },
-	math:		{ name: '数学', data: 'MATH_DATA',		emoji: '\u1F4D0', total: 20 },
-	physics:	{ name: '物理', data: 'PHYSICS_DATA',	emoji: '\u2699\uFE0F', total: 20 },
-	chemistry:	{ name: '化学', data: 'CHEMISTRY_DATA',	emoji: '\u1F9EA', total: 20 },
-	geography:	{ name: '地理', data: 'GEOGRAPHY_DATA',	emoji: '\u1F5FA\uFE0F', total: 20 },
-	history:	{ name: '历史', data: 'HISTORY_DATA',	emoji: '\u1F4DC', total: 20 },
-	chinese:	{ name: '语文', data: 'CHINESE_DATA',	emoji: '\u1F4DD', total: 15 },
-	english:	{ name: '英语', data: 'ENGLISH_DATA',	emoji: '\u1F1EC\u1F1E7', total: 35 },
-	politics:	{ name: '政治', data: 'POLITICS_DATA',	emoji: '\u2696\uFE0F', total: 20 }
+const PROVINCE_CONFIG						= {
+	beijing:	{ name: '北京', prefix: '' },
+	shandong:	{ name: '山东', prefix: 'SD_' }
+};
+
+const SUBJECT_TOTALS						= {
+	beijing:	{ biology: 20, math: 20, physics: 20, chemistry: 20, geography: 20, history: 20, chinese: 15, english: 35, politics: 20 },
+	shandong:	{ biology: 20, math: 22, physics: 15, chemistry: 15, geography: 15, history: 15, chinese: 23, english: 35, politics: 15 }
+};
+
+const SUBJECT_META							= {
+	biology:	{ name: '生物', emoji: '\u1F9EC' },
+	math:		{ name: '数学', emoji: '\u1F4D0' },
+	physics:	{ name: '物理', emoji: '\u2699\uFE0F' },
+	chemistry:	{ name: '化学', emoji: '\u1F9EA' },
+	geography:	{ name: '地理', emoji: '\u1F5FA\uFE0F' },
+	history:	{ name: '历史', emoji: '\u1F4DC' },
+	chinese:	{ name: '语文', emoji: '\u1F4DD' },
+	english:	{ name: '英语', emoji: '\u1F1EC\u1F1E7' },
+	politics:	{ name: '政治', emoji: '\u2696\uFE0F' }
 };
 
 let current_subject							= 'biology';
+let current_province						= 'beijing';
 let current_total							= 20;
+
+function get_data_var_name(province, subject) {
+	let prefix							= PROVINCE_CONFIG[province].prefix;
+	return prefix + subject.toUpperCase() + '_DATA';
+}
 
 function main() {
 	let url_params						= new URLSearchParams(window.location.search);
+	let prov_param						= url_params.get('province') || 'beijing';
 	let subj_param						= url_params.get('subject') || 'biology';
 
-	if (!SUBJECT_CONFIG[subj_param]) {
-		subj_param						= 'biology';
-	}
+	if (!PROVINCE_CONFIG[prov_param]) prov_param = 'beijing';
+	if (!SUBJECT_META[subj_param]) subj_param = 'biology';
 
+	current_province					= prov_param;
 	current_subject						= subj_param;
-	current_total						= SUBJECT_CONFIG[subj_param].total;
+	current_total						= SUBJECT_TOTALS[prov_param][subj_param] || 20;
 
 	let q_id							= parseInt(url_params.get('id') || '1');
 
-	if (q_id < 1 || q_id > current_total) {
-		q_id							= 1;
-	}
+	if (q_id < 1 || q_id > current_total) q_id = 1;
 
-	let data_obj						= window[SUBJECT_CONFIG[subj_param].data];
+	let data_var_name					= get_data_var_name(prov_param, subj_param);
+	let data_obj						= window[data_var_name];
 	let q								= data_obj ? data_obj[q_id] : null;
 
 	if (!q) {
@@ -222,9 +247,14 @@ function main() {
 		return;
 	}
 
-	$('#subject_pill').text(SUBJECT_CONFIG[subj_param].name);
-	$('#back_to_papers').attr('href', 'papers.html?subject=' + subj_param);
-	$('#bottom_papers_link').attr('href', 'papers.html?subject=' + subj_param);
+	let prov_text						= PROVINCE_CONFIG[prov_param].name + ' 2025';
+	$('.province-label').text(prov_text);
+	$('#subject_pill').text(SUBJECT_META[subj_param].name);
+
+	let papers_href						= 'papers.html?province=' + prov_param + '&subject=' + subj_param;
+	$('#back_to_papers').attr('href', papers_href);
+	$('#bottom_papers_link').attr('href', papers_href);
+
 	render_question(q);
 	update_nav_buttons(q_id);
 }
@@ -314,19 +344,19 @@ function render_question(q) {
 }
 
 function update_nav_buttons(q_id) {
-	let subj_qs							= 'subject=' + current_subject + '&';
-	let papers_url						= 'papers.html?subject=' + current_subject;
+	let base_qs							= 'province=' + current_province + '&subject=' + current_subject + '&';
+	let papers_url						= 'papers.html?province=' + current_province + '&subject=' + current_subject;
 
 	if (q_id <= 1) {
 		$('#prev_q_btn').attr('href', papers_url).html('&larr; 返回列表');
 	} else {
-		$('#prev_q_btn').attr('href', 'question.html?' + subj_qs + 'id=' + (q_id - 1));
+		$('#prev_q_btn').attr('href', 'question.html?' + base_qs + 'id=' + (q_id - 1));
 	}
 
 	if (q_id >= current_total) {
 		$('#next_q_btn').attr('href', papers_url).html('返回列表 &rarr;');
 	} else {
-		$('#next_q_btn').attr('href', 'question.html?' + subj_qs + 'id=' + (q_id + 1));
+		$('#next_q_btn').attr('href', 'question.html?' + base_qs + 'id=' + (q_id + 1));
 	}
 }
 
