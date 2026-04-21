@@ -1,0 +1,10 @@
+data_raw/
+db/
+scripts/
+site_map/
+docs/
+node_modules/
+.git/
+.claude/
+*.log
+PLAN_*.md

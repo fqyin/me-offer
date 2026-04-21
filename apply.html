@@ -731,6 +731,117 @@
 			</section>
 		</section>
 
+
+		<!-- ==================== Step 6: 志愿管理工作台（新版主界面） ==================== -->
+		<section id="step_6" class="hidden-section" style="padding:0;">
+
+			<!-- 顶栏 -->
+			<div style="background:white;border-bottom:1px solid #E5DDD0;padding:10px 14px;position:sticky;top:0;z-index:30;">
+				<div class="flex items-center justify-between gap-2">
+					<div class="flex items-center gap-2">
+						<button onclick="ws_back_to_form()" style="background:#FDF8F0;border:1px solid #E5DDD0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">← 返回</button>
+						<div>
+							<div class="text-sm font-bold text-dark">志愿管理工作台</div>
+							<div class="text-[10px] text-muted" id="ws_subtitle">你的分数 · 位次 · 选科</div>
+						</div>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-[10px]" id="ws_save_status" style="color:#16A34A;">💾 自动保存</span>
+						<button onclick="ws_show_parent_report()" style="background:#FDF8F0;color:#8B6914;border:1px solid #C9A96E;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;">📖 深度报告</button>
+						<button onclick="ws_download_pdf()" style="background:linear-gradient(135deg,#C9A96E,#8B6914);color:white;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;">📥 下载 PDF</button>
+					</div>
+				</div>
+				<!-- 志愿统计条 -->
+				<div class="flex gap-2 mt-2">
+					<div class="flex-1 text-center rounded-lg py-1.5" style="background:#FEECEC;">
+						<span class="text-[11px] font-bold" style="color:#C94A4A;">冲 <span id="ws_stat_chong">0</span></span>
+					</div>
+					<div class="flex-1 text-center rounded-lg py-1.5" style="background:#FDF4E5;">
+						<span class="text-[11px] font-bold" style="color:#8B6914;">稳 <span id="ws_stat_wen">0</span></span>
+					</div>
+					<div class="flex-1 text-center rounded-lg py-1.5" style="background:#E8F7EE;">
+						<span class="text-[11px] font-bold" style="color:#16A34A;">保 <span id="ws_stat_bao">0</span></span>
+					</div>
+					<div class="flex-1 text-center rounded-lg py-1.5" style="background:#F5F0E8;">
+						<span class="text-[11px] font-bold text-dark">共 <span id="ws_stat_total">0</span>/96</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 移动端 Tab 切换 -->
+			<div id="ws_mobile_tabs" class="flex" style="background:#F5F0E8;border-bottom:1px solid #E5DDD0;">
+				<button onclick="ws_switch_tab('list')" id="ws_tab_list" class="flex-1 py-2 text-xs font-semibold" style="color:#C9A96E;border-bottom:2px solid #C9A96E;background:white;">📋 我的志愿表</button>
+				<button onclick="ws_switch_tab('pool')" id="ws_tab_pool" class="flex-1 py-2 text-xs font-semibold" style="color:#999;border-bottom:2px solid transparent;">🔍 候选学校池</button>
+			</div>
+
+			<!-- 主体区 -->
+			<div id="ws_body" style="display:flex;min-height:calc(100vh - 130px);">
+
+				<!-- 左侧：候选学校池 -->
+				<div id="ws_pool" style="flex:0 0 42%;background:#FAFAF7;border-right:1px solid #E5DDD0;overflow-y:auto;max-height:calc(100vh - 130px);">
+					<div style="padding:10px;position:sticky;top:0;background:#FAFAF7;z-index:10;border-bottom:1px solid #E5DDD0;">
+						<input type="text" id="ws_search_input" placeholder="🔍 搜索学校或专业..." style="width:100%;padding:8px 10px;border:1px solid #E5DDD0;border-radius:8px;font-size:12px;outline:none;background:white;">
+						<div class="flex gap-1 mt-2 flex-wrap" id="ws_filter_chips">
+							<button onclick="ws_filter('all')" class="ws-filter-btn ws-filter-active" data-filter="all">全部</button>
+							<button onclick="ws_filter('chong')" class="ws-filter-btn" data-filter="chong">冲</button>
+							<button onclick="ws_filter('wen')" class="ws-filter-btn" data-filter="wen">稳</button>
+							<button onclick="ws_filter('bao')" class="ws-filter-btn" data-filter="bao">保</button>
+							<button onclick="ws_filter('985')" class="ws-filter-btn" data-filter="985">985</button>
+							<button onclick="ws_filter('211')" class="ws-filter-btn" data-filter="211">211</button>
+						</div>
+					</div>
+					<div id="ws_pool_list" style="padding:8px 10px;"></div>
+				</div>
+
+				<!-- 右侧：我的志愿表 -->
+				<div id="ws_list" style="flex:1;overflow-y:auto;max-height:calc(100vh - 130px);">
+					<div id="ws_list_content" style="padding:10px;"></div>
+					<div style="padding:0 10px 20px;">
+						<button onclick="ws_switch_tab('pool')" id="ws_add_btn" style="display:none;width:100%;padding:12px;border:2px dashed #C9A96E;background:transparent;color:#8B6914;border-radius:10px;font-size:12px;cursor:pointer;">+ 从候选池添加志愿</button>
+					</div>
+				</div>
+
+			</div>
+
+		</section>
+
+		<!-- 学校详情弹层 -->
+		<div id="ws_school_modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end;justify-content:center;">
+			<div style="background:white;width:100%;max-width:520px;max-height:85vh;border-radius:16px 16px 0 0;overflow-y:auto;">
+				<div id="ws_school_modal_content"></div>
+			</div>
+		</div>
+
+		<!-- 家长深度报告弹层 -->
+		<div id="ws_parent_report_modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:110;align-items:center;justify-content:center;padding:10px;">
+			<div style="background:#FDF8F0;width:100%;max-width:680px;max-height:92vh;border-radius:16px;overflow-y:auto;position:relative;">
+				<div id="ws_parent_report_content"></div>
+			</div>
+		</div>
+
+		<style>
+			.ws-filter-btn { padding:4px 10px; border-radius:12px; font-size:11px; border:1px solid #E5DDD0; background:white; color:#666; cursor:pointer; }
+			.ws-filter-btn.ws-filter-active { background:#C9A96E; color:white; border-color:#C9A96E; }
+			.ws-card { background:white; border:1px solid #E5DDD0; border-radius:10px; padding:10px; margin-bottom:8px; cursor:pointer; transition:all 0.15s; }
+			.ws-card:hover { border-color:#C9A96E; box-shadow:0 2px 8px rgba(139,105,20,0.1); }
+			.ws-card-in-list { background:#FDF8F0; border-color:#C9A96E; }
+			.ws-row { background:white; border:1px solid #E5DDD0; border-radius:10px; padding:10px; margin-bottom:8px; position:relative; }
+			.ws-row-actions { display:flex; gap:4px; }
+			.ws-row-btn { width:24px; height:24px; border-radius:6px; border:1px solid #E5DDD0; background:white; cursor:pointer; font-size:11px; display:inline-flex; align-items:center; justify-content:center; }
+			.ws-row-btn:hover { background:#F5F0E8; }
+			.ws-row-btn-delete:hover { background:#FEECEC; color:#C94A4A; border-color:#C94A4A; }
+			@media (max-width: 768px) {
+				#ws_body { display:block !important; min-height:calc(100vh - 150px) !important; }
+				#ws_pool, #ws_list { flex:none !important; max-height:calc(100vh - 150px) !important; width:100% !important; border-right:none !important; }
+				#ws_pool.ws-mobile-hide { display:none !important; }
+				#ws_list.ws-mobile-hide { display:none !important; }
+				#ws_mobile_tabs { display:flex !important; }
+			}
+			@media (min-width: 769px) {
+				#ws_mobile_tabs { display:none !important; }
+			}
+		</style>
+
 	</div>
 
 <script>
@@ -808,7 +919,7 @@ const AGENT_SCRIPT								= [
 		agent: 'risk',
 		duration: 18000,
 		logs: [
-			{delay: 200, text: '[05] ▸ 启动 风险 Agent (Claude Sonnet 4.5)', color: '#C9A96E'},
+			{delay: 200, text: '[05] ▸ 启动 风险 Agent (Claude 4.5)', color: '#C9A96E'},
 			{delay: 1200, text: '    ├─ 向 Anthropic API 发送推理请求...', color: '#888'},
 			{delay: 2800, text: '    ├─ Claude 接收用户画像（性格+兴趣+分数+位次）', color: '#888'},
 			{delay: 4500, text: '    ├─ 深度推理开始 (这是最耗时的一步)', color: '#F59E0B'},
@@ -866,6 +977,13 @@ function main() {
 	restore_url_plan();
 	load_provinces();
 	bind_province_change();
+
+	/* 检查 URL 上有没有 ?restore=plan_id 参数，如果有 → 从云端加载方案直接进入工作台 */
+	setTimeout(function() {
+		if (typeof ws_restore_from_cloud_if_needed === 'function') {
+			ws_restore_from_cloud_if_needed();
+		}
+	}, 200);
 }
 
 // ==================== Provinces Dynamic Load ====================
@@ -1238,6 +1356,7 @@ function collect_form_data() {
 // ==================== AI Analysis ====================
 let api_result_96						= null;
 let api_result_insights					= null;
+let api_result_deep						= null;			// Claude 深度推荐（策略+理由+风险）
 
 function start_ai_analysis() {
 	collect_form_data();
@@ -1291,7 +1410,47 @@ function start_ai_analysis() {
 			console.log('[API] generate_96 success, volunteers=' + (res.volunteers || []).length);
 			api_result_96					= res;
 
-			// API 2: Claude 分析（要 Top 志愿作为上下文）
+			/* 并发：深度推荐（只传精选 24 志愿样本以降低 payload + Claude token） */
+			let sample_vols					= [];
+			let all_vols					= res.volunteers || [];
+			let ch							= all_vols.filter(function(v){return v.tier==='chong';}).slice(0, 8);
+			let wn							= all_vols.filter(function(v){return v.tier==='wen';}).slice(0, 8);
+			let bo							= all_vols.filter(function(v){return v.tier==='bao';}).slice(0, 8);
+			sample_vols						= ch.concat(wn).concat(bo);
+
+			$.ajax({
+				url:		'/api/deep_recommend',
+				method:		'POST',
+				contentType:	'application/json',
+				data:		JSON.stringify({
+					score:			form_data.score,
+					rank:			res.rank,
+					subjects:		form_data.subjects,
+					cities:			form_data.cities,
+					majors:			form_data.majors,
+					personality:	form_data.personality,
+					hobbies:		form_data.hobbies,
+					strengths:		form_data.strengths,
+					talents:		form_data.talents,
+					health:			form_data.health,
+					level:			form_data.level,
+					budget:			form_data.budget,
+					remote:			form_data.remote,
+					sino:			form_data.sino,
+					volunteers:		sample_vols
+				}),
+				success: function(r3) {
+					/* 后端 reasons 可能只覆盖 sample，merge 到全量志愿 */
+					api_result_deep		= r3;
+					console.log('[API] deep_recommend done, source=' + r3.source + ' reasons=' + Object.keys(r3.reasons||{}).length);
+				},
+				error: function(xhr){
+					console.warn('[API] deep_recommend error:', xhr.status);
+				},
+				timeout: 35000
+			});
+
+			// API 2: Claude 快速洞察（保留旧 API 兼容结果页的 5 条卡片）
 			$.ajax({
 				url:		'/api/ai_analyze',
 				method:		'POST',
@@ -1445,6 +1604,12 @@ function append_log(text, color) {
 
 // ==================== Results ====================
 function show_results() {
+	/* v17：改为直接进入志愿工作台 step_6（校长反馈：要可编辑 + 看详情） */
+	if (WORKSPACE_MODE) {
+		show_workspace();
+		return;
+	}
+
 	goto_step_no_form(5);
 
 	let rank								= (api_result_96 && api_result_96.rank) || form_data.rank_current || 0;
@@ -1465,8 +1630,47 @@ function show_results() {
 	// 隐藏 review 升级 panel（默认 · 只在精准档付费后显示）
 	$('#review_upgrade_panel').addClass('hidden-section');
 
+	if (FREE_MODE) {
+		/* 公开测试期：隐藏所有付费卡，显示免费下载 PDF 面板 */
+		$('#paywall_inline').addClass('hidden-section');
+		$('#precision_upgrade_panel').addClass('hidden-section');
+		$('#review_upgrade_panel').addClass('hidden-section');
+		render_free_mode_actions();
+		return;
+	}
+
 	// 检查 localStorage 是否已付过 · 直接应用
 	check_stored_unlock();
+}
+
+
+function render_free_mode_actions() {
+	let rank_text							= (api_result_96 && api_result_96.rank) ? api_result_96.rank.toLocaleString() : '—';
+	let total								= (api_result_96 && api_result_96.volunteers || []).length;
+
+	let html								= '';
+
+	html += '<div class="rounded-2xl p-4 mb-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 2px solid #C9A96E;">';
+	html += '  <div class="flex items-center gap-2 mb-3">';
+	html += '    <span class="text-base">📥</span>';
+	html += '    <div class="text-sm font-bold text-dark">下载你的志愿方案</div>';
+	html += '    <span class="ml-auto text-[9px] px-2 py-0.5 rounded-full text-white" style="background: #22C55E;">公开测试期 · 免费</span>';
+	html += '  </div>';
+	html += '  <div class="space-y-1.5 mb-3 text-[11px]" style="color: #5A3F0F;">';
+	html += '    <div>✓ 位次 <strong>' + rank_text + '</strong> · 共推荐 <strong>' + total + '</strong> 志愿</div>';
+	html += '    <div>✓ PDF 格式对齐山东省教育招生考试院填报表</div>';
+	html += '    <div>✓ 冲刺 / 稳妥 / 保底 分档清晰 · 可直接抄录</div>';
+	html += '  </div>';
+	html += '  <button onclick="download_volunteer_pdf()" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer mb-2" style="background: linear-gradient(135deg, #C9A96E, #8B6914);">📄 下载志愿填报表 PDF</button>';
+	html += '  <button onclick="download_strategy_pdf()" class="w-full py-2.5 rounded-xl text-sm font-bold cursor-pointer" style="background: white; border: 1.5px solid #C9A96E; color: #8B6914;">📊 下载 AI 策略报告 PDF</button>';
+	html += '</div>';
+
+	html += '<div class="rounded-xl p-3 text-center" style="background: #FDF8F0; border: 1px dashed #E5DDD0;">';
+	html += '  <div class="text-[11px] text-muted">📢 公开测试期 · 帮我们测试数据准确率</div>';
+	html += '  <div class="text-[10px] text-muted mt-1">发现问题？微信 <strong>meoffer_cs</strong> 反馈</div>';
+	html += '</div>';
+
+	$('#paywall_inline').removeClass('hidden-section').html(html);
 }
 
 function render_insight_card() {
@@ -1523,8 +1727,8 @@ function render_volunteer_preview() {
 		return;
 	}
 
-	// trial/precision/review 三档都展开 96 志愿
-	if (current_unlock_level === 'trial' || current_unlock_level === 'precision' || current_unlock_level === 'review') {
+	/* FREE_MODE（公开测试期）或已付费 → 展开完整 96 志愿 · 不遮挡 */
+	if (FREE_MODE || current_unlock_level === 'trial' || current_unlock_level === 'precision' || current_unlock_level === 'review') {
 		render_all_volunteers();
 		return;
 	}
@@ -1600,6 +1804,28 @@ function save_unlock_state(level, order_id) {
 // 测试期统一价格（正式上线改回 299 / 1999）
 const TEST_MODE							= true;
 const TEST_PRICE						= 1;
+
+/* ========================================================================
+   FREE_MODE：公开测试期 · 所有付费卡点关闭 · 结果完全展示 · PDF 免费下载
+   等 Claude 深度推荐 + PDF 生成 + 数据准确率测试都跑通后再关闭此开关。
+   ======================================================================== */
+const FREE_MODE							= true;
+
+/* ========================================================================
+   WORKSPACE_MODE：志愿管理工作台模式（v17 · 2026-04-20）
+   替代旧的「一键生成 96 志愿 + 下载 PDF」流程，
+   改为「候选池 + 可编辑志愿表 + 学校详情」的工作台。
+   ======================================================================== */
+const WORKSPACE_MODE					= true;
+
+/* 工作台全局状态 */
+let ws_data								= {
+	candidates:		[],			/* 候选学校池（可以是 AI 推荐 + 全量 2868 搜索） */
+	my_list:		[],			/* 我的志愿表（可编辑） */
+	filter:			'all',		/* 当前筛选：all/chong/wen/bao/985/211 */
+	search:			'',
+	current_tab:	'list'		/* 移动端当前 tab */
+};
 
 function trigger_pay(amount) {
 	// 手机号直接跳过
@@ -2146,6 +2372,179 @@ function generate_pdf_manual() {
 	generate_pdf('MANUAL_' + Date.now());
 }
 
+/* ========================================================================
+   FREE_MODE 入口：下载志愿填报表 + 策略报告（免费测试期）
+   ======================================================================== */
+function download_volunteer_pdf() {
+	generate_pdf('FREE_' + Date.now());
+}
+
+function download_strategy_pdf() {
+	let vols								= (api_result_96 && api_result_96.volunteers) || [];
+	if (vols.length === 0) {
+		alert('没有数据生成 PDF');
+		return;
+	}
+
+	show_toast('📊 正在生成 AI 策略报告（约 8 秒）...', 7000);
+
+	try {
+		build_strategy_pdf('STRATEGY_' + Date.now(), vols);
+	}
+	catch (e) {
+		console.error('Strategy PDF error:', e);
+		alert('策略报告 PDF 生成失败：' + e.message);
+	}
+}
+
+
+function build_strategy_pdf(order_id, vols) {
+	let rank								= api_result_96 ? api_result_96.rank : '—';
+	let score								= form_data.score || '—';
+	let subjects_cn							= (form_data.subjects || []).map(function(s) {
+		let map								= {physics: '物理', chemistry: '化学', biology: '生物', politics: '政治', history: '历史', geography: '地理'};
+		return map[s] || s;
+	}).join(' · ');
+	let gen_time							= new Date().toLocaleString('zh-CN');
+	let insights							= (api_result_insights && api_result_insights.insights) || [];
+	let deep								= api_result_deep || {};
+	let strategy_text						= deep.strategy_summary || '';
+	let risks_list							= deep.risks || [];
+	let filling_tip							= deep.filling_order_tip || '';
+
+	/* 统计冲稳保数量 */
+	let chong_count							= vols.filter(function(v) { return v.tier === 'chong'; }).length;
+	let wen_count							= vols.filter(function(v) { return v.tier === 'wen'; }).length;
+	let bao_count							= vols.filter(function(v) { return v.tier === 'bao'; }).length;
+
+	/* 每档 Top 5 */
+	let top_chong							= vols.filter(function(v) { return v.tier === 'chong'; }).slice(0, 5);
+	let top_wen								= vols.filter(function(v) { return v.tier === 'wen'; }).slice(0, 5);
+	let top_bao								= vols.filter(function(v) { return v.tier === 'bao'; }).slice(0, 5);
+
+	function render_tier_list(list, color, label) {
+		let html							= '<div style="margin-bottom:16px;">';
+		html								+= '<div style="font-size:13px;font-weight:700;color:' + color + ';margin-bottom:6px;">' + label + '（Top 5）</div>';
+		list.forEach(function(v, i) {
+			html							+= '<div style="font-size:11px;padding:4px 8px;border-left:3px solid ' + color + ';margin-bottom:3px;background:#FAFAF7;">';
+			html							+= '<strong>' + (i + 1) + '. ' + escape_html(v.school_name) + '</strong> · ' + escape_html(v.group_name || '') + ' · 概率 ' + (v.prob || 0) + '%';
+			html							+= '</div>';
+		});
+		html								+= '</div>';
+		return html;
+	}
+
+	let insights_html						= '';
+	if (insights.length > 0) {
+		insights.forEach(function(ins) {
+			let icon						= {match: '🎯', risk: '⚠️', strength: '💪', warning: '🚧'}[ins.type] || '✨';
+			insights_html					+= '<div style="font-size:11px;padding:6px 10px;margin-bottom:6px;border-radius:6px;background:#FDF8F0;border:1px solid #E5DDD0;">';
+			insights_html					+= '<strong>' + icon + ' ' + escape_html(ins.title || '') + '</strong>：' + escape_html(ins.content || '');
+			insights_html					+= '</div>';
+		});
+	}
+	else {
+		insights_html						= '<div style="font-size:11px;color:#888;">（AI 暂未生成个性化洞察 · 请检查网络）</div>';
+	}
+
+	let container							= $('<div></div>').css({
+		position: 'absolute', left: '-10000px', top: 0, width: '794px',
+		background: 'white', padding: '40px', fontFamily: '"Microsoft YaHei","PingFang SC",sans-serif', color: '#222'
+	}).html(
+		'<div style="text-align:center;border-bottom:2px solid #C9A96E;padding-bottom:14px;margin-bottom:20px;">' +
+			'<div style="font-size:20px;font-weight:800;color:#1A1A1A;">Me Offer · AI 志愿填报策略报告</div>' +
+			'<div style="font-size:11px;color:#666;margin-top:4px;">山东省 2026 年高考志愿参考</div>' +
+		'</div>' +
+
+		'<div style="display:flex;gap:20px;margin-bottom:20px;padding:12px;background:#FDF8F0;border-radius:8px;">' +
+			'<div style="flex:1;"><div style="font-size:10px;color:#888;">考生姓名</div><div style="font-size:14px;font-weight:600;border-bottom:1px solid #999;padding:4px 0;">________________</div></div>' +
+			'<div style="flex:1;"><div style="font-size:10px;color:#888;">准考证号</div><div style="font-size:14px;font-weight:600;border-bottom:1px solid #999;padding:4px 0;">________________</div></div>' +
+			'<div style="flex:1;"><div style="font-size:10px;color:#888;">高考分数</div><div style="font-size:14px;font-weight:600;">' + score + ' 分</div></div>' +
+			'<div style="flex:1;"><div style="font-size:10px;color:#888;">省内位次</div><div style="font-size:14px;font-weight:600;">' + (rank ? rank.toLocaleString() : '—') + '</div></div>' +
+			'<div style="flex:1;"><div style="font-size:10px;color:#888;">选科</div><div style="font-size:14px;font-weight:600;">' + subjects_cn + '</div></div>' +
+		'</div>' +
+
+		'<div style="margin-bottom:20px;">' +
+			'<div style="font-size:14px;font-weight:700;color:#8B6914;margin-bottom:8px;">📊 方案概览</div>' +
+			'<div style="display:flex;gap:10px;">' +
+				'<div style="flex:1;padding:10px;border-radius:6px;background:#FEECEC;text-align:center;"><div style="font-size:20px;font-weight:800;color:#C94A4A;">' + chong_count + '</div><div style="font-size:10px;color:#C94A4A;">冲刺档</div></div>' +
+				'<div style="flex:1;padding:10px;border-radius:6px;background:#FDF4E5;text-align:center;"><div style="font-size:20px;font-weight:800;color:#8B6914;">' + wen_count + '</div><div style="font-size:10px;color:#8B6914;">稳妥档</div></div>' +
+				'<div style="flex:1;padding:10px;border-radius:6px;background:#E8F7EE;text-align:center;"><div style="font-size:20px;font-weight:800;color:#16A34A;">' + bao_count + '</div><div style="font-size:10px;color:#16A34A;">保底档</div></div>' +
+			'</div>' +
+		'</div>' +
+
+		(strategy_text ? '<div style="margin-bottom:20px;">' +
+			'<div style="font-size:14px;font-weight:700;color:#8B6914;margin-bottom:8px;">🎯 Claude 4.5 整体策略</div>' +
+			'<div style="font-size:11px;line-height:1.8;padding:12px;background:#FDF8F0;border-radius:8px;border-left:3px solid #C9A96E;">' + escape_html(strategy_text) + '</div>' +
+		'</div>' : '') +
+
+		'<div style="margin-bottom:20px;">' +
+			'<div style="font-size:14px;font-weight:700;color:#8B6914;margin-bottom:8px;">🧠 Claude 4.5 个性化洞察</div>' +
+			insights_html +
+		'</div>' +
+
+		(risks_list.length > 0 ? '<div style="margin-bottom:20px;">' +
+			'<div style="font-size:14px;font-weight:700;color:#C94A4A;margin-bottom:8px;">⚠️ 关键风险提示</div>' +
+			risks_list.map(function(r){return '<div style="font-size:11px;padding:6px 10px;margin-bottom:4px;border-radius:4px;background:#FEECEC;border-left:2px solid #C94A4A;">' + escape_html(r) + '</div>';}).join('') +
+		'</div>' : '') +
+
+		render_tier_list(top_chong, '#C94A4A', '🔥 冲刺档推荐') +
+		render_tier_list(top_wen, '#8B6914', '🎯 稳妥档推荐') +
+		render_tier_list(top_bao, '#16A34A', '🛡 保底档推荐') +
+
+		'<div style="margin-top:20px;padding:10px;background:#F5EAD5;border-radius:6px;font-size:10px;color:#5A3F0F;line-height:1.7;">' +
+			'<strong>📝 填报顺序建议：</strong><br>' +
+			'1. 冲刺档 ' + chong_count + ' 个填在前面（1 - ' + chong_count + ' 位）<br>' +
+			'2. 稳妥档 ' + wen_count + ' 个填在中间（' + (chong_count + 1) + ' - ' + (chong_count + wen_count) + ' 位）<br>' +
+			'3. 保底档 ' + bao_count + ' 个填在最末（' + (chong_count + wen_count + 1) + ' - ' + (chong_count + wen_count + bao_count) + ' 位）<br>' +
+			(filling_tip ? '<div style="margin-top:8px;padding:6px;background:white;border-radius:4px;">' + escape_html(filling_tip) + '</div>' : '') +
+			'<strong style="color:#C94A4A;">重要：一定要勾选"服从专业调剂"，避免滑档！</strong>' +
+		'</div>' +
+
+		'<div style="margin-top:20px;padding-top:12px;border-top:1px solid #ccc;font-size:9px;color:#999;line-height:1.8;">' +
+			'<div><strong>订单号：</strong>' + order_id + '　<strong>生成时间：</strong>' + gen_time + '</div>' +
+			'<div><strong>数据来源：</strong>山东省教育招生考试院 sdzk.cn · 2021-2025 公开投档数据</div>' +
+			'<div><strong>AI 引擎：</strong>Anthropic Claude 4.5</div>' +
+			'<div><strong>免责声明：</strong>本报告为 AI 参考建议，最终志愿填报以山东省教育招生考试院官方系统为准。Me Offer 不对录取结果作任何承诺。</div>' +
+			'<div><strong>客服：</strong>info@me-offer.com　<strong>官网：</strong>me-offer.com</div>' +
+		'</div>'
+	);
+
+	$('body').append(container);
+
+	html2canvas(container[0], {scale: 2, backgroundColor: '#ffffff'}).then(function(canvas) {
+		let img_data						= canvas.toDataURL('image/jpeg', 0.92);
+		/* 横向 A4：297 × 210（因列数多，横向更清晰） */
+		let pdf								= new jspdf.jsPDF('l', 'mm', 'a4');
+		let img_w							= 297;
+		let img_h							= canvas.height * img_w / canvas.width;
+		let page_h							= 210;
+
+		if (img_h <= page_h) {
+			pdf.addImage(img_data, 'JPEG', 0, 0, img_w, img_h);
+		}
+		else {
+			let remaining					= img_h;
+			let position					= 0;
+			while (remaining > 0) {
+				pdf.addImage(img_data, 'JPEG', 0, position, img_w, img_h);
+				remaining					-= page_h;
+				position					-= page_h;
+				if (remaining > 0) pdf.addPage();
+			}
+		}
+
+		let filename						= 'MeOffer_策略报告_' + score + '分_' + order_id + '.pdf';
+		ws_save_pdf_crossplatform(pdf, filename);
+		container.remove();
+		show_download_success(filename);
+	}).catch(function(e) {
+		console.error('html2canvas strategy error:', e);
+		alert('策略报告生成失败：' + e.message);
+		container.remove();
+	});
+}
+
 function generate_pdf(order_id) {
 	let vols								= (api_result_96 && api_result_96.volunteers) || [];
 	if (vols.length === 0) {
@@ -2156,12 +2555,16 @@ function generate_pdf(order_id) {
 	// 显示加载提示
 	show_toast('📄 正在生成专业志愿表（可能需要 10 秒）...', 8000);
 
-	// 先调富化 API 补全每条志愿的数据
+	// 先调富化 API 补全每条志愿的数据（传 user_rank/user_score 以生成"比我位次"派生字段）
 	$.ajax({
 		url:		'/api/enrich_volunteers',
 		method:		'POST',
 		contentType: 'application/json',
-		data:		JSON.stringify({volunteers: vols}),
+		data:		JSON.stringify({
+			volunteers:		vols,
+			user_rank:		api_result_96 ? api_result_96.rank : 0,
+			user_score:		form_data.score || 0
+		}),
 		success: function(res) {
 			try {
 				build_pdf_via_html(order_id, res.enriched || vols);
@@ -2180,6 +2583,142 @@ function generate_pdf(order_id) {
 		}
 	});
 }
+
+/* 为 PDF 构建深度报告页 HTML（返回空字符串则不插入报告页） */
+function build_parent_report_pdf_html() {
+	let r									= api_result_deep && api_result_deep.parent_report;
+	if (!r) return '';
+
+	let subjects_cn							= (form_data.subjects || []).map(function(s){
+		return {physics:'物理',chemistry:'化学',biology:'生物',politics:'政治',history:'历史',geography:'地理'}[s] || s;
+	}).join('·');
+	let rank								= api_result_96 ? api_result_96.rank : 0;
+
+	let html								= '<div style="padding:10px 0 30px 0;page-break-after:always;">';
+
+	/* 封面标题 */
+	html									+=
+		'<div style="text-align:center;padding:30px 0 20px 0;border-bottom:3px double #8B6914;margin-bottom:25px;">' +
+		'  <div style="font-size:12px;color:#8B6914;letter-spacing:4px;margin-bottom:8px;">ME OFFER · 家长深度剖析报告</div>' +
+		'  <div style="font-size:26px;font-weight:800;color:#1A1A1A;margin-bottom:6px;">Parent Insights Report</div>' +
+		'  <div style="font-size:11px;color:#8A8A8A;">' + form_data.score + ' 分 · 位次 ' + (rank ? rank.toLocaleString() : '—') + ' · ' + subjects_cn + ' &nbsp;·&nbsp; Claude Sonnet 4.5 深度推理</div>' +
+		'</div>';
+
+	let sec									= function(num, title, body) {
+		return '<div style="margin-bottom:16px;">' +
+			'  <div style="font-size:13px;font-weight:700;color:#8B1A1A;margin-bottom:6px;border-left:4px solid #C9A96E;padding-left:10px;">' + num + ' ' + escape_html(title) + '</div>' +
+			'  <div style="padding:0 10px;font-size:11px;line-height:1.8;color:#1A1A1A;">' + body + '</div>' +
+			'</div>';
+	};
+
+	/* ① 考生画像速览 */
+	if (r.profile_summary) {
+		html								+= sec('🎯 ①', '考生画像速览', '<div style="background:#FDF8F0;padding:10px 14px;border-radius:6px;">' + escape_html(r.profile_summary) + '</div>');
+	}
+
+	/* ② 96 志愿编排 */
+	if (r.plan_narrative) {
+		html								+= sec('🎯 ②', '为你精心编排的 96 志愿', '<div>' + escape_html(r.plan_narrative) + '</div>');
+	}
+
+	/* ③ 匹配解读 */
+	if (r.match_insights && r.match_insights.length > 0) {
+		let body							= '';
+		r.match_insights.forEach(function(it, i) {
+			body							+= '<div style="padding:8px 0;' + (i > 0 ? 'border-top:1px dashed #E5DDD0;' : '') + '">' + escape_html(it) + '</div>';
+		});
+		html								+= sec('🎯 ③', '性格 × 专业 匹配解读', body);
+	}
+
+	/* ④ 风险雷达 */
+	if (r.risk_radar && r.risk_radar.length > 0) {
+		let body							= '<div style="background:#FEECEC;padding:10px 14px;border-radius:6px;">';
+		r.risk_radar.forEach(function(it, i) {
+			body							+= '<div style="padding:6px 0;' + (i > 0 ? 'border-top:1px dashed #FCA5A5;' : '') + '">' + escape_html(it) + '</div>';
+		});
+		body								+= '</div>';
+		html								+= sec('🎯 ④', '长期风险雷达', body);
+	}
+
+	/* ⑤ 4 年后画像预判 */
+	if (r.future_prediction) {
+		let fp								= r.future_prediction;
+		let body							= '';
+		if (fp.narrative) body				+= '<div style="margin-bottom:10px;">' + escape_html(fp.narrative) + '</div>';
+		if (fp.paths && fp.paths.length > 0) {
+			body							+= '<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:8px 12px;margin-bottom:8px;">';
+			fp.paths.forEach(function(p, i) {
+				body						+= '<div style="display:flex;gap:12px;padding:6px 0;' + (i > 0 ? 'border-top:1px dashed #F3E8D8;' : '') + '">' +
+					'<div style="min-width:120px;font-weight:600;color:#8B6914;">' + escape_html(p.label||'') + '</div>' +
+					'<div style="min-width:60px;color:#C94A4A;font-weight:700;">' + escape_html(p.prob||'') + '</div>' +
+					'<div style="color:#555;flex:1;">' + escape_html(p.detail||'') + '</div>' +
+					'</div>';
+			});
+			body							+= '</div>';
+		}
+		if (fp.income_range) body			+= '<div style="background:#FDF8F0;border-left:3px solid #C9A96E;padding:8px 12px;"><strong>💰 收入预判：</strong>' + escape_html(fp.income_range) + '</div>';
+		html								+= sec('🎯 ⑤', '4 年后画像预判', body);
+	}
+
+	/* ⑥ 父母投入预估 */
+	if (r.parent_investment) {
+		let pi								= r.parent_investment;
+		let body							= '';
+		if (pi.summary) body				+= '<div style="margin-bottom:10px;">' + escape_html(pi.summary) + '</div>';
+		if (pi.items && pi.items.length > 0) {
+			body							+= '<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:8px 12px;margin-bottom:8px;">';
+			pi.items.forEach(function(it, i) {
+				body						+= '<div style="display:flex;gap:10px;padding:5px 0;' + (i > 0 ? 'border-top:1px dashed #F3E8D8;' : '') + '">' +
+					'<div style="flex:1;">' + escape_html(it.label||'') + '</div>' +
+					'<div style="color:#8A8A8A;min-width:130px;">' + escape_html(it.amount||'') + '</div>' +
+					'<div style="min-width:80px;text-align:right;color:#C94A4A;font-weight:700;">' + escape_html(it.total||'') + '</div>' +
+					'</div>';
+			});
+			body							+= '</div>';
+		}
+		if (pi.grand_total) body			+= '<div style="background:linear-gradient(135deg,#FDF8F0,#F5EAD5);border:1px solid #C9A96E;border-radius:6px;padding:10px 12px;font-size:12px;font-weight:700;color:#8B1A1A;text-align:center;">' + escape_html(pi.grand_total) + '</div>';
+		html								+= sec('🎯 ⑥', '父母投入预估（10 年总账）', body);
+	}
+
+	/* ⑦ 同分段竞争对手画像 */
+	if (r.peer_comparison) {
+		let pc								= r.peer_comparison;
+		let body							= '';
+		if (pc.summary) body				+= '<div style="margin-bottom:10px;">' + escape_html(pc.summary) + '</div>';
+		if (pc.typical_peers && pc.typical_peers.length > 0) {
+			body							+= '<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:8px 12px;margin-bottom:8px;">';
+			pc.typical_peers.forEach(function(p, i) {
+				body						+= '<div style="display:flex;gap:8px;padding:5px 0;' + (i > 0 ? 'border-top:1px dashed #F3E8D8;' : '') + '">' +
+					'<div style="min-width:20px;color:#8B6914;font-weight:700;">' + (i + 1) + '.</div>' +
+					'<div style="flex:1;">' + escape_html(p) + '</div>' +
+					'</div>';
+			});
+			body							+= '</div>';
+		}
+		if (pc.your_edge) body				+= '<div style="background:#F0FDF4;border-left:3px solid #16A34A;padding:8px 12px;"><strong>✨ 你的差异化优势：</strong>' + escape_html(pc.your_edge) + '</div>';
+		html								+= sec('🎯 ⑦', '同分段竞争对手画像', body);
+	}
+
+	/* ⑧ 给家长的心态建议 */
+	if (r.parent_tips && r.parent_tips.length > 0) {
+		let body							= '<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:10px 14px;">';
+		r.parent_tips.forEach(function(tip, i) {
+			body							+= '<div style="padding:8px 0;' + (i > 0 ? 'border-top:1px dashed #E5DDD0;' : '') + '">' + escape_html(tip) + '</div>';
+		});
+		body								+= '</div>';
+		html								+= sec('🎯 ⑧', '给家长的心态建议', body);
+	}
+
+	/* 免责声明 */
+	html									+=
+		'<div style="margin-top:30px;padding:10px 14px;background:#FAFAF7;border-radius:4px;font-size:9px;line-height:1.7;color:#8A8A8A;">' +
+		'<strong>免责声明：</strong>本报告基于 Claude Sonnet 4.5 深度推理生成，融合了考生完整画像、96 志愿投档数据、行业洞察。报告为个性化决策参考，<strong>不构成录取承诺</strong>，最终以山东省教育招生考试院官方为准。' +
+		'</div>';
+
+	html									+= '</div>';		/* 结束报告页 · page-break-after */
+	return html;
+}
+
 
 function build_pdf_via_html(order_id, vols) {
 	// 按院校聚合志愿组：同一院校用一个"志愿序号"
@@ -2203,42 +2742,109 @@ function build_pdf_via_html(order_id, vols) {
 		let tcolor							= tier_colors[sg.tier] || '#666';
 		let first							= true;
 		sg.volunteers.forEach(function(v) {
+			/* 如果有 AI 深度推荐理由，AI 理由列显示；否则降级显示通用话术 */
+			let ai_reason					= '';
+			if (api_result_deep && api_result_deep.reasons) {
+				let v_key					= (v.school_code || '') + '_' + (v.group_code || '');
+				ai_reason					= api_result_deep.reasons[v_key] || '';
+			}
+			let reason						= ai_reason || '综合位次与专业特色，适合此志愿档位。';
 			let career						= v.career_path || '相关行业';
 			let code_5						= v.school_code_5digit || v.school_code || '';
-			let min_score					= v.min_score_2024 ? v.min_score_2024 : '-';
-			let min_rank					= v.min_rank || '-';
-			let plan_count					= v.plan_count || '-';
 			let study_years					= v.study_years || '四年';
 			let tuition						= v.tuition_yuan || 5500;
 			let prob						= v.prob || 0;
 
+			/* 三年数据 · 独立列 */
+			let hist						= v.history || {};
+			let h2025						= hist[2025] || hist['2025'] || {};
+			let h2024						= hist[2024] || hist['2024'] || {};
+			let h2023						= hist[2023] || hist['2023'] || {};
+
+			/* 每年数据：最低分/最低位次 横排 · 招生计划数字单独一行
+			   year_n: 本单元格是哪一年（2025/2024/2023）
+			   推断"该专业新设/未招生"并诚实标注 */
+			function fmt_year_cell(h, year_n) {
+				if (!h.min_score && !h.min_rank && !h.plan_count) {
+					/* 无数据：根据其他年份推断标注文案 */
+					let has_2025			= !!(h2025 && h2025.min_rank);
+					let has_2024			= !!(h2024 && h2024.min_rank);
+					let has_2023			= !!(h2023 && h2023.min_rank);
+					let first_y				= has_2023 ? 2023 : (has_2024 ? 2024 : (has_2025 ? 2025 : 0));
+					let note				= '';
+
+					if (first_y === 2025) {
+						note				= '2025<br>新设';
+					}
+					else if (first_y === 2024 && year_n === 2023) {
+						note				= '2024<br>新设';
+					}
+					else if (has_2023 && has_2025 && year_n === 2024) {
+						note				= '该年<br>未招';
+					}
+					else {
+						note				= '—';
+					}
+					return '<span style="color:#aaa;font-size:8px;font-style:italic;">' + note + '</span>';
+				}
+				let html					= '';
+				let score					= h.min_score || '—';
+				let rank					= h.min_rank ? h.min_rank.toLocaleString() : '—';
+				/* 最低分 / 最低位次 横排显示 */
+				html						+= '<span style="color:#DC2626;font-weight:700;font-size:11px;">' + score + '</span>';
+				html						+= '<span style="color:#999;font-size:10px;"> / </span>';
+				html						+= '<span style="color:#1A1A1A;font-weight:600;font-size:10px;">' + rank + '</span>';
+				/* 招生数字（无"招 X 人"前缀，与表头呼应） */
+				if (h.plan_count) html		+= '<br><span style="color:#666;font-size:9px;">' + h.plan_count + '</span>';
+				return html;
+			}
+
+			/* 2025 列统一按 分/位次/招生 三行格式显示（2025 投档数据已完整） */
+			let plan_2025_cell				= fmt_year_cell(h2025, 2025);
+			/* fallback：h2025 空但 volunteer 本身有 plan_count（来自 generate_96 原始） */
+			if (!h2025.min_rank && v.plan_count && v.min_rank) {
+				plan_2025_cell				= '<span style="color:#DC2626;font-weight:700;font-size:11px;">—</span>' +
+					'<span style="color:#999;font-size:10px;"> / </span>' +
+					'<span style="color:#1A1A1A;font-weight:600;font-size:10px;">' + v.min_rank.toLocaleString() + '</span>' +
+					'<br><span style="color:#666;font-size:9px;">' + v.plan_count + '</span>';
+			}
+
+			/* 比我位次 */
+			let diff_cell					= '';
+			if (h2024.rank_label || h2024.score_label) {
+				let rank_color				= (h2024.rank_vs_me > 0) ? '#DC2626' : '#16A34A';
+				diff_cell					=
+					(h2024.rank_label ? '<span style="color:' + rank_color + ';font-weight:600;">' + h2024.rank_label + '</span>' : '') +
+					(h2024.score_label ? '<br><span style="color:#666;font-size:8px;">' + h2024.score_label + '分</span>' : '');
+			}
+			if (!diff_cell) diff_cell		= '<span style="color:#ccc;">—</span>';
+
+			/* 波动数据保留在 v.volatility 可供 AI 风险提示用，但 PDF 不单列 */
+
+			let study_cell					= study_years + '<br><span style="color:#999;font-size:8px;">¥' + tuition + '</span>';
+
+			/* 院校 + 代码 · 专业 + 代码
+			   v.group_code 和 v.group_name 已由 generate_96 后端预处理好 */
+			let school_cell					= first ?
+				'<b>' + escape_html(v.school_name) + '</b><br><span style="color:#999;font-weight:normal;font-size:8px;">代码 ' + code_5 + '</span>' : '';
+			let group_cell					=
+				escape_html(v.group_name || '') + '<br><span style="color:#999;font-size:8px;">代码 ' + (v.group_code || '-') + '</span>';
+
 			rows_html						+= '<tr>' +
-				// 序号 - 只在每个院校第一行显示
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + (first ? volunteer_no : '') + '</td>' +
-				// 梯度 - 只在每个院校第一行显示
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;">' +
-					(first ? '<span style="display:inline-block;padding:1px 7px;border-radius:8px;color:white;background:' + tcolor + ';font-size:10px;font-weight:600;">' + tier_names[sg.tier] + '</span>' : '') +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:10px;">' + (first ? volunteer_no : '') + '</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;">' +
+					(first ? '<span style="display:inline-block;padding:1px 6px;border-radius:8px;color:white;background:' + tcolor + ';font-size:10px;font-weight:600;">' + tier_names[sg.tier] + '</span>' : '') +
 				'</td>' +
-				// 院校名称
-				'<td style="padding:4px 5px;border:1px solid #ddd;font-size:10px;' + (first ? 'font-weight:600;' : 'color:#666;') + '">' + (first ? escape_html(v.school_name) : '') + '</td>' +
-				// 院校代码 - 每行都显示
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;color:#666;">' + (first ? code_5 : '') + '</td>' +
-				// 专业名称
-				'<td style="padding:4px 5px;border:1px solid #ddd;font-size:10px;">' + escape_html(v.group_name || '') + '</td>' +
-				// 专业代码
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;color:#666;">' + (v.group_code || '-') + '</td>' +
-				// 2024 招生人数
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + plan_count + '</td>' +
-				// 2024 最低分/位次
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + min_score + '/' + min_rank + '</td>' +
-				// 录取概率
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;font-weight:600;color:' + tcolor + ';">' + prob + '%</td>' +
-				// 就业去向
-				'<td style="padding:4px 5px;border:1px solid #ddd;font-size:9px;color:#555;">' + escape_html(career) + '</td>' +
-				// 学制
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + study_years + '</td>' +
-				// 学费（元/年）
-				'<td style="padding:4px 5px;border:1px solid #ddd;text-align:center;font-size:10px;">' + tuition + '</td>' +
+				'<td style="padding:4px 4px;border:1px solid #ddd;font-size:10px;line-height:1.4;">' + school_cell + '</td>' +
+				'<td style="padding:4px 4px;border:1px solid #ddd;font-size:10px;line-height:1.4;">' + group_cell + '</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:12px;font-weight:700;color:' + tcolor + ';">' + prob + '%</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:10px;">' + plan_2025_cell + '</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:9px;line-height:1.4;">' + fmt_year_cell(h2024, 2024) + '</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:9px;line-height:1.4;">' + fmt_year_cell(h2023, 2023) + '</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:9px;line-height:1.4;">' + diff_cell + '</td>' +
+				'<td style="padding:4px 3px;border:1px solid #ddd;text-align:center;font-size:10px;line-height:1.4;">' + study_cell + '</td>' +
+				'<td style="padding:4px 4px;border:1px solid #ddd;font-size:9px;color:#666;line-height:1.4;">' + escape_html(career) + '</td>' +
+				'<td style="padding:4px 4px;border:1px solid #ddd;font-size:9px;color:#555;line-height:1.4;">' + escape_html(reason) + '</td>' +
 			'</tr>';
 			first							= false;
 		});
@@ -2254,30 +2860,45 @@ function build_pdf_via_html(order_id, vols) {
 	let rank								= api_result_96 ? api_result_96.rank : '—';
 	let title_line							= province_name + ' / 本科 / ' + subjects_cn + ' / ' + form_data.score + '分 / ' + rank + '名';
 
+	/* 家长深度报告 HTML（插入到主表格前作为 PDF 第 1 页） */
+	let parent_report_html					= build_parent_report_pdf_html();
+
 	let container							= $('<div></div>').css({
-		position:	'absolute', left: '-10000px', top: 0, width: '1200px',
+		position:	'absolute', left: '-10000px', top: 0, width: '1500px',
 		background: 'white', padding: '25px', fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif', color: '#222'
 	}).html(
-		// 标题栏（仿国内专业模板）
-		'<div style="margin-bottom: 12px;">' +
-			'<div style="font-size:16px;font-weight:700;color:#1A1A1A;margin-bottom:6px;">志愿填报: ' + title_line + '</div>' +
+		parent_report_html +
+
+		// 标题栏（仿山东省教育招生考试院官方填报表）
+		'<div style="text-align:center;border-bottom:2px solid #8B6914;padding-bottom:10px;margin-bottom:12px;' + (parent_report_html ? 'page-break-before:always;padding-top:20px;' : '') + '">' +
+			'<div style="font-size:18px;font-weight:800;color:#1A1A1A;">山东省 2026 年普通高校招生志愿填报参考表</div>' +
+			'<div style="font-size:10px;color:#8B6914;margin-top:4px;">Me Offer AI · 智能生成 · ' + title_line + '</div>' +
 		'</div>' +
 
-		// 主表格
-		'<table style="width:100%;border-collapse:collapse;font-size:10px;">' +
+		// 考生信息填写区（手写空白位）
+		'<div style="display:flex;gap:20px;margin-bottom:12px;padding:8px 12px;background:#FDF8F0;border-radius:6px;font-size:11px;">' +
+			'<div style="flex:1.2;"><span style="color:#666;">考生姓名：</span><span style="display:inline-block;border-bottom:1px solid #333;min-width:100px;padding:0 6px;">&nbsp;</span></div>' +
+			'<div style="flex:1.5;"><span style="color:#666;">准考证号：</span><span style="display:inline-block;border-bottom:1px solid #333;min-width:140px;padding:0 6px;">&nbsp;</span></div>' +
+			'<div style="flex:1;"><span style="color:#666;">高考分数：</span><strong>' + form_data.score + ' 分</strong></div>' +
+			'<div style="flex:1;"><span style="color:#666;">省内位次：</span><strong>' + (rank ? rank.toLocaleString() : '—') + '</strong></div>' +
+			'<div style="flex:1.3;"><span style="color:#666;">选科：</span><strong>' + subjects_cn + '</strong></div>' +
+		'</div>' +
+
+		// 主表格（12 列 · 紧凑版 · 三年独立列）
+		'<table style="width:100%;border-collapse:collapse;font-size:10px;table-layout:fixed;">' +
 			'<thead><tr style="background:#F5F0E8;">' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:30px;">序号</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:36px;">梯度</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:95px;">院校名称</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:55px;">院校代码</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;">专业名称</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:55px;">专业代码</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:70px;">2025招生计划</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:80px;">2024专业最低分/位次</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:50px;">录取概率(%)</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;">就业去向</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:38px;">学制</th>' +
-				'<th style="padding:6px 5px;border:1px solid #ddd;font-size:10px;width:62px;">学费 (元/年)</th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:24px;">序号</th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:26px;">梯度</th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:110px;">院校<br><span style="font-weight:normal;color:#999;font-size:8px;">(代码)</span></th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:130px;">专业<br><span style="font-weight:normal;color:#999;font-size:8px;">(代码)</span></th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:40px;background:#FEF3C7;">录取<br>概率</th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:78px;background:#FFF8E7;">2025<br><span style="font-weight:normal;color:#999;font-size:8px;">分/位次/招生</span></th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:78px;">2024<br><span style="font-weight:normal;color:#999;font-size:8px;">分/位次/招生</span></th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:78px;">2023<br><span style="font-weight:normal;color:#999;font-size:8px;">分/位次/招生</span></th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:70px;">比我位次<br><span style="font-weight:normal;color:#999;font-size:8px;">(2024对比)</span></th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:44px;">学制<br>学费</th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;width:100px;">就业去向</th>' +
+				'<th style="padding:5px 2px;border:1px solid #ddd;font-size:9px;">AI 推荐理由</th>' +
 			'</tr></thead>' +
 			'<tbody>' + rows_html + '</tbody>' +
 		'</table>' +
@@ -2285,7 +2906,11 @@ function build_pdf_via_html(order_id, vols) {
 		// 底部信息
 		'<div style="margin-top:15px;padding-top:10px;border-top:1px solid #ccc;font-size:9px;color:#999;line-height:1.7;">' +
 			'<div><strong>订单号：</strong>' + order_id + '　<strong>生成时间：</strong>' + gen_time + '</div>' +
-			'<div><strong>数据来源：</strong>山东省教育招生考试院 2021-2025 公开数据　<strong>算法：</strong>Me Offer AI 位次匹配引擎 + Claude 4.5 个性化推理</div>' +
+			'<div><strong>数据说明：</strong>' +
+				'<span style="color:#16A34A;">投档位次 · 招生计划 · 选考科目</span> 来自山东省教育招生考试院 sdzk.cn 2021-2025 官方公开投档表（' + '<span style="color:#999;">每条数据附原始来源 URL</span>）；' +
+				'<span style="color:#D97706;">最低分（等效分）</span> 为基于一分一段表反算的参考值（全国新高考省份行业通行做法，官方不发布专业最低分）；' +
+				'<span style="color:#6366F1;">大小年波动标签</span> 基于近 3 年位次方差计算；' +
+				'<span style="color:#C9A96E;">AI 推荐理由</span> 由 Anthropic Claude 4.5 基于考生画像生成。</div>' +
 			'<div><strong>免责声明：</strong>本方案为 AI 参考建议，最终志愿填报以山东省教育招生考试院官方系统为准。Me Offer 不对录取结果作任何承诺。</div>' +
 			'<div><strong>客服：</strong>info@me-offer.com　<strong>官网：</strong>me-offer.com</div>' +
 		'</div>'
@@ -2314,7 +2939,7 @@ function build_pdf_via_html(order_id, vols) {
 		}
 
 		let filename						= 'MeOffer_志愿方案_' + (form_data.score || '') + '分_' + order_id + '.pdf';
-		pdf.save(filename);
+		ws_save_pdf_crossplatform(pdf, filename);
 		container.remove();
 
 		// 下载成功提示 · 告诉用户文件去哪了
@@ -2372,6 +2997,1148 @@ function show_download_success(filename) {
 	setTimeout(function() {
 		$('#pdf_success_toast').fadeOut(500, function() { $(this).remove(); });
 	}, 8000);
+}
+
+
+/* ============================================================================
+   志愿管理工作台 · Day 1-4（v17）
+   从"一键生成 PDF"改成"候选池 + 可编辑志愿表 + 学校详情"
+   ============================================================================ */
+
+function show_workspace() {
+	goto_step_no_form(6);
+
+	/* 初始化状态（v21 方案 A：建构式）
+	   - candidates = 完整 AI 候选池（96 + extras = 200 所），左栏显示 · 分冲/稳/保三档
+	   - my_list    = 我的志愿表，**初始空**，由用户主动从左侧挑选添加
+	   - 提供"🚀 一键全部加入 AI 96"快捷按钮 */
+	let vols								= (api_result_96 && api_result_96.volunteers) || [];
+	let extras								= (api_result_96 && api_result_96.extras) || [];
+
+	ws_data.ai_top96						= vols.slice();					/* AI 原始推荐的 96 所 · 供一键加入 */
+	ws_data.candidates						= vols.concat(extras);			/* 左栏：完整候选池 */
+	ws_data.all_pool						= vols.concat(extras);			/* 全量查找池 */
+	ws_data.my_list							= [];							/* 右栏：初始空 */
+	ws_data.filter							= 'all';
+	ws_data.search							= '';
+	ws_data.current_tab						= 'list';
+
+	/* 先从 localStorage 恢复（如果有保存） */
+	ws_load_from_local();
+
+	ws_render_subtitle();
+	ws_render_pool();
+	ws_render_list();
+	ws_render_stats();
+	ws_bind_search();
+
+	/* 手机端：默认只显示"我的志愿"tab，把候选池隐藏掉 */
+	if (window.innerWidth <= 768) {
+		ws_switch_tab('list');
+	}
+
+	/* 登录了显示顶部 "我的后台" 链接 */
+	if (meoffer_is_logged_in()) {
+		let u								= meoffer_get_user();
+		$('#ws_save_status').html('👤 ' + (u.nickname || '用户') + ' · <a href="dashboard.html" style="color:#8B6914;text-decoration:underline;">我的后台</a>');
+	} else {
+		/* 未登录 · 提示可以登录保存方案 */
+		$('#ws_save_status').html('<a onclick="ws_show_login_prompt()" style="color:#8B6914;cursor:pointer;text-decoration:underline;">💾 登录保存方案</a>');
+	}
+}
+
+
+/* 未登录时 · 引导登录（用户想保存方案时触发） */
+function ws_show_login_prompt() {
+	window.location.href = 'dashboard.html';
+}
+
+
+/* 一键全部加入 AI 推荐的 96 所 */
+function ws_add_all_ai96() {
+	if (!ws_data.ai_top96 || ws_data.ai_top96.length === 0) {
+		show_toast('暂无 AI 推荐志愿', 1500);
+		return;
+	}
+	ws_data.my_list							= ws_data.ai_top96.slice();
+	ws_sort_list();
+	ws_render_list();
+	ws_render_pool();
+	ws_save_to_local();
+	show_toast('✓ 已加入 AI 推荐的 ' + ws_data.my_list.length + ' 所', 1500);
+}
+
+
+/* 自定义加入（从教育部认证库加入不在 AI 池的学校） */
+function ws_custom_add_school(school_name, school_code) {
+	if (!school_name) return;
+	/* 检查是否已在志愿表 */
+	if (ws_data.my_list.some(function(v){ return v.school_name === school_name; })) {
+		show_toast('该学校已在志愿表', 1500);
+		return;
+	}
+	if (!confirm('确定加入 "' + school_name + '" ？\n\n⚠️ 注意：AI 未评估该校匹配度，录取概率需自行判断。')) return;
+
+	/* 创建一个自定义志愿项 */
+	let custom_v							= {
+		school_code:	school_code || '',
+		school_name:	school_name,
+		group_code:		'',
+		group_name:		'（请在考试院填报系统查询具体专业）',
+		tier:			'custom',		/* 自定义档位 */
+		prob:			'?',			/* 未知概率 */
+		min_rank:		null,
+		plan_count:		null,
+		_custom:		true			/* 标记为自定义加入 */
+	};
+	ws_data.my_list.push(custom_v);
+	ws_render_list();
+	ws_render_pool();
+	ws_save_to_local();
+	show_toast('✓ 已自定义加入：' + school_name, 2000);
+}
+
+
+/* 清空志愿表 */
+function ws_clear_all() {
+	if (ws_data.my_list.length === 0) return;
+	if (!confirm('确定清空志愿表？（可重新从左侧添加）')) return;
+	ws_data.my_list							= [];
+	ws_render_list();
+	ws_render_pool();
+	ws_save_to_local();
+}
+
+
+function ws_render_subtitle() {
+	let score								= form_data.score || '—';
+	let rank								= (api_result_96 && api_result_96.rank) ? api_result_96.rank.toLocaleString() : '—';
+	/* 选科按习惯顺序排列：物/化/生/史/政/地 */
+	let subject_order						= {physics:1,chemistry:2,biology:3,history:4,politics:5,geography:6};
+	let map									= {physics:'物',chemistry:'化',biology:'生',politics:'政',history:'史',geography:'地'};
+	let subjects							= (form_data.subjects || [])
+		.slice()
+		.sort(function(a,b){return (subject_order[a]||99)-(subject_order[b]||99);})
+		.map(function(s){ return map[s] || s; })
+		.join('');
+	$('#ws_subtitle').text(score + '分 · 位次 ' + rank + ' · ' + subjects);
+}
+
+
+function ws_render_stats() {
+	let list								= ws_data.my_list || [];
+	let c = 0, w = 0, b = 0;
+	list.forEach(function(v){
+		if (v.tier === 'chong') c++;
+		else if (v.tier === 'wen') w++;
+		else if (v.tier === 'bao') b++;
+	});
+	$('#ws_stat_chong').text(c);
+	$('#ws_stat_wen').text(w);
+	$('#ws_stat_bao').text(b);
+	$('#ws_stat_total').text(list.length);
+}
+
+
+function ws_bind_search() {
+	let debounce_timer;
+	$('#ws_search_input').off('input').on('input', function(){
+		ws_data.search						= $(this).val().trim();
+
+		/* 先本地过滤（毫秒级） */
+		ws_render_pool();
+
+		/* 防抖 500ms 后调后端搜全量 2868 所（防野鸡大学识别） */
+		clearTimeout(debounce_timer);
+		if (ws_data.search.length >= 2) {
+			debounce_timer					= setTimeout(function(){
+				ws_search_verify(ws_data.search);
+			}, 500);
+		} else {
+			/* 搜索清空则还原普通候选池显示 */
+			ws_data.verified_results		= null;
+			ws_render_pool();
+		}
+	});
+}
+
+
+/* 三级搜索：判断学校是否在 D1（教育部认证） */
+function ws_search_verify(keyword) {
+	$.ajax({
+		url:		'/api/search_schools',
+		method:		'GET',
+		data:		{ q: keyword },
+		success: function(res) {
+			if (ws_data.search !== keyword) return;		/* 期间用户又改了输入，丢弃结果 */
+			ws_data.verified_results		= res.verified || [];
+			ws_render_pool();
+		},
+		error: function() { /* 失败不阻塞本地搜索 */ }
+	});
+}
+
+
+function ws_filter(type) {
+	ws_data.filter							= type;
+	$('.ws-filter-btn').removeClass('ws-filter-active');
+	$('.ws-filter-btn[data-filter="' + type + '"]').addClass('ws-filter-active');
+	ws_render_pool();
+}
+
+
+function ws_render_pool() {
+	/* v21 方案 A：左栏 = AI 全量候选池（按冲/稳/保分组）
+	   - 默认排除已在志愿表的（避免重复）
+	   - 搜索时扩展到全量，但仍排除已加入的 */
+	let in_list_keys						= new Set(ws_data.my_list.map(function(v){return ws_vkey(v);}));
+	let base_pool							= (ws_data.candidates || []).filter(function(v){
+		return !in_list_keys.has(ws_vkey(v));
+	});
+
+	let pool								= base_pool;
+	let filter								= ws_data.filter;
+	let search								= ws_data.search.toLowerCase();
+
+	/* 筛选 */
+	if (filter === 'chong' || filter === 'wen' || filter === 'bao') {
+		pool								= pool.filter(function(v){ return v.tier === filter; });
+	}
+	else if (filter === '985') {
+		pool								= pool.filter(function(v){ return (v.school_tier||'').indexOf('985') !== -1; });
+	}
+	else if (filter === '211') {
+		pool								= pool.filter(function(v){ return (v.school_tier||'').indexOf('211') !== -1 || (v.school_tier||'').indexOf('985') !== -1; });
+	}
+
+	/* 搜索过滤 */
+	if (search) {
+		pool								= pool.filter(function(v){
+			return (v.school_name||'').toLowerCase().indexOf(search) !== -1 ||
+				   (v.group_name||'').toLowerCase().indexOf(search) !== -1;
+		});
+	}
+
+	let tier_colors							= {chong:'#C94A4A', wen:'#8B6914', bao:'#16A34A'};
+	let tier_bg								= {chong:'#FEECEC', wen:'#FDF4E5', bao:'#E8F7EE'};
+	let tier_names							= {chong:'冲档', wen:'稳档', bao:'保档'};
+
+	/* 按 tier 分组 */
+	let groups								= {chong: [], wen: [], bao: []};
+	pool.forEach(function(v){
+		if (groups[v.tier]) groups[v.tier].push(v);
+	});
+
+	let html								= '';
+
+	/* 顶部说明 */
+	if (!search) {
+		html								+= '<div style="padding:8px 10px;font-size:11px;color:#5A3F0F;line-height:1.5;background:#FDF8F0;border-radius:8px;margin-bottom:10px;">';
+		html								+= '📚 <strong>AI 候选学校池</strong>（共 ' + base_pool.length + ' 所）<br>';
+		html								+= '<span style="color:#999;">点击学校看详情，点 "+ 加入" 添加到右侧志愿表</span>';
+		html								+= '</div>';
+	} else {
+		/* 三级搜索展示 */
+		let keyword							= ws_data.search;
+		let verified						= ws_data.verified_results;		/* 后端返回的 D1 搜索结果（全量 2868） */
+		let ai_pool_names					= new Set((ws_data.candidates || []).map(function(v){return v.school_name;}));
+		let in_list_names					= new Set((ws_data.my_list || []).map(function(v){return v.school_name;}));
+
+		html								+= '<div style="padding:6px 8px;font-size:10px;color:#666;margin-bottom:6px;background:#FAFAF7;border-radius:6px;">🔍 AI 候选池匹配：' + pool.length + ' 所（专业级）</div>';
+
+		/* 如果后端返回了 verified 结果，展示【教育部认证但不在 AI 池】 + 【野鸡警告】 */
+		if (verified !== null && verified !== undefined) {
+			let not_in_ai_pool				= verified.filter(function(v){
+				return !ai_pool_names.has(v.school_name);
+			});
+
+			if (not_in_ai_pool.length > 0) {
+				html						+= '<div style="margin-top:10px;padding:8px 10px;background:#FEF3C7;border-left:3px solid #F59E0B;border-radius:6px;font-size:10px;color:#78350F;line-height:1.6;">';
+				html						+= '📚 <strong>教育部认证学校</strong> · ' + not_in_ai_pool.length + ' 所<br>';
+				html						+= '<span style="color:#92400E;">AI 未推荐（可能位次不匹配或不在候选范围），可自定义加入</span>';
+				html						+= '</div>';
+
+				not_in_ai_pool.slice(0, 10).forEach(function(s){
+					let already_in_list		= in_list_names.has(s.school_name);
+					let tier_label			= s.is_985 ? '985' : (s.is_211 ? '211' : (s.is_double_first ? '双一流' : s.tier));
+					let tier_color			= s.is_985 ? '#DC2626' : (s.is_211 ? '#EA580C' : '#6B7280');
+
+					html					+= '<div class="ws-card" style="background:#FFFBEB;border:1px solid #FCD34D;" onclick="ws_custom_add_school(\'' + escape_html(s.school_name) + '\', \'' + escape_html(s.code || '') + '\')">';
+					html					+= '  <div class="flex items-center justify-between gap-2 mb-1">';
+					html					+= '    <div style="flex:1;min-width:0;">';
+					html					+= '      <div class="text-[12px] font-bold text-dark">' + escape_html(s.school_name) + '</div>';
+					html					+= '      <div class="text-[10px] text-muted">' + escape_html(s.city || s.province || '') + ' · ' + escape_html(s.nature || '') + '</div>';
+					html					+= '    </div>';
+					html					+= '    <span style="background:' + tier_color + ';color:white;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;">' + tier_label + '</span>';
+					html					+= '  </div>';
+					html					+= '  <div class="flex items-center justify-between mt-2">';
+					if (s.rank_ruanke) {
+						html				+= '    <div class="text-[10px]" style="color:#666;">软科 #' + s.rank_ruanke + '</div>';
+					} else {
+						html				+= '    <div class="text-[10px]" style="color:#999;">—</div>';
+					}
+					if (already_in_list) {
+						html				+= '    <span style="color:#16A34A;font-size:10px;">✓ 已加入</span>';
+					} else {
+						html				+= '    <button onclick="event.stopPropagation(); ws_custom_add_school(\'' + escape_html(s.school_name) + '\', \'' + escape_html(s.code || '') + '\')" style="background:#F59E0B;color:white;border:none;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:600;cursor:pointer;">+ 自定义加入</button>';
+					}
+					html					+= '  </div>';
+					html					+= '</div>';
+				});
+			}
+
+			/* 野鸡警告（D1 全库都搜不到） */
+			if (verified.length === 0 && pool.length === 0) {
+				html						+= '<div style="margin-top:10px;padding:12px;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:8px;font-size:11px;color:#991B1B;">';
+				html						+= '  <div style="font-weight:700;margin-bottom:6px;">⚠️ 未找到 "' + escape_html(keyword) + '"</div>';
+				html						+= '  <div style="color:#7F1D1D;line-height:1.7;">';
+				html						+= '    教育部认证院校库（2868 所）中无此学校，可能是：<br>';
+				html						+= '    • 名字输错（请检查错别字）<br>';
+				html						+= '    • 新设院校（尚未纳入数据）<br>';
+				html						+= '    • <strong>野鸡学校 / 无办学资质</strong>（谨慎！）';
+				html						+= '  </div>';
+				html						+= '  <div style="display:flex;gap:6px;margin-top:8px;">';
+				html						+= '    <a href="https://www.baidu.com/s?wd=' + encodeURIComponent(keyword + ' 大学') + '" target="_blank" style="flex:1;text-align:center;padding:8px;background:white;border:1px solid #FCA5A5;border-radius:6px;color:#991B1B;font-size:11px;text-decoration:none;">🔍 百度搜索核实</a>';
+				html						+= '    <a href="https://gaokao.chsi.com.cn/sch/search.do" target="_blank" style="flex:1;text-align:center;padding:8px;background:white;border:1px solid #FCA5A5;border-radius:6px;color:#991B1B;font-size:11px;text-decoration:none;">🏛 阳光高考核查</a>';
+				html						+= '  </div>';
+				html						+= '</div>';
+			}
+		}
+	}
+
+	/* 按档位分组渲染 */
+	['chong', 'wen', 'bao'].forEach(function(t){
+		let group_items						= groups[t];
+		if (group_items.length === 0) return;
+		let tcolor							= tier_colors[t];
+		let tbg								= tier_bg[t];
+		let tname							= tier_names[t];
+
+		html							+= '<div style="background:' + tbg + ';color:' + tcolor + ';padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;margin:12px 0 6px;">';
+		html							+= tname + '（' + group_items.length + ' 所可选）';
+		html							+= '</div>';
+
+		group_items.forEach(function(v){
+			let key							= ws_vkey(v);
+			let tsmall						= {chong:'冲', wen:'稳', bao:'保'}[t];
+
+			html						+= '<div class="ws-card" onclick="ws_show_school_detail(\'' + key + '\')">';
+			html						+= '  <div class="flex items-center justify-between gap-2 mb-1">';
+			html						+= '    <div style="flex:1;min-width:0;">';
+			html						+= '      <div class="text-[12px] font-bold text-dark" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escape_html(v.school_name||'') + '</div>';
+			html						+= '      <div class="text-[10px] text-muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escape_html(v.group_name||'') + '</div>';
+			html						+= '    </div>';
+			html						+= '    <span style="background:' + tcolor + ';color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">' + tsmall + ' ' + (v.prob||0) + '%</span>';
+			html						+= '  </div>';
+			html						+= '  <div class="flex items-center justify-between mt-2">';
+			html						+= '    <div class="text-[10px]" style="color:#666;">位次 ' + (v.min_rank ? v.min_rank.toLocaleString() : '—') + '</div>';
+			html						+= '    <button onclick="event.stopPropagation(); ws_add_to_list(\'' + key + '\')" style="background:#C9A96E;color:white;border:none;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:600;cursor:pointer;">+ 加入</button>';
+			html						+= '  </div>';
+			html						+= '</div>';
+		});
+	});
+
+	if (pool.length === 0) {
+		html								+= '<div style="text-align:center;color:#999;padding:30px 10px;font-size:12px;">暂无匹配结果</div>';
+	}
+	$('#ws_pool_list').html(html);
+}
+
+
+function ws_render_list() {
+	let list								= ws_data.my_list || [];
+	let html								= '';
+
+	if (list.length === 0) {
+		let ai_count						= (ws_data.ai_top96 || []).length;
+
+		html								= '<div style="text-align:center;padding:30px 16px;">';
+		html							+= '  <div style="font-size:48px;margin-bottom:12px;">📋</div>';
+		html							+= '  <div style="font-size:15px;font-weight:700;color:#1A1A1A;margin-bottom:6px;">志愿表空空如也</div>';
+		html							+= '  <div style="font-size:12px;color:#666;margin-bottom:24px;">AI 已为你精挑 ' + ai_count + ' 所，或从左侧逐个添加</div>';
+
+		/* 主按钮：一键加入 AI 96 */
+		html							+= '  <button onclick="ws_add_all_ai96()" style="width:100%;padding:14px;background:linear-gradient(135deg,#C94A4A,#8B1A1A);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(201,74,74,0.3);margin-bottom:12px;">';
+		html							+= '    🚀 一键全部加入 AI 推荐的 ' + ai_count + ' 所';
+		html							+= '  </button>';
+
+		/* 次按钮：从左侧选 */
+		html							+= '  <button onclick="ws_switch_tab(\'pool\')" id="ws_add_btn" style="width:100%;padding:12px;background:white;color:#8B6914;border:2px dashed #C9A96E;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">';
+		html							+= '    📚 从左侧候选池逐个挑选';
+		html							+= '  </button>';
+
+		html							+= '  <div style="margin-top:16px;font-size:10px;color:#999;line-height:1.6;">';
+		html							+= '    💡 逐个审视 AI 的选校逻辑后再加入，<br>可以避免盲目采用、形成自己的判断';
+		html							+= '  </div>';
+		html							+= '</div>';
+
+		$('#ws_list_content').html(html);
+		$('#ws_add_btn').hide();
+		ws_render_stats();
+		return;
+	}
+	$('#ws_add_btn').hide();
+
+	let tier_colors							= {chong:'#C94A4A', wen:'#8B6914', bao:'#16A34A'};
+	let tier_bg								= {chong:'#FEECEC', wen:'#FDF4E5', bao:'#E8F7EE'};
+	let tier_names							= {chong:'冲', wen:'稳', bao:'保'};
+
+	/* 顶部操作条：清空 / 重置为 AI 方案 */
+	html									+= '<div class="flex gap-2 mb-3" style="padding:2px;">';
+	html								+= '  <button onclick="ws_clear_all()" style="flex:1;padding:6px 10px;background:white;border:1px solid #E5DDD0;border-radius:6px;font-size:11px;color:#666;cursor:pointer;">🗑 清空志愿表</button>';
+	html								+= '  <button onclick="ws_add_all_ai96()" style="flex:1;padding:6px 10px;background:#FDF8F0;border:1px solid #C9A96E;color:#8B6914;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">🚀 一键重置为 AI 方案</button>';
+	html								+= '</div>';
+
+	/* 按 tier 分段显示 */
+	let last_tier							= null;
+	list.forEach(function(v, idx){
+		let key								= ws_vkey(v);
+		if (v.tier !== last_tier) {
+			let tname						= tier_names[v.tier] || '';
+			let tcolor						= tier_colors[v.tier] || '#666';
+			let tbg							= tier_bg[v.tier] || '#FAFAF7';
+			html						+= '<div style="background:' + tbg + ';color:' + tcolor + ';padding:6px 10px;border-radius:6px;font-size:12px;font-weight:700;margin:12px 0 6px;">' + tname + '档</div>';
+			last_tier						= v.tier;
+		}
+
+		html							+= '<div class="ws-row">';
+		html							+= '  <div class="flex items-start justify-between gap-2 mb-1">';
+		html							+= '    <div style="flex:1;min-width:0;">';
+		html							+= '      <div class="flex items-center gap-2 mb-1">';
+		html							+= '        <span style="background:#F5F0E8;color:#8B6914;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;">' + (idx+1) + '</span>';
+		html							+= '        <span onclick="ws_show_school_detail(\'' + key + '\')" style="font-size:12px;font-weight:700;color:#1A1A1A;cursor:pointer;text-decoration:underline dotted;">' + escape_html(v.school_name||'') + '</span>';
+		html							+= '      </div>';
+		html							+= '      <div class="text-[11px] text-muted" style="padding-left:2px;">' + escape_html(v.group_name||'') + '</div>';
+		html							+= '    </div>';
+		html							+= '    <span style="background:' + tier_colors[v.tier] + ';color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;flex-shrink:0;">' + (v.prob||0) + '%</span>';
+		html							+= '  </div>';
+		html							+= '  <div class="flex items-center justify-between mt-2">';
+		html							+= '    <div class="text-[10px]" style="color:#666;">位次 ' + (v.min_rank ? v.min_rank.toLocaleString() : '—') + ' · 招生 ' + (v.plan_count||'-') + '</div>';
+		html							+= '    <div class="ws-row-actions">';
+		if (idx > 0) html				+= '      <button class="ws-row-btn" onclick="ws_move(\'' + key + '\', -1)" title="上移">↑</button>';
+		if (idx < list.length - 1) html	+= '      <button class="ws-row-btn" onclick="ws_move(\'' + key + '\', 1)" title="下移">↓</button>';
+		html							+= '      <button class="ws-row-btn ws-row-btn-delete" onclick="ws_remove_from_list(\'' + key + '\')" title="移除">×</button>';
+		html							+= '    </div>';
+		html							+= '  </div>';
+		html							+= '</div>';
+	});
+
+	$('#ws_list_content').html(html);
+	ws_render_stats();
+}
+
+
+function ws_vkey(v) {
+	return (v.school_code || '') + '_' + (v.group_code || '') + '_' + (v.school_name || '').replace(/[^a-z0-9\u4e00-\u9fa5]/gi, '');
+}
+
+
+function ws_find_in_candidates(key) {
+	return (ws_data.candidates || []).find(function(v){ return ws_vkey(v) === key; });
+}
+
+
+function ws_add_to_list(key) {
+	let v									= ws_find_in_candidates(key);
+	if (!v) return;
+	if (ws_data.my_list.some(function(x){ return ws_vkey(x) === key; })) {
+		show_toast('已在志愿表中', 1500);
+		return;
+	}
+	ws_data.my_list.push(v);
+	/* 按 tier 排序：冲 → 稳 → 保 */
+	ws_sort_list();
+	ws_render_list();
+	ws_render_pool();
+	ws_save_to_local();
+	show_toast('✓ 已加入志愿表', 1200);
+}
+
+
+function ws_remove_from_list(key) {
+	ws_data.my_list							= ws_data.my_list.filter(function(v){ return ws_vkey(v) !== key; });
+	ws_render_list();
+	ws_render_pool();
+	ws_save_to_local();
+}
+
+
+function ws_move(key, delta) {
+	let list								= ws_data.my_list;
+	let idx									= list.findIndex(function(v){ return ws_vkey(v) === key; });
+	if (idx < 0) return;
+	let new_idx								= idx + delta;
+	if (new_idx < 0 || new_idx >= list.length) return;
+	/* 只在同档位内移动（防止把冲档移到保档去） */
+	if (list[idx].tier !== list[new_idx].tier) return;
+	let tmp									= list[idx];
+	list[idx]								= list[new_idx];
+	list[new_idx]							= tmp;
+	ws_render_list();
+	ws_save_to_local();
+}
+
+
+function ws_sort_list() {
+	let tier_order							= {chong: 0, wen: 1, bao: 2};
+	ws_data.my_list.sort(function(a, b){
+		let ta								= tier_order[a.tier] !== undefined ? tier_order[a.tier] : 3;
+		let tb								= tier_order[b.tier] !== undefined ? tier_order[b.tier] : 3;
+		if (ta !== tb) return ta - tb;
+		return (a.min_rank || 999999) - (b.min_rank || 999999);
+	});
+}
+
+
+function ws_switch_tab(tab) {
+	ws_data.current_tab						= tab;
+	if (tab === 'list') {
+		$('#ws_tab_list').css({color:'#C9A96E', 'border-bottom-color':'#C9A96E', background:'white'});
+		$('#ws_tab_pool').css({color:'#999', 'border-bottom-color':'transparent', background:'transparent'});
+		$('#ws_list').removeClass('ws-mobile-hide');
+		$('#ws_pool').addClass('ws-mobile-hide');
+	} else {
+		$('#ws_tab_pool').css({color:'#C9A96E', 'border-bottom-color':'#C9A96E', background:'white'});
+		$('#ws_tab_list').css({color:'#999', 'border-bottom-color':'transparent', background:'transparent'});
+		$('#ws_pool').removeClass('ws-mobile-hide');
+		$('#ws_list').addClass('ws-mobile-hide');
+	}
+}
+
+
+function ws_back_to_form() {
+	goto_step(3);
+}
+
+
+function ws_show_school_detail(key) {
+	let v									= ws_find_in_candidates(key) ||
+											  ws_data.my_list.find(function(x){return ws_vkey(x) === key;});
+	if (!v) return;
+
+	/* 如果还没拿到 history，动态调 enrich API */
+	if (!v.history || Object.keys(v.history).length === 0) {
+		ws_render_school_modal(v, key, true);		/* 先渲染加载中 */
+		$.ajax({
+			url:		'/api/enrich_volunteers',
+			method:		'POST',
+			contentType: 'application/json',
+			data:		JSON.stringify({
+				volunteers:		[v],
+				user_rank:		(api_result_96 && api_result_96.rank) || 0,
+				user_score:		form_data.score || 0
+			}),
+			success: function(res){
+				if (res.enriched && res.enriched[0]) {
+					let enriched				= res.enriched[0];
+					/* 合并回原对象（保留原有字段） */
+					Object.assign(v, enriched);
+					ws_render_school_modal(v, key, false);
+				}
+			},
+			error: function(){
+				ws_render_school_modal(v, key, false);
+			}
+		});
+		return;
+	}
+	ws_render_school_modal(v, key, false);
+}
+
+
+function ws_render_school_modal(v, key, loading) {
+
+	let school_name							= v.school_name || '';
+	let search_url							= 'https://www.baidu.com/s?wd=' + encodeURIComponent(school_name + ' 官网');
+
+	let html								= '';
+	html								+= '<div style="padding:14px;border-bottom:1px solid #E5DDD0;display:flex;align-items:center;justify-content:space-between;">';
+	html								+= '  <div>';
+	html								+= '    <div style="font-size:16px;font-weight:700;color:#1A1A1A;">' + escape_html(school_name) + '</div>';
+	html								+= '    <div style="font-size:11px;color:#999;margin-top:2px;">' + escape_html(v.school_tier || '') + ' · ' + escape_html(v.school_city || v.school_nature || '') + '</div>';
+	html								+= '  </div>';
+	html								+= '  <button onclick="ws_close_school_modal()" style="background:none;border:none;font-size:22px;color:#999;cursor:pointer;">×</button>';
+	html								+= '</div>';
+
+	html								+= '<div style="padding:14px;">';
+	html								+= '  <div style="font-size:12px;font-weight:700;color:#8B6914;margin-bottom:8px;">📊 历年录取情况</div>';
+	html								+= '  <div style="background:#FDF8F0;border-radius:8px;padding:10px;font-size:11px;line-height:1.8;">';
+
+	let hist								= v.history || {};
+	let has_2025							= !!(hist['2025'] && hist['2025'].min_rank);
+	let has_2024							= !!(hist['2024'] && hist['2024'].min_rank);
+	let has_2023							= !!(hist['2023'] && hist['2023'].min_rank);
+	let any_year							= has_2025 || has_2024 || has_2023;
+
+	/* 推断 "新设" 年份：最早出现的年份 */
+	let first_year							= has_2023 ? 2023 : (has_2024 ? 2024 : (has_2025 ? 2025 : 0));
+
+	['2025','2024','2023'].forEach(function(y){
+		let h								= hist[y] || {};
+		if (h.min_rank) {
+			html						+= '    <div class="flex justify-between"><span>' + y + ' 年：</span><strong>' + (h.min_score ? h.min_score + ' 分 · ' : '') + h.min_rank.toLocaleString() + ' 名 · 招 ' + (h.plan_count||'-') + ' 人</strong></div>';
+		}
+		else if (any_year) {
+			/* 有其他年份但此年无 → 诚实标注 */
+			let note						= '';
+			let yn								= parseInt(y);
+
+			if (first_year === 2025 && yn < 2025) {
+				note						= '该专业 2025 年新设，无往年数据';
+			}
+			else if (first_year === 2024 && yn === 2023) {
+				note						= '该专业 2024 年新设，无 2023 数据';
+			}
+			else if (has_2023 && has_2025 && yn === 2024) {
+				note						= '该年度此专业未招生';
+			}
+			else {
+				note						= '无数据';
+			}
+
+			html						+= '    <div class="flex justify-between" style="opacity:0.6;"><span>' + y + ' 年：</span><span style="color:#999;font-style:italic;font-size:10px;">ℹ️ ' + note + '</span></div>';
+		}
+	});
+
+	if (loading) {
+		html							+= '    <div style="text-align:center;color:#999;padding:10px;">加载中 <span class="animate-pulse">...</span></div>';
+	}
+	else if (!any_year) {
+		html							+= '    <div style="text-align:center;color:#999;padding:10px;font-size:11px;">ℹ️ 暂无历年数据（该专业可能为 2025 新增 · 或名称变更后无法匹配）</div>';
+	}
+	html								+= '  </div>';
+	html								+= '  <div class="flex items-center justify-between mt-3 p-2" style="background:#FAFAF7;border-radius:6px;">';
+	html								+= '    <div><div class="text-[10px] text-muted">专业</div><div class="text-[12px] font-bold">' + escape_html(v.group_name||'') + '</div></div>';
+	html								+= '    <div style="background:#C9A96E;color:white;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700;">概率 ' + (v.prob||0) + '%</div>';
+	html								+= '  </div>';
+
+	if (v.subject_require) {
+		html							+= '  <div style="margin-top:10px;font-size:11px;color:#666;background:#FEF3C7;padding:8px;border-radius:6px;"><strong>选考要求：</strong>' + escape_html(v.subject_require) + '</div>';
+	}
+
+	html								+= '  <div style="margin-top:16px;font-size:12px;font-weight:700;color:#8B6914;margin-bottom:8px;">🔗 更多信息</div>';
+	html								+= '  <a href="' + search_url + '" target="_blank" style="display:block;text-align:center;padding:10px;background:#FDF8F0;border:1px dashed #C9A96E;border-radius:8px;color:#8B6914;font-size:12px;text-decoration:none;">🔍 在百度搜索"' + escape_html(school_name) + '"官网</a>';
+	html								+= '  <div style="margin-top:6px;font-size:10px;color:#999;text-align:center;">（学校详细信息页即将上线 · 当前使用百度搜索辅助查询）</div>';
+
+	html								+= '  <div style="margin-top:20px;display:flex;gap:8px;">';
+	let in_list								= ws_data.my_list.some(function(x){return ws_vkey(x) === key;});
+	if (in_list) {
+		html							+= '    <button onclick="ws_remove_from_list(\'' + key + '\'); ws_close_school_modal();" style="flex:1;padding:10px;background:#FEECEC;color:#C94A4A;border:1px solid #FCA5A5;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">✗ 从志愿表移除</button>';
+	} else {
+		html							+= '    <button onclick="ws_add_to_list(\'' + key + '\'); ws_close_school_modal();" style="flex:1;padding:10px;background:#C9A96E;color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">+ 加入志愿表</button>';
+	}
+	html								+= '    <button onclick="ws_close_school_modal()" style="padding:10px 18px;background:white;color:#666;border:1px solid #E5DDD0;border-radius:8px;font-size:12px;cursor:pointer;">关闭</button>';
+	html								+= '  </div>';
+	html								+= '</div>';
+
+	$('#ws_school_modal_content').html(html);
+	$('#ws_school_modal').css('display', 'flex');
+}
+
+
+function ws_close_school_modal() {
+	$('#ws_school_modal').css('display', 'none');
+}
+
+
+/* ============ 家长深度报告（同步版 · 6 板块）============ */
+function ws_show_parent_report() {
+	/* 加载中：动画进度条 + elapsed 计数 */
+	let start_time							= Date.now();
+	let animation_id						= null;
+	let update_loading						= function() {
+		let elapsed							= Math.round((Date.now() - start_time) / 1000);
+		let pct								= Math.min(95, Math.round(elapsed / 22 * 100));
+		let label;
+		if (elapsed < 5)		label		= '📋 载入考生画像';
+		else if (elapsed < 10)	label		= '🧠 Claude 4.5 深度推理';
+		else if (elapsed < 18)	label		= '✍️ 生成 6 板块报告';
+		else					label		= '🎯 精细化校对';
+		let html							=
+			'<div style="padding:40px 20px;text-align:center;">' +
+			'  <div style="font-size:32px;margin-bottom:8px;">📖</div>' +
+			'  <div style="font-size:14px;font-weight:700;color:#1A1A1A;margin-bottom:4px;">正在生成家长深度报告</div>' +
+			'  <div style="font-size:12px;color:#8B6914;margin-bottom:4px;">' + label + '</div>' +
+			'  <div style="font-size:10px;color:#999;margin-bottom:18px;">' + elapsed + ' 秒 · Claude Sonnet 4.5 · 预计 15-22 秒</div>' +
+			'  <div style="width:240px;height:6px;background:#E5DDD0;border-radius:3px;overflow:hidden;margin:0 auto;">' +
+			'    <div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#C9A96E,#8B6914);transition:width 0.5s ease;"></div>' +
+			'  </div>' +
+			'  <button onclick="ws_close_parent_report()" style="display:block;margin:18px auto 0;padding:6px 16px;background:white;border:1px solid #E5DDD0;border-radius:6px;font-size:11px;color:#666;cursor:pointer;">取消</button>' +
+			'</div>';
+		$('#ws_parent_report_content').html(html);
+	};
+	update_loading();
+	animation_id							= setInterval(update_loading, 1000);
+	$('#ws_parent_report_modal').css('display', 'flex').data('anim_id', animation_id);
+
+	/* 同步调用 Claude 深度报告 */
+	let top_picks							= (ws_data.my_list.length > 0 ? ws_data.my_list : (ws_data.pool || [])).slice(0, 10);
+
+	$.ajax({
+		url:			'https://me-offer-report.vercel.app/api/parent_report',
+		method:			'POST',
+		contentType:	'application/json',
+		data:			JSON.stringify({
+			score:			form_data.score,
+			rank:			form_data.rank || 0,
+			subjects:		form_data.subjects,
+			cities:			form_data.cities,
+			majors:			form_data.majors,
+			personality:	form_data.personality,
+			hobbies:		form_data.hobbies,
+			strengths:		form_data.strengths,
+			talents:		form_data.talents,
+			health:			form_data.health,
+			level:			form_data.level,
+			budget:			form_data.budget,
+			remote:			form_data.remote,
+			sino:			form_data.sino,
+			volunteers:		top_picks
+		}),
+		timeout:		90000,
+		success: function(r) {
+			clearInterval(animation_id);
+			if (r && r.parent_report) {
+				api_result_deep				= Object.assign({}, api_result_deep || {}, { parent_report: r.parent_report, source: r.source });
+				ws_render_parent_report(r.parent_report, r.source);
+			} else {
+				ws_render_parent_report_error('返回异常，请重试');
+			}
+		},
+		error: function(xhr, status) {
+			clearInterval(animation_id);
+			ws_render_parent_report_error(status === 'timeout' ? 'AI 推理超时，请稍后重试' : '网络异常，请检查连接');
+		}
+	});
+}
+
+
+function ws_close_parent_report() {
+	$('#ws_parent_report_modal').css('display', 'none');
+	if (parent_report_poll_timer) {
+		clearTimeout(parent_report_poll_timer);
+		parent_report_poll_timer			= null;
+	}
+}
+
+
+function ws_render_parent_report_error(msg) {
+	let html								=
+		'<div style="padding:40px 20px;text-align:center;">' +
+		'  <div style="font-size:32px;margin-bottom:10px;">⚠️</div>' +
+		'  <div style="font-size:14px;font-weight:700;color:#C94A4A;margin-bottom:6px;">报告生成失败</div>' +
+		'  <div style="font-size:12px;color:#8A8A8A;margin-bottom:20px;">' + msg + '</div>' +
+		'  <button onclick="ws_show_parent_report()" style="padding:8px 20px;background:#C9A96E;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;margin-right:8px;">🔄 重试</button>' +
+		'  <button onclick="ws_close_parent_report()" style="padding:8px 20px;background:white;border:1px solid #E5DDD0;border-radius:6px;font-size:12px;color:#666;cursor:pointer;">关闭</button>' +
+		'</div>';
+	$('#ws_parent_report_content').html(html);
+}
+
+
+function ws_render_parent_report(r, source) {
+	let badge								= source === 'claude-sonnet-4-5'
+		? '<span style="background:#16A34A;color:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">✨ Claude 4.5</span>'
+		: '<span style="background:#999;color:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">规则版</span>';
+
+	let html								= '';
+	/* Header */
+	html									+=
+		'<div style="padding:18px 22px;border-bottom:1px solid #E5DDD0;background:linear-gradient(135deg,#FDF8F0,#F5EAD5);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;">' +
+		'  <div>' +
+		'    <div style="font-size:15px;font-weight:700;color:#1A1A1A;">📖 家长深度剖析报告</div>' +
+		'    <div style="font-size:10px;color:#8A8A8A;margin-top:2px;">' + form_data.score + ' 分 · 位次 ' + (form_data.rank || '-').toLocaleString() + ' · 物化生 &nbsp; ' + badge + '</div>' +
+		'  </div>' +
+		'  <button onclick="ws_close_parent_report()" style="background:none;border:none;font-size:22px;color:#999;cursor:pointer;padding:0 4px;">&times;</button>' +
+		'</div>';
+
+	/* Body · 8 板块 */
+	html									+= '<div style="padding:18px 22px;">';
+
+	/* ① 考生画像速览 */
+	if (r.profile_summary) {
+		html								+= section('🎯 ① 考生画像速览') + para(r.profile_summary);
+	}
+
+	/* ② 96 志愿编排 */
+	if (r.plan_narrative) {
+		html								+= section('🎯 ② 为你精心编排的 96 志愿') + para(r.plan_narrative);
+	}
+
+	/* ③ 匹配解读 */
+	if (r.match_insights && r.match_insights.length > 0) {
+		html								+= section('🎯 ③ 性格 × 专业 匹配解读');
+		html								+= '<div style="background:white;border-radius:8px;padding:12px 14px;border:1px solid #E5DDD0;">';
+		r.match_insights.forEach(function(item, i) {
+			html							+= '<div style="font-size:12.5px;line-height:1.7;color:#1A1A1A;' + (i > 0 ? 'margin-top:10px;padding-top:10px;border-top:1px dashed #E5DDD0;' : '') + '">' + escape_html(item) + '</div>';
+		});
+		html								+= '</div>';
+	}
+
+	/* ④ 风险雷达 */
+	if (r.risk_radar && r.risk_radar.length > 0) {
+		html								+= section('🎯 ④ 5 项长期风险雷达');
+		html								+= '<div style="background:#FEECEC;border-radius:8px;padding:12px 14px;border:1px solid #FCA5A5;">';
+		r.risk_radar.forEach(function(item, i) {
+			html							+= '<div style="font-size:12px;line-height:1.7;color:#1A1A1A;' + (i > 0 ? 'margin-top:8px;padding-top:8px;border-top:1px dashed #FCA5A5;' : '') + '">' + escape_html(item) + '</div>';
+		});
+		html								+= '</div>';
+	}
+
+	/* ⑤ 4 年后画像预判 */
+	if (r.future_prediction) {
+		let fp								= r.future_prediction;
+		html								+= section('🎯 ⑤ 4 年后画像预判');
+		if (fp.narrative) html				+= para(fp.narrative);
+		if (fp.paths && fp.paths.length > 0) {
+			html							+= '<div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid #E5DDD0;margin-bottom:10px;">';
+			fp.paths.forEach(function(p) {
+				html						+= '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:12px;line-height:1.6;border-bottom:1px dashed #F3E8D8;">' +
+					'  <div style="min-width:100px;font-weight:600;color:#8B6914;">' + escape_html(p.label || '') + '</div>' +
+					'  <div style="min-width:55px;color:#C94A4A;font-weight:700;">' + escape_html(p.prob || '') + '</div>' +
+					'  <div style="color:#666;flex:1;">' + escape_html(p.detail || '') + '</div>' +
+					'</div>';
+			});
+			html							+= '</div>';
+		}
+		if (fp.income_range) {
+			html							+= '<div style="background:#FDF8F0;border-left:3px solid #C9A96E;padding:10px 14px;font-size:12px;line-height:1.6;color:#1A1A1A;"><strong>💰 收入预判：</strong>' + escape_html(fp.income_range) + '</div>';
+		}
+	}
+
+	/* ⑥ 父母投入预估 */
+	if (r.parent_investment) {
+		let pi								= r.parent_investment;
+		html								+= section('🎯 ⑥ 父母投入预估（10 年总账）');
+		if (pi.summary) html				+= para(pi.summary);
+		if (pi.items && pi.items.length > 0) {
+			html							+= '<div style="background:white;border-radius:8px;padding:8px 14px;border:1px solid #E5DDD0;margin-bottom:10px;">';
+			pi.items.forEach(function(it) {
+				html						+= '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:12px;border-bottom:1px dashed #F3E8D8;">' +
+					'  <div style="flex:1;color:#1A1A1A;">' + escape_html(it.label || '') + '</div>' +
+					'  <div style="color:#8A8A8A;font-size:10px;">' + escape_html(it.amount || '') + '</div>' +
+					'  <div style="min-width:80px;text-align:right;color:#C94A4A;font-weight:700;">' + escape_html(it.total || '') + '</div>' +
+					'</div>';
+			});
+			html							+= '</div>';
+		}
+		if (pi.grand_total) {
+			html							+= '<div style="background:linear-gradient(135deg,#FDF8F0,#F5EAD5);border:1px solid #C9A96E;border-radius:8px;padding:12px 14px;font-size:13px;font-weight:700;color:#8B1A1A;text-align:center;">' + escape_html(pi.grand_total) + '</div>';
+		}
+	}
+
+	/* ⑦ 同分段竞争对手画像 */
+	if (r.peer_comparison) {
+		let pc								= r.peer_comparison;
+		html								+= section('🎯 ⑦ 同分段竞争对手画像');
+		if (pc.summary) html				+= para(pc.summary);
+		if (pc.typical_peers && pc.typical_peers.length > 0) {
+			html							+= '<div style="background:white;border-radius:8px;padding:10px 14px;border:1px solid #E5DDD0;margin-bottom:10px;">';
+			pc.typical_peers.forEach(function(p, i) {
+				html						+= '<div style="display:flex;gap:8px;padding:6px 0;font-size:12px;line-height:1.6;' + (i > 0 ? 'border-top:1px dashed #F3E8D8;' : '') + '">' +
+					'  <div style="min-width:20px;color:#8B6914;font-weight:700;">' + (i + 1) + '.</div>' +
+					'  <div style="color:#1A1A1A;flex:1;">' + escape_html(p) + '</div>' +
+					'</div>';
+			});
+			html							+= '</div>';
+		}
+		if (pc.your_edge) {
+			html							+= '<div style="background:#F0FDF4;border-left:3px solid #16A34A;padding:10px 14px;font-size:12.5px;line-height:1.7;color:#1A1A1A;"><strong>✨ 你的差异化优势：</strong>' + escape_html(pc.your_edge) + '</div>';
+		}
+	}
+
+	/* ⑧ 给家长的 3 条心态建议 */
+	if (r.parent_tips && r.parent_tips.length > 0) {
+		html								+= section('🎯 ⑧ 给家长的心态建议');
+		html								+= '<div style="background:white;border-radius:8px;padding:14px 16px;border:1px solid #E5DDD0;">';
+		r.parent_tips.forEach(function(tip, i) {
+			html							+= '<div style="font-size:12.5px;line-height:1.8;color:#1A1A1A;' + (i > 0 ? 'margin-top:12px;padding-top:12px;border-top:1px dashed #E5DDD0;' : '') + '">' + escape_html(tip) + '</div>';
+		});
+		html								+= '</div>';
+	}
+
+	/* 免责声明 */
+	html									+=
+		'<div style="margin-top:24px;padding:12px;background:#FAFAF7;border-radius:6px;font-size:10px;line-height:1.7;color:#8A8A8A;">' +
+		'<strong>免责声明：</strong>本报告基于 Claude Sonnet 4.5 深度推理生成，融合了考生完整画像、96 志愿投档数据、行业洞察。报告为个性化决策参考，<strong>不构成录取承诺</strong>，最终以山东省教育招生考试院官方为准。' +
+		'</div>';
+
+	/* 底部按钮 */
+	html									+=
+		'<div style="margin-top:16px;display:flex;gap:8px;">' +
+		'  <button onclick="window.print()" style="flex:1;padding:10px;background:white;border:1px solid #C9A96E;color:#8B6914;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">🖨 打印报告</button>' +
+		'  <button onclick="ws_close_parent_report()" style="flex:1;padding:10px;background:#C9A96E;color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">关闭</button>' +
+		'</div>';
+
+	html									+= '</div>';
+
+	$('#ws_parent_report_content').html(html);
+
+	/* 辅助函数定义在局部 */
+	function section(title) {
+		return '<div style="margin-top:18px;margin-bottom:10px;font-size:13px;font-weight:700;color:#8B1A1A;">' + title + '</div>';
+	}
+	function para(text) {
+		return '<div style="font-size:12.5px;line-height:1.8;color:#1A1A1A;margin-bottom:10px;padding:10px 14px;background:white;border-radius:8px;border:1px solid #E5DDD0;">' + escape_html(text) + '</div>';
+	}
+}
+
+
+/* 跨平台 PDF 保存（iOS / 安卓 / 微信 / WPS 都兼容）
+   - PC：正常下载
+   - 移动端：新开窗口，用户长按保存 / 分享到 WPS */
+function ws_save_pdf_crossplatform(pdf, filename) {
+	let ua									= navigator.userAgent || '';
+	let is_mobile							= /Android|iPhone|iPad|iPod|HarmonyOS|MicroMessenger/i.test(ua);
+	let is_wechat							= /MicroMessenger/i.test(ua);
+
+	if (!is_mobile) {
+		/* PC 桌面版：直接下载 */
+		try { pdf.save(filename); } catch (e) { alert('下载失败：' + e.message); }
+		return;
+	}
+
+	/* 移动端：用 Blob + 新窗口展示 PDF，用户长按保存 */
+	try {
+		let blob							= pdf.output('blob');
+		let blob_url						= URL.createObjectURL(blob);
+
+		if (is_wechat) {
+			/* 微信内：打不开 blob:，提示用户在浏览器里打开 */
+			let html						=
+				'<div style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;color:white;font-family:system-ui;">' +
+				'<div style="background:#fff;color:#333;border-radius:12px;padding:20px;max-width:340px;text-align:center;">' +
+				'<div style="font-size:32px;margin-bottom:8px;">📱</div>' +
+				'<div style="font-size:15px;font-weight:700;margin-bottom:10px;">微信不支持直接下载 PDF</div>' +
+				'<div style="font-size:12px;color:#666;line-height:1.6;margin-bottom:16px;text-align:left;">请按以下步骤：<br>1. 点右上角 <strong>···</strong> <br>2. 选 <strong>"在浏览器打开"</strong><br>3. 回到此页，再点"下载 PDF"</div>' +
+				'<button onclick="this.parentNode.parentNode.remove()" style="width:100%;padding:10px;background:#C9A96E;color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">我知道了</button>' +
+				'</div></div>';
+			$('body').append(html);
+			URL.revokeObjectURL(blob_url);
+			return;
+		}
+
+		/* 华为 / 安卓浏览器 / Safari：新开一个 tab 让用户保存 */
+		let a								= document.createElement('a');
+		a.href								= blob_url;
+		a.download							= filename;
+		a.target							= '_blank';
+		a.rel								= 'noopener';
+		document.body.appendChild(a);
+		a.click();
+		setTimeout(function() {
+			document.body.removeChild(a);
+			URL.revokeObjectURL(blob_url);
+		}, 3000);
+
+		/* 额外提示 */
+		show_toast('📥 PDF 已打开新窗口，长按可保存到相册/文件', 5000);
+	}
+	catch (e) {
+		alert('PDF 下载失败：' + e.message + '\n\n建议：请在手机浏览器（Chrome/Safari/华为浏览器）里打开此页面，不要在微信里打开。');
+	}
+}
+
+
+function ws_save_to_local() {
+	try {
+		let key								= 'meoffer_ws_' + (form_data.score || 0) + '_' + ((form_data.subjects||[]).sort().join('_'));
+		localStorage.setItem(key, JSON.stringify({
+			my_list:	ws_data.my_list,
+			saved_at:	Date.now()
+		}));
+		$('#ws_save_status').text('💾 已保存 ' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}));
+	} catch (e) { /* silent */ }
+
+	/* 登录了就顺便云端保存（防抖：1.5 秒内多次调用只保存一次） */
+	if (meoffer_is_logged_in()) {
+		clearTimeout(window._ws_cloud_save_timer);
+		window._ws_cloud_save_timer			= setTimeout(ws_save_to_cloud, 1500);
+	}
+}
+
+
+/* ============ C 端客户后台 · 登录 & 云端方案 ============ */
+const MEOFFER_AUTH_KEY						= 'meoffer_auth';
+let current_cloud_plan_id					= null;		// 当前加载的云端方案 ID（如果有）
+
+function meoffer_get_token() {
+	try {
+		let obj								= JSON.parse(localStorage.getItem(MEOFFER_AUTH_KEY) || '{}');
+		return obj.token || '';
+	} catch(e) { return ''; }
+}
+
+function meoffer_is_logged_in() {
+	return !!meoffer_get_token();
+}
+
+function meoffer_get_user() {
+	try {
+		return JSON.parse(localStorage.getItem(MEOFFER_AUTH_KEY) || '{}');
+	} catch(e) { return {}; }
+}
+
+function meoffer_auth_headers() {
+	return {
+		'Content-Type':		'application/json',
+		'Authorization':	'Bearer ' + meoffer_get_token()
+	};
+}
+
+/* 自动保存到云端 */
+function ws_save_to_cloud() {
+	if (!meoffer_is_logged_in()) return;
+	if (ws_data.my_list.length === 0) return;
+
+	let body								= {
+		plan_id:		current_cloud_plan_id,
+		plan_name:		(form_data.score || '-') + ' 分方案',
+		score:			form_data.score,
+		rank:			api_result_96 ? api_result_96.rank : 0,
+		province:		form_data.province || 'shandong',
+		subjects:		form_data.subjects,
+		form_data:		form_data,
+		volunteers:		ws_data.my_list,
+		deep_report:	api_result_deep ? api_result_deep.parent_report : null,
+		status:			'draft'
+	};
+
+	$.ajax({
+		url:			'/api/plans/save',
+		method:			'POST',
+		contentType:	'application/json',
+		headers:		{ 'Authorization': 'Bearer ' + meoffer_get_token() },
+		data:			JSON.stringify(body),
+		success: function(r) {
+			if (r.plan_id) {
+				current_cloud_plan_id		= r.plan_id;
+				$('#ws_save_status').html('☁️ 已云端保存 · <a href="dashboard.html" style="color:#8B6914;text-decoration:underline;">我的方案</a>');
+			}
+		}
+	});
+}
+
+
+/* 从云端恢复方案（URL 参数 ?restore=123 触发） */
+function ws_restore_from_cloud_if_needed() {
+	let params								= new URLSearchParams(window.location.search);
+	let plan_id								= params.get('restore');
+	if (!plan_id) return false;
+	if (!meoffer_is_logged_in()) {
+		alert('请先登录才能恢复云端方案');
+		window.location.href = 'dashboard.html';
+		return false;
+	}
+
+	$.ajax({
+		url:			'/api/plans/load?plan_id=' + encodeURIComponent(plan_id),
+		method:			'GET',
+		headers:		{ 'Authorization': 'Bearer ' + meoffer_get_token() },
+		success: function(r) {
+			if (!r.plan) { alert('方案不存在'); return; }
+			let p							= r.plan;
+			/* 恢复 form_data */
+			if (p.form_data && typeof p.form_data === 'object') {
+				Object.assign(form_data, p.form_data);
+			}
+			form_data.score					= p.score;
+			form_data.subjects				= p.subjects;
+			/* 恢复 96 志愿（直接塞到 ws_data） */
+			if (p.volunteers && p.volunteers.length > 0) {
+				ws_data.my_list				= p.volunteers.slice();
+			}
+			if (p.deep_report) {
+				api_result_deep				= Object.assign({}, api_result_deep || {}, { parent_report: p.deep_report });
+			}
+			current_cloud_plan_id			= p.plan_id;
+			/* 直接进入工作台 · 跳过填表 */
+			show_toast && show_toast('☁️ 已从云端恢复方案', 2500);
+			setTimeout(function() {
+				show_workspace();
+				$('#ws_save_status').html('☁️ 已恢复云端方案 · <a href="dashboard.html" style="color:#8B6914;text-decoration:underline;">我的方案</a>');
+			}, 500);
+		},
+		error: function() {
+			alert('方案加载失败');
+		}
+	});
+	return true;
+}
+
+
+function ws_load_from_local() {
+	try {
+		let key								= 'meoffer_ws_' + (form_data.score || 0) + '_' + ((form_data.subjects||[]).sort().join('_'));
+		let stored							= localStorage.getItem(key);
+		if (!stored) return;
+		let data							= JSON.parse(stored);
+		if (data && data.my_list && data.my_list.length > 0) {
+			/* 只恢复 AI 候选池里存在的条目（防止 key 变化后数据失效） */
+			let cand_keys					= new Set(ws_data.candidates.map(function(v){return ws_vkey(v);}));
+			let restored					= data.my_list.filter(function(v){ return cand_keys.has(ws_vkey(v)); });
+			if (restored.length > 0) {
+				ws_data.my_list				= restored;
+				$('#ws_save_status').text('💾 已恢复上次方案（' + restored.length + ' 志愿）');
+			}
+		}
+	} catch (e) { /* silent */ }
+}
+
+
+function ws_download_pdf() {
+	if (ws_data.my_list.length === 0) {
+		alert('请先添加志愿再下载');
+		return;
+	}
+
+	/* 若 api_result_deep 里还没有 parent_report，先拉一次（PDF 里插入报告页用）
+	   如果已经有则直接进入 PDF 流程；如果拉取失败也不阻塞 PDF 生成 */
+	let need_fetch_report					= !(api_result_deep && api_result_deep.parent_report);
+
+	let proceed_pdf							= function() {
+		let saved_96						= api_result_96;
+		api_result_96						= Object.assign({}, api_result_96, {volunteers: ws_data.my_list});
+		generate_pdf('WS_' + Date.now());
+		setTimeout(function(){ api_result_96 = saved_96; }, 100);
+	};
+
+	if (need_fetch_report) {
+		show_toast('📖 正在生成深度报告页（约 20 秒）...', 35000);
+		$.ajax({
+			url:			'https://me-offer-report.vercel.app/api/parent_report',
+			method:			'POST',
+			contentType:	'application/json',
+			data:			JSON.stringify({
+				score:			form_data.score,
+				rank:			form_data.rank || 0,
+				subjects:		form_data.subjects,
+				cities:			form_data.cities,
+				majors:			form_data.majors,
+				personality:	form_data.personality,
+				hobbies:		form_data.hobbies,
+				strengths:		form_data.strengths,
+				talents:		form_data.talents,
+				health:			form_data.health,
+				level:			form_data.level,
+				budget:			form_data.budget,
+				remote:			form_data.remote,
+				sino:			form_data.sino,
+				volunteers:		ws_data.my_list.slice(0, 10)
+			}),
+			timeout:		90000,
+			complete: function(xhr) {
+				try {
+					let r					= xhr.responseJSON;
+					if (r && r.parent_report) {
+						api_result_deep		= Object.assign({}, api_result_deep || {}, { parent_report: r.parent_report, source: r.source });
+					}
+				} catch (e) {}
+				proceed_pdf();
+			}
+		});
+	} else {
+		proceed_pdf();
+	}
 }
 </script>
 

@@ -1,7 +1,8 @@
-// Me Offer · 富化 96 志愿数据（为 PDF 导出提供完整字段）
+// Me Offer · 富化 96 志愿数据（掌上高考风格 · 三年横向对比）
 // POST /api/enrich_volunteers
-// body: { volunteers: [{school_name, group_name, min_rank, plan_count, ...}] }
-// Returns: { enriched: [{...original, school_code_5digit, min_score_2024, tuition, career_path, study_years}] }
+// body: { volunteers: [...], user_rank, user_score }
+// Returns: 每条志愿带 history: { "2025": plan, "2024": {...}, "2023": {...} }
+//         以及 "比我位次 / 比我分数 / 等效分" 三个派生字段
 
 export async function onRequestPost(context) {
 	const request							= context.request;
@@ -15,6 +16,9 @@ export async function onRequestPost(context) {
 	}
 
 	const vols								= body.volunteers || [];
+	const user_rank							= parseInt(body.user_rank) || 0;
+	const user_score						= parseInt(body.user_score) || 0;
+
 	if (vols.length === 0) {
 		return json_response({error: 'no volunteers'}, 400);
 	}
@@ -84,31 +88,113 @@ export async function onRequestPost(context) {
 		}
 	}
 
-	// 3. 批量查 2024 年最低分（用 min_rank 反查 2024 一分一段表）
-	const ranks_2024						= new Map();
-	const unique_ranks						= Array.from(new Set(vols.map(v => v.min_rank).filter(x => x > 0)));
+	// 3. 批量查 2023/2024/2025 三年数据 —— 降级匹配（21%→55-65%）
+	//    拉取每所学校的全部 group 候选 → 在代码里做 4 层降级匹配：
+	//    L1 精确 code 匹配      L2 group_name 完全相同
+	//    L3 group_name 前缀相同  L4 group_name LIKE 主题词
+	const school_codes						= Array.from(new Set(vols.map(v => v.school_code).filter(Boolean)));
+	/* school_year_rows[school_code][year] = [row, row, ...]（候选池，降级匹配时查找） */
+	const school_year_rows					= new Map();
 
-	for (const rank of unique_ranks) {
-		const seg							= await env.DB.prepare(`
-			SELECT score FROM gaokao_segments
-			WHERE year = 2024 AND subject_type = 'total' AND rank >= ?
-			ORDER BY rank ASC LIMIT 1
-		`).bind(rank).first();
+	if (school_codes.length > 0) {
+		const placeholders					= school_codes.map(() => '?').join(',');
+		const hist_query					= await env.DB.prepare(`
+			SELECT year, school_code, group_code, group_name, min_score, min_rank, plan_count
+			FROM gaokao_scores
+			WHERE year IN (2023, 2024, 2025) AND province = 'shandong'
+			  AND school_code IN (${placeholders})
+		`).bind(...school_codes).all();
 
-		ranks_2024.set(rank, seg ? seg.score : null);
+		for (const row of hist_query.results || []) {
+			if (!school_year_rows.has(row.school_code)) {
+				school_year_rows.set(row.school_code, { 2023: [], 2024: [], 2025: [] });
+			}
+			const buckets					= school_year_rows.get(row.school_code);
+			if (buckets[row.year]) buckets[row.year].push(row);
+		}
 	}
 
-	// 4. 富化每条志愿
+	// 4. 一分一段表（2023/2024/2025）用于等效分换算 + min_score 反查
+	const segments							= {2023: [], 2024: [], 2025: []};
+	for (const year of [2023, 2024, 2025]) {
+		const seg_rows						= await env.DB.prepare(`
+			SELECT score, rank FROM gaokao_segments
+			WHERE year = ? AND subject_type = 'total' AND province = 'shandong'
+			ORDER BY rank ASC
+		`).bind(year).all();
+		segments[year]						= seg_rows.results || [];
+	}
+
+	// 5. 富化每条志愿
 	const enriched							= vols.map(v => {
 		const major_info					= major_info_map.get(v.group_name);
 		const code_5						= school_codes_map.get(v.school_name) || '';
-		const min_score_2024				= ranks_2024.get(v.min_rank);
+
+		/* 三年数据 · 带派生字段 · 4 层降级匹配 */
+		const history						= {};
+		const v_eff_code					= get_effective_group_code(v.group_code, v.group_name);
+		const v_clean_name					= clean_group_name(v.group_name);
+		const school_buckets				= school_year_rows.get(v.school_code);
+
+		for (const year of [2023, 2024, 2025]) {
+			const candidates				= school_buckets ? school_buckets[year] : null;
+			const matched					= match_history_row(candidates, v_eff_code, v.group_name, v_clean_name);
+
+			if (matched) {
+				history[year]				= {
+					year:			matched.year,
+					min_score:		matched.min_score,
+					min_rank:		matched.min_rank,
+					plan_count:		matched.plan_count,
+					group_name:		matched.group_name,
+					match_level:	matched._match_level		/* 调试用：L1=精确 L2=全名 L3=前缀 L4=关键词 */
+				};
+
+				/* min_score 反查：如果 D1 原始数据 min_score 为 null，用 min_rank 反查一分一段表 */
+				if (!history[year].min_score && history[year].min_rank > 0) {
+					const inferred_score	= rank_to_score(history[year].min_rank, segments[year]);
+					if (inferred_score) history[year].min_score = inferred_score;
+				}
+
+				/* 派生字段：比我位次 / 比我分数（2023/2024 有录取数据） */
+				if (year !== 2025 && user_rank > 0 && history[year].min_rank > 0) {
+					const rank_diff			= user_rank - history[year].min_rank;
+					history[year].rank_vs_me	= rank_diff;
+					history[year].rank_label	= rank_diff > 0 ? '靠后' + rank_diff : (rank_diff < 0 ? '靠前' + (-rank_diff) : '持平');
+				}
+				if (year !== 2025 && user_score > 0 && history[year].min_score > 0) {
+					const score_diff		= user_score - history[year].min_score;
+					history[year].score_vs_me	= score_diff;
+					history[year].score_label	= score_diff > 0 ? '高' + score_diff : (score_diff < 0 ? '低' + (-score_diff) : '相等');
+				}
+				/* 等效分：用户位次在 year 年对应什么分数 */
+				if (year !== 2025 && user_rank > 0) {
+					const eq_score			= rank_to_score(user_rank, segments[year]);
+					if (eq_score) history[year].equiv_score	= eq_score;
+				}
+			}
+		}
+
+		/* 回退：如果 history 都没查到（school_code 不匹配），用志愿本身的 min_rank/plan_count 填充最新年 */
+		if (Object.keys(history).length === 0 && v.min_rank) {
+			history[v.year || 2024]			= {
+				min_rank:		v.min_rank,
+				plan_count:		v.plan_count
+			};
+		}
+
+		/* ========= 大小年波动分析（差异化卖点） =========
+		   基于 2023/2024/2025 三年位次计算波动幅度 + 趋势方向 */
+		const volatility					= analyze_volatility(history);
 
 		return {
 			...v,
 			school_code_5digit:				code_5,
-			min_score_2024:					min_score_2024,
-			min_rank_2024:					v.min_rank,
+			history:						history,
+			volatility:						volatility,		/* { level, label, icon, color, trend, explanation } */
+			/* 保留老字段兼容当前 PDF */
+			min_score_2024:					history[2024] ? history[2024].min_score : null,
+			min_rank_2024:					history[2024] ? history[2024].min_rank : v.min_rank,
 			tuition_yuan:					major_info ? major_info.tuition_avg : infer_tuition(v.group_name, v.school_name),
 			study_years:					infer_study_years(v.group_name),
 			career_path:					major_info ? infer_career_path(major_info) : infer_career_from_group(v.group_name),
@@ -121,6 +207,221 @@ export async function onRequestPost(context) {
 		enriched:		enriched,
 		count:			enriched.length
 	});
+}
+
+
+/* ============================================================
+   大小年波动分析：基于 2023/2024/2025 三年位次判定稳定性 + 趋势
+
+   返回结构：
+   {
+     level: 'stable' | 'normal' | 'volatile' | 'unstable',
+     label: '🎯 三年稳定' | '🟢 正常波动' | '🟡 有波动' | '⚠️ 大小年',
+     icon: '🎯' / '🟢' / '🟡' / '⚠️',
+     color: '#16A34A' / '#65A30D' / '#F59E0B' / '#DC2626',
+     trend: 'rising' | 'falling' | 'flat' | 'oscillating',
+     explanation: '近3年位次稳定在25000名' / '2024大年(涨5k),2025或回调'
+   }
+   ============================================================ */
+function analyze_volatility(history) {
+	const ranks								= [];
+	for (const y of [2023, 2024, 2025]) {
+		const h								= history[y];
+		if (h && h.min_rank && h.min_rank > 0) {
+			ranks.push({ year: y, rank: h.min_rank });
+		}
+	}
+
+	/* 数据不足 2 年：无法判断 */
+	if (ranks.length < 2) {
+		return {
+			level:			'unknown',
+			label:			'数据不足',
+			icon:			'—',
+			color:			'#999',
+			trend:			'unknown',
+			explanation:	'历史数据不足，参考性有限'
+		};
+	}
+
+	/* 计算波动幅度（标准差 / 平均 * 100%） */
+	const avg								= ranks.reduce((s, r) => s + r.rank, 0) / ranks.length;
+	const variance							= ranks.reduce((s, r) => s + (r.rank - avg) ** 2, 0) / ranks.length;
+	const std								= Math.sqrt(variance);
+	const volatility_pct					= (std / avg) * 100;
+
+	/* 判断趋势（相邻两年差值） */
+	let trend								= 'flat';
+	let trend_detail						= '';
+	if (ranks.length >= 3) {
+		const diff_23_24					= (ranks[1].rank - ranks[0].rank) / ranks[0].rank;		/* +=位次变高=难度降低 */
+		const diff_24_25					= (ranks[2].rank - ranks[1].rank) / ranks[1].rank;
+
+		if (diff_23_24 > 0.15 && diff_24_25 > 0.15) {
+			trend							= 'falling';		/* 位次持续变大=录取难度下降 */
+			trend_detail					= '连续两年位次下降（分数降温）';
+		}
+		else if (diff_23_24 < -0.15 && diff_24_25 < -0.15) {
+			trend							= 'rising';
+			trend_detail					= '连续两年位次上升（分数走高）';
+		}
+		else if ((diff_23_24 > 0.2 && diff_24_25 < -0.2) || (diff_23_24 < -0.2 && diff_24_25 > 0.2)) {
+			trend							= 'oscillating';
+			trend_detail					= '大小年明显，2024 异于 2023/2025';
+		}
+	}
+	else if (ranks.length === 2) {
+		const diff							= (ranks[1].rank - ranks[0].rank) / ranks[0].rank;
+		if (Math.abs(diff) > 0.2) {
+			trend							= diff > 0 ? 'falling' : 'rising';
+			trend_detail					= `两年位次变化 ${diff > 0 ? '+' : ''}${Math.round(diff * 100)}%`;
+		}
+	}
+
+	/* 分级 */
+	let level, label, icon, color;
+	if (volatility_pct <= 10) {
+		level								= 'stable';
+		label								= '🎯 三年稳定';
+		icon								= '🎯';
+		color								= '#16A34A';
+	}
+	else if (volatility_pct <= 20) {
+		level								= 'normal';
+		label								= '🟢 正常波动';
+		icon								= '🟢';
+		color								= '#65A30D';
+	}
+	else if (volatility_pct <= 30) {
+		level								= 'volatile';
+		label								= '🟡 有波动';
+		icon								= '🟡';
+		color								= '#F59E0B';
+	}
+	else {
+		level								= 'unstable';
+		label								= '⚠️ 大小年';
+		icon								= '⚠️';
+		color								= '#DC2626';
+	}
+
+	const explanation						= `近${ranks.length}年波动${Math.round(volatility_pct)}%${trend_detail ? '·' + trend_detail : ''}`;
+
+	return {
+		level:			level,
+		label:			label,
+		icon:			icon,
+		color:			color,
+		trend:			trend,
+		volatility_pct:	Math.round(volatility_pct),
+		explanation:	explanation
+	};
+}
+
+
+/* 获取有效的专业组代码：
+   - 如果 group_code 非空，直接用
+   - 否则从 group_name 前缀提取（如 "0B智能制造工程" → "0B"）
+   - 都没有则返回 group_name 全名作为 fallback */
+function get_effective_group_code(group_code, group_name) {
+	if (group_code && String(group_code).trim() !== '') return String(group_code).trim();
+	if (!group_name) return '';
+
+	/* 匹配 1-3 位字母或数字 + 后接汉字 */
+	const m									= group_name.match(/^([0-9A-Z]{1,3})([\u4e00-\u9fa5])/);
+	if (m) return m[1];
+
+	return group_name;		/* 最后 fallback：完整名称 */
+}
+
+
+/* 判断两个 group_name 是否相关（用于 L1 精确 code 匹配的名称校验）
+   规则：互相包含 / 前 2-3 字相同 / 至少共享 2 个 2 字关键词
+   返回 true 表示可以认定是同专业 */
+function names_related(a, b) {
+	if (!a || !b) return false;
+	/* 完全相同 */
+	if (a === b) return true;
+	/* 互相包含（一个是另一个的子串，长度 >= 2） */
+	if (a.length >= 2 && b.indexOf(a) >= 0) return true;
+	if (b.length >= 2 && a.indexOf(b) >= 0) return true;
+	/* 前 2 字相同（最宽松的"相关"标准） */
+	if (a.length >= 2 && b.length >= 2 && a.slice(0, 2) === b.slice(0, 2)) return true;
+	/* 其他情况视为不相关（避免跨专业错匹） */
+	return false;
+}
+
+
+/* 4 层降级匹配：在同一 school_code 同一 year 的候选池里找最相似的专业
+   candidates: [{year, school_code, group_code, group_name, min_score, min_rank, plan_count}, ...]
+   v_eff_code:  志愿的 effective_group_code（如 "0H"）
+   v_raw_name:  志愿原始 group_name（如 "0H人工智能" 或 "人工智能"）
+   v_clean:     志愿 clean name（去括号、"类" 等后缀，如 "人工智能"）
+   返回匹配到的 row（带 _match_level 标识 L1-L4）或 null */
+function match_history_row(candidates, v_eff_code, v_raw_name, v_clean) {
+	if (!candidates || candidates.length === 0) return null;
+
+	/* L1: 精确 code 匹配 + group_name 名称校验
+	   原因：山东考试院 group_code 每年会重用，同 code 可能是完全不同专业
+	   解决：同 code 后再验证 group_name 共享至少一个 2 字以上关键词 */
+	if (v_eff_code) {
+		for (const row of candidates) {
+			const row_eff					= get_effective_group_code(row.group_code, row.group_name);
+			if (row_eff === v_eff_code) {
+				/* 验证 group_name 相关（避免跨专业错匹） */
+				const row_clean				= clean_group_name(row.group_name);
+				if (v_clean && row_clean && names_related(v_clean, row_clean)) {
+					return { ...row, _match_level: 'L1' };
+				}
+				/* code 相同但名称完全不相关 → 跳过该 row，继续找 */
+			}
+		}
+	}
+
+	/* L2: group_name 完全相同（去 code 前缀后，专业名一致） */
+	if (v_clean) {
+		for (const row of candidates) {
+			const row_clean					= clean_group_name(row.group_name);
+			if (row_clean && row_clean === v_clean) {
+				return { ...row, _match_level: 'L2' };
+			}
+		}
+	}
+
+	/* L3: group_name 前缀（头 4 个字相同，如 "计算机类" ≈ "计算机科学") */
+	if (v_clean && v_clean.length >= 3) {
+		const prefix						= v_clean.slice(0, Math.min(4, v_clean.length));
+		for (const row of candidates) {
+			const row_clean					= clean_group_name(row.group_name);
+			if (row_clean && row_clean.indexOf(prefix) === 0) {
+				return { ...row, _match_level: 'L3' };
+			}
+		}
+	}
+
+	/* L4: 主题词互相包含（最宽松） */
+	if (v_clean && v_clean.length >= 2) {
+		for (const row of candidates) {
+			const row_clean					= clean_group_name(row.group_name);
+			if (row_clean && (row_clean.indexOf(v_clean) >= 0 || v_clean.indexOf(row_clean) >= 0)) {
+				return { ...row, _match_level: 'L4' };
+			}
+		}
+	}
+
+	return null;
+}
+
+
+/* 在一分一段表里查位次对应的分数（位次越小分数越高） */
+function rank_to_score(rank, segments) {
+	if (!segments || segments.length === 0) return null;
+	/* segments 已按 rank ASC 排序。找第一个 rank >= 目标的 */
+	for (const s of segments) {
+		if (s.rank >= rank) return s.score;
+	}
+	/* 超出最后一个（位次特别靠后），返回最低分 */
+	return segments[segments.length - 1].score;
 }
 
 

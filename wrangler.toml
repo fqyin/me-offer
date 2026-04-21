@@ -6,3 +6,7 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "meoffer-gaokao"
 database_id = "abee2971-12f2-4f09-8c86-8ce1ce604a7b"
+
+[[kv_namespaces]]
+binding = "REPORT_CACHE"
+id = "69500217e8ba48b7aeee78fac43f90bc"

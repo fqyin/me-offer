@@ -42,13 +42,8 @@ export async function onRequestPost(context) {
 		return json_response({error: 'no segment data'}, 500);
 	}
 
-	// 2. 查询候选院校专业组
-	// user_rank 周围区间：
-	// min_rank < user_rank - 6000: 我分显著高于录取线 (保档)
-	// min_rank 在 user_rank -6000 ~ user_rank: 稳档
-	// min_rank 在 user_rank ~ user_rank + 5000: 冲档
-	// min_rank > user_rank + 5000: 偏远冲档（数据价值低）
-	const candidates						= await fetch_candidates(env.DB, Math.max(1, user_rank - 20000), user_rank + 30000, body);
+	// 2. 查询候选院校专业组（传真实 user_rank）
+	const candidates						= await fetch_candidates(env.DB, user_rank, body);
 
 	// 3. 计算录取概率
 	// diff = user_rank - min_rank
@@ -63,30 +58,48 @@ export async function onRequestPost(context) {
 		let tier;
 		let prob;
 
-		if (diff >= -2000 && diff <= 3000) {
-			// 稳：位次差 [-2000, 3000]，概率 50-75%
+		/* ============================================================
+		   概率分层（v3 修复 · 按用户位次百分比动态缩放）
+		   diff = user_rank - school_min_rank
+		   diff 为正 = 用户排名靠后 = 冲
+		   diff 为负 = 用户排名靠前 = 保
+
+		   关键：用 diff / user_rank 做百分比，避免高分段位次差绝对值小被误判
+		   ============================================================ */
+		const diff_pct						= user_rank > 0 ? (diff / user_rank) : 0;		// 相对位次差百分比
+
+		if (diff_pct >= -0.05 && diff_pct <= 0.05) {
+			/* 稳·核心：相对位次差 ±5%，概率 65-85% */
 			tier							= 'wen';
-			if (diff > 0) {
-				// 用户略差 → 50-62%
-				prob						= Math.round(62 - (diff / 3000) * 12);
-			} else {
-				// 用户略好 → 62-75%
-				prob						= Math.round(62 + (-diff / 2000) * 13);
-			}
-		} else if (diff > 3000 && diff <= 10000) {
-			// 冲：用户位次差于录取线 3000~10000，概率 25-40%
+			prob							= Math.round(85 - (Math.abs(diff_pct) / 0.05) * 20);
+		}
+		else if (diff_pct > 0.05 && diff_pct <= 0.15) {
+			/* 稳·边缘：差 +5%~+15%，概率 50-65% */
+			tier							= 'wen';
+			prob							= Math.round(65 - ((diff_pct - 0.05) / 0.10) * 15);
+		}
+		else if (diff_pct > 0.15 && diff_pct <= 0.5) {
+			/* 冲：差 +15%~+50%，概率 40-20%（线性） */
 			tier							= 'chong';
-			prob							= Math.round(40 - ((diff - 3000) / 7000) * 15);
-		} else if (diff > 10000) {
-			// 极冲：差距 > 10000，概率 15-25%
+			prob							= Math.round(40 - ((diff_pct - 0.15) / 0.35) * 20);
+		}
+		else if (diff_pct > 0.5) {
+			/* 极冲：差 > +50%，概率 15-20% */
 			tier							= 'chong';
-			prob							= Math.max(15, Math.round(25 - (diff - 10000) / 2000));
-		} else if (diff < -2000 && diff >= -8000) {
-			// 保：用户位次好于录取线 2000~8000，概率 85-95%
+			prob							= Math.max(15, Math.round(20 - (diff_pct - 0.5) * 10));
+		}
+		else if (diff_pct < -0.05 && diff_pct >= -0.15) {
+			/* 保·边缘：差 -5%~-15%，概率 85-92% */
 			tier							= 'bao';
-			prob							= Math.round(85 + ((-diff - 2000) / 6000) * 10);
-		} else {
-			// diff < -8000 极保，概率 96-98%
+			prob							= Math.round(85 + ((-diff_pct - 0.05) / 0.10) * 7);
+		}
+		else if (diff_pct < -0.15 && diff_pct >= -0.5) {
+			/* 保·稳妥：差 -15%~-50%，概率 92-97% */
+			tier							= 'bao';
+			prob							= Math.round(92 + ((-diff_pct - 0.15) / 0.35) * 5);
+		}
+		else {
+			/* 极保：差 < -50%，概率 98% */
 			tier							= 'bao';
 			prob							= 98;
 		}
@@ -130,6 +143,20 @@ export async function onRequestPost(context) {
 				score_boost					-= 80;		// 明显不相关，重度降权
 			}
 		}
+		else if (c.group_name) {
+			/* 用户没显式选意向专业：用选科组合推理默认大类，降权不相关方向。
+			   物化生没选意向 → 推文学语言/艺术类降权，保持 STEM 主体。 */
+			const default_cats				= infer_default_majors_from_subjects(body.subjects);
+			if (default_cats) {
+				const fake_match				= check_major_match(default_cats, c.group_name);
+				if (fake_match === 'irrelevant') {
+					score_boost					-= 50;		// 轻度降权（用户没明确意向，不能过死）
+				}
+				else if (fake_match === 'match') {
+					score_boost					+= 15;		// 轻度加权
+				}
+			}
+		}
 
 		// 排除不符合的
 		if (body.remote === 'no' && is_remote_area(c.school_name)) {
@@ -150,6 +177,21 @@ export async function onRequestPost(context) {
 			}
 		}
 
+		// ⭐ 性格 × 专业软加权（基于霍兰德职业兴趣理论 · 精简占位版 · 下一阶段由专项矩阵替换）
+		if (c.group_name && body.personality && body.personality.length > 0) {
+			score_boost						+= compute_personality_boost(body.personality, c.group_name);
+		}
+
+		// ⭐ 兴趣 × 专业软加权
+		if (c.group_name && body.hobbies && body.hobbies.length > 0) {
+			score_boost						+= compute_hobby_boost(body.hobbies, c.group_name);
+		}
+
+		// ⭐ 学科特长 × 专业软加权
+		if (c.group_name && body.strengths && body.strengths.length > 0) {
+			score_boost						+= compute_strength_boost(body.strengths, c.group_name);
+		}
+
 		return {
 			school_code:	c.school_code,
 			school_name:	c.school_name,
@@ -167,15 +209,111 @@ export async function onRequestPost(context) {
 	});
 
 	// 4. 按 tier 分组 + 综合分排序 + 取 24/48/24
-	const chong_list						= enriched.filter(x => x.tier === 'chong').sort((a, b) => b.score - a.score);
-	const wen_list							= enriched.filter(x => x.tier === 'wen').sort((a, b) => b.score - a.score);
-	const bao_list							= enriched.filter(x => x.tier === 'bao').sort((a, b) => b.score - a.score);
+	//    ⭐ 用户选了专业意向：匹配 majors 的强制排最前（避免医学意向被其他专业挤掉）
+	const sort_by_major_first				= (list) => {
+		if (!body.majors || body.majors.length === 0) {
+			return list.sort((a, b) => b.score - a.score);
+		}
+		return list.sort((a, b) => {
+			const a_match					= (a.group_name && check_major_match(body.majors, a.group_name) === 'match') ? 1 : 0;
+			const b_match					= (b.group_name && check_major_match(body.majors, b.group_name) === 'match') ? 1 : 0;
+			if (a_match !== b_match) return b_match - a_match;		/* 匹配专业优先 */
+			return b.score - a.score;									/* 同类比综合分 */
+		});
+	};
+
+	let chong_list							= sort_by_major_first(enriched.filter(x => x.tier === 'chong'));
+	let wen_list							= sort_by_major_first(enriched.filter(x => x.tier === 'wen'));
+	let bao_list							= sort_by_major_first(enriched.filter(x => x.tier === 'bao'));
+
+	/* 借档辅助：加入"专业匹配优先"的打分 (match 优先于 diff 接近度)
+	   prefer_direction: 'asc'（borrow to wen from chong, 借低 diff）/ 'desc'（borrow to wen from bao, 借高 diff）
+	   return: 已排序的索引数组（越靠前越优先借） */
+	const rank_by_major_then_diff			= (list, prefer_direction) => {
+		return [...list].sort((a, b) => {
+			if (body.majors && body.majors.length > 0) {
+				const a_match				= (a.group_name && check_major_match(body.majors, a.group_name) === 'match') ? 1 : 0;
+				const b_match				= (b.group_name && check_major_match(body.majors, b.group_name) === 'match') ? 1 : 0;
+				if (a_match !== b_match) return b_match - a_match;
+			}
+			return prefer_direction === 'asc' ? a.diff - b.diff : b.diff - a.diff;
+		});
+	};
+
+	/* 兜底 v5：稳档不足时从冲/保档借（高分段专业池稀疏，清北华五就这么多） */
+	if (wen_list.length < 48) {
+		const need							= 48 - wen_list.length;
+		/* 优先从 chong 借（先匹配专业，再低 diff） */
+		const chong_sorted					= rank_by_major_then_diff(chong_list, 'asc');
+		const take_from_chong				= Math.min(Math.ceil(need / 2), Math.max(0, chong_list.length - 24));
+		for (let i = 0; i < take_from_chong; i++) {
+			const item						= { ...chong_sorted[i], tier: 'wen' };
+			wen_list.push(item);
+			const idx						= chong_list.indexOf(chong_sorted[i]);
+			if (idx !== -1) chong_list.splice(idx, 1);
+		}
+		/* 再从 bao 借（先匹配专业，再高 diff） */
+		const bao_sorted					= rank_by_major_then_diff(bao_list, 'desc');
+		const still_need					= 48 - wen_list.length;
+		const take_from_bao					= Math.min(still_need, Math.max(0, bao_list.length - 24));
+		for (let i = 0; i < take_from_bao; i++) {
+			const item						= { ...bao_sorted[i], tier: 'wen' };
+			wen_list.push(item);
+			const idx						= bao_list.indexOf(bao_sorted[i]);
+			if (idx !== -1) bao_list.splice(idx, 1);
+		}
+	}
+
+	/* 冲档不足：从 wen 借（先匹配专业，再高 diff 接近冲档） */
+	if (chong_list.length < 24 && wen_list.length > 0) {
+		const sorted						= rank_by_major_then_diff(wen_list, 'desc');
+		const need							= 24 - chong_list.length;
+		for (let i = 0; i < Math.min(need, sorted.length); i++) {
+			const item						= { ...sorted[i], tier: 'chong' };
+			chong_list.push(item);
+			const idx						= wen_list.indexOf(sorted[i]);
+			if (idx !== -1) wen_list.splice(idx, 1);
+		}
+	}
+
+	/* 保档不足：从 wen 借（先匹配专业，再低 diff 接近保档） */
+	if (bao_list.length < 24 && wen_list.length > 0) {
+		const sorted						= rank_by_major_then_diff(wen_list, 'asc');
+		const need							= 24 - bao_list.length;
+		for (let i = 0; i < Math.min(need, sorted.length); i++) {
+			const item						= { ...sorted[i], tier: 'bao' };
+			bao_list.push(item);
+			const idx						= wen_list.indexOf(sorted[i]);
+			if (idx !== -1) wen_list.splice(idx, 1);
+		}
+	}
 
 	const final_chong						= chong_list.slice(0, 24);
 	const final_wen							= wen_list.slice(0, 48);
 	const final_bao							= bao_list.slice(0, 24);
 
 	const final_list						= [...final_chong, ...final_wen, ...final_bao];
+
+	/* v17+: 额外返回 "备选池" extras = 未进入 96 的候选（每档再 40 所，共 120 个）
+	   用户可在工作台替换默认方案 */
+	const extras_chong						= chong_list.slice(24, 64);
+	const extras_wen						= wen_list.slice(48, 88);
+	const extras_bao						= bao_list.slice(24, 64);
+	const extras_list						= [...extras_chong, ...extras_wen, ...extras_bao];
+
+	/* 统一补 group_code：D1 里 group_code 常空，从 group_name 前缀提取（如 "0B智能制造工程" → "0B"）
+	   同时从 group_name 中剥离前缀，留下干净专业名 */
+	const all_items							= [...final_list, ...extras_list];
+	for (const item of all_items) {
+		const raw_gn						= item.group_name || '';
+		const m								= raw_gn.match(/^([0-9A-Z]{1,3})([\u4e00-\u9fa5])/);
+		if (m) {
+			if (!item.group_code || String(item.group_code).trim() === '') {
+				item.group_code				= m[1];
+			}
+			item.group_name					= raw_gn.substring(m[1].length);
+		}
+	}
 
 	return json_response({
 		score:			score,
@@ -185,9 +323,11 @@ export async function onRequestPost(context) {
 			chong:		final_chong.length,
 			wen:		final_wen.length,
 			bao:		final_bao.length,
-			total:		final_list.length
+			total:		final_list.length,
+			extras:		extras_list.length
 		},
-		volunteers:		final_list
+		volunteers:		final_list,
+		extras:			extras_list		/* 备选池 · 前端工作台左侧展示 */
 	});
 }
 
@@ -208,22 +348,82 @@ async function estimate_user_rank(db, score, subject_type, year) {
 }
 
 
-async function fetch_candidates(db, rank_low, rank_high, body) {
-	// 取最近两年数据（2025 优先，2024 补充）做平均
-	const q									= db.prepare(`
+async function fetch_candidates(db, user_rank, body) {
+	/* 关键修复 v4：
+	   - 分别查 冲 / 稳 / 保 三段，每段足够大
+	   - 高分段（rank < 3000）百分比会导致范围太窄，改用绝对偏移 */
+
+	/* 动态决定偏移策略 */
+	let chong_low, chong_high, wen_low, wen_high, bao_low, bao_high;
+
+	if (user_rank < 3000) {
+		/* 高分段：用户 rank < 3000，用绝对偏移（因为百分比太小） */
+		chong_low							= 1;
+		chong_high							= Math.max(1, user_rank - 100);
+		wen_low								= Math.max(1, user_rank - 2000);
+		wen_high							= user_rank + 3000;
+		bao_low								= user_rank + 3000;
+		bao_high							= user_rank + 20000;
+	}
+	else if (user_rank < 15000) {
+		/* 中高分段：保守百分比 + 绝对兜底 */
+		chong_low							= Math.max(1, Math.round(user_rank * 0.3));
+		chong_high							= Math.round(user_rank * 0.85);
+		wen_low								= Math.round(user_rank * 0.85);
+		wen_high							= Math.round(user_rank * 1.25);
+		bao_low								= Math.round(user_rank * 1.25);
+		bao_high							= Math.round(user_rank * 2.0);
+	}
+	else {
+		/* 普通分段：百分比模式 */
+		chong_low							= Math.max(1, Math.round(user_rank * 0.5));
+		chong_high							= Math.round(user_rank * 0.85);
+		wen_low								= Math.round(user_rank * 0.85);
+		wen_high							= Math.round(user_rank * 1.15);
+		bao_low								= Math.round(user_rank * 1.15);
+		bao_high							= Math.round(user_rank * 1.50);
+	}
+
+	const q_chong							= db.prepare(`
 		SELECT s.school_code, s.school_name, s.group_code, s.group_name,
-			   s.min_rank, s.plan_count, s.year,
+			   s.min_rank, s.plan_count, s.year, s.subject_require,
 			   u.city, u.tier, u.nature
 		FROM gaokao_scores s
 		LEFT JOIN universities u ON s.school_code = u.code
-		WHERE s.year IN (2024, 2025)
-		  AND s.min_rank BETWEEN ? AND ?
-		ORDER BY s.year DESC, s.min_rank
-		LIMIT 3000
-	`).bind(rank_low, rank_high);
+		WHERE s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
+		ORDER BY s.year DESC, s.min_rank DESC
+		LIMIT 1500
+	`).bind(chong_low, chong_high);
 
-	const result							= await q.all();
-	const rows								= result.results || [];
+	const q_wen								= db.prepare(`
+		SELECT s.school_code, s.school_name, s.group_code, s.group_name,
+			   s.min_rank, s.plan_count, s.year, s.subject_require,
+			   u.city, u.tier, u.nature
+		FROM gaokao_scores s
+		LEFT JOIN universities u ON s.school_code = u.code
+		WHERE s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
+		ORDER BY s.year DESC, ABS(s.min_rank - ?)
+		LIMIT 2000
+	`).bind(wen_low, wen_high, user_rank);
+
+	const q_bao								= db.prepare(`
+		SELECT s.school_code, s.school_name, s.group_code, s.group_name,
+			   s.min_rank, s.plan_count, s.year, s.subject_require,
+			   u.city, u.tier, u.nature
+		FROM gaokao_scores s
+		LEFT JOIN universities u ON s.school_code = u.code
+		WHERE s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
+		ORDER BY s.year DESC, s.min_rank
+		LIMIT 1500
+	`).bind(bao_low, bao_high);
+
+	const [r_chong, r_wen, r_bao]			= await Promise.all([q_chong.all(), q_wen.all(), q_bao.all()]);
+
+	const rows								= [
+		...(r_chong.results || []),
+		...(r_wen.results || []),
+		...(r_bao.results || [])
+	];
 
 	// 去重：同学校+专业组只保留最新一年
 	const map								= new Map();
@@ -238,6 +438,7 @@ async function fetch_candidates(db, rank_low, rank_high, body) {
 				min_rank:		r.min_rank,
 				plan_count:		r.plan_count,
 				year:			r.year,
+				subject_require: r.subject_require || '',
 				school_city:	r.city || '',
 				tier:			r.tier || '普通本科',
 				nature:			r.nature || '公办'
@@ -245,13 +446,181 @@ async function fetch_candidates(db, rank_low, rank_high, body) {
 		}
 	}
 
-	return Array.from(map.values());
+	let list								= Array.from(map.values());
+
+	// ========= 关键：选科硬过滤 =========
+	// 用户选科（3 门）vs 专业组 subject_require 字段
+	// 格式样例：
+	//   '物理,化学(2门科目考生均须选考方可报考)' → 必须同时选物理+化学
+	//   '物理(1门科目考生必须选考方可报考)'    → 必须选物理
+	//   '不提科目要求' / null                     → 任意选科可报
+	const user_subjects						= body.subjects || [];
+
+	if (user_subjects.length > 0) {
+		list								= list.filter(c => match_subject_requirement(c.subject_require, user_subjects));
+	}
+
+	return list;
+}
+
+
+// 选科硬匹配：返回 true 表示用户选科满足专业组要求
+function match_subject_requirement(require_text, user_subjects) {
+	if (!require_text) return true;					// 缺数据时放行（避免数据缺失导致 0 结果）
+	if (require_text.includes('不提科目要求')) return true;
+
+	// 中文选科名称到前端英文 key 的映射
+	const cn_to_en = {
+		'物理':		'physics',
+		'化学':		'chemistry',
+		'生物':		'biology',
+		'思想政治':	'politics',
+		'政治':		'politics',
+		'历史':		'history',
+		'地理':		'geography'
+	};
+
+	const user_set							= new Set(user_subjects);
+
+	// Case A: '物理,化学(2门科目考生均须选考方可报考)' · 均须
+	if (require_text.includes('均须选考') || require_text.includes('均需选考')) {
+		// 提取括号前的学科列表
+		const before							= require_text.split('(')[0].trim();
+		const req_cn_list						= before.split(/[,，、]/).map(s => s.trim()).filter(s => s);
+		for (const cn of req_cn_list) {
+			const en							= cn_to_en[cn];
+			if (!en || !user_set.has(en)) return false;		// 任一必考缺失 → 不匹配
+		}
+		return true;
+	}
+
+	// Case B: '物理(1门科目考生必须选考方可报考)' · 必选这一门
+	if (require_text.includes('必须选考') || require_text.includes('方可报考')) {
+		const before							= require_text.split('(')[0].trim();
+		const req_cn_list						= before.split(/[,，、]/).map(s => s.trim()).filter(s => s);
+		// 1 门必须类：至少 1 门被选中
+		for (const cn of req_cn_list) {
+			const en							= cn_to_en[cn];
+			if (en && user_set.has(en)) return true;
+		}
+		return false;
+	}
+
+	// Case C: '物理或化学或生物(考生选考其中1门即可报考)' · 选其一
+	if (require_text.includes('或') && (require_text.includes('任选') || require_text.includes('其中') || require_text.includes('即可'))) {
+		const before							= require_text.split('(')[0].trim();
+		const req_cn_list						= before.split(/[或]/).map(s => s.trim()).filter(s => s);
+		for (const cn of req_cn_list) {
+			const en							= cn_to_en[cn];
+			if (en && user_set.has(en)) return true;
+		}
+		return false;
+	}
+
+	// Fallback: 裸学科文本 · 尝试提取所有学科，至少 1 门匹配则通过
+	let any_matched							= false;
+	for (const [cn, en] of Object.entries(cn_to_en)) {
+		if (require_text.includes(cn)) {
+			if (user_set.has(en)) return true;
+			any_matched							= true;
+		}
+	}
+	// 如果 require 里提到了学科但用户一个都没选 → 不匹配
+	return !any_matched;
 }
 
 
 function is_remote_area(school_name) {
 	const remote_kw							= ['新疆', '西藏', '青海', '宁夏', '内蒙古', '甘肃', '云南', '贵州', '石河子', '海南', '延边', '黑龙江'];
 	return remote_kw.some(kw => school_name.includes(kw));
+}
+
+
+/* ==============================================================
+   性格 × 专业软加权矩阵（精简占位版 · V1）
+   基于霍兰德职业兴趣理论（Realistic/Investigative/Artistic/Social/Enterprising/Conventional）
+   V2 将由独立"性格×专业映射矩阵"项目替换，此处仅用于今晚功能闭环
+   ============================================================== */
+const PERSONALITY_MAJOR_MAP					= {
+	/* 外向善社交 → 偏沟通/服务/管理 */
+	social:			{ add: ['新闻', '传播', '广告', '市场营销', '工商管理', '国际经济', '旅游', '酒店', '公共管理', '社会学', '师范', '教育', '护理'], sub: ['数学', '哲学', '考古', '基础'] },
+	/* 内向爱思考 → 偏研究/独立工作 */
+	introvert:		{ add: ['数学', '物理', '哲学', '计算机', '软件', '考古', '基础医学', '统计', '化学', '生物'], sub: ['新闻', '市场营销', '工商管理', '表演'] },
+	/* 逻辑性强 → STEM + 金融法律 */
+	logical:		{ add: ['计算机', '软件', '数学', '物理', '电子', '自动化', '金融', '法学', '统计', '经济', '人工智能', '数据科学'], sub: ['美术', '音乐', '表演'] },
+	/* 创意想象丰富 → 艺术/设计/传媒 */
+	creative:		{ add: ['设计', '美术', '动画', '数字媒体', '广告', '建筑', '戏剧', '影视', '编导', '工业设计', '服装'], sub: ['会计', '统计', '精算'] },
+	/* 细致耐心 → 医学/会计/考古/实验 */
+	detail:			{ add: ['会计', '审计', '医学', '护理', '药学', '考古', '检验', '实验', '财务', '统计', '口腔'], sub: ['公共管理'] },
+	/* 有领导力 → 管理/军警/商科 */
+	leader:			{ add: ['工商管理', '公共管理', '人力资源', '国防', '军事', '警察', '政治', '国际关系', '市场营销'], sub: [] },
+	/* 动手能力强 → 工科/医学/军警 */
+	handson:		{ add: ['机械', '土木', '建筑', '电气', '自动化', '车辆', '医学', '口腔', '航空', '船舶', '机器人', '材料成型'], sub: ['哲学', '历史'] },
+	/* 独立自主 → 基础研究/创业 */
+	independent:	{ add: ['数学', '物理', '哲学', '经济学', '统计', '金融', '基础', '历史'], sub: [] }
+};
+
+function compute_personality_boost(personality_arr, group_name) {
+	let boost								= 0;
+	const gn								= group_name || '';
+	for (const p of personality_arr) {
+		const map							= PERSONALITY_MAJOR_MAP[p];
+		if (!map) continue;
+		if ((map.add || []).some(kw => gn.includes(kw))) boost += 8;
+		if ((map.sub || []).some(kw => gn.includes(kw))) boost -= 10;
+	}
+	return boost;
+}
+
+
+/* 兴趣 × 专业映射（V1 占位） */
+const HOBBY_MAJOR_MAP						= {
+	tech:			['计算机', '软件', '电子', '人工智能', '自动化', '数据科学', '通信', '微电子'],
+	reading:		['汉语言', '新闻', '传播', '历史', '哲学', '外语', '编辑'],
+	sports:			['体育', '运动', '康复', '健康'],
+	art:			['设计', '美术', '动画', '建筑', '服装', '工业设计'],
+	music:			['音乐', '作曲', '声乐', '舞蹈'],
+	travel:			['旅游', '酒店', '地理', '外语'],
+	games:			['计算机', '软件', '动画', '数字媒体', '游戏'],
+	social_media:	['新闻', '传播', '广告', '市场营销', '数字媒体'],
+	business:		['金融', '经济', '工商管理', '会计', '市场营销', '国际贸易'],
+	science:		['物理', '化学', '生物', '数学', '材料', '环境', '地质'],
+	history:		['历史', '考古', '哲学', '社会学', '政治'],
+	film:			['戏剧', '影视', '编导', '动画', '广播电视']
+};
+
+function compute_hobby_boost(hobbies, group_name) {
+	let boost								= 0;
+	const gn								= group_name || '';
+	for (const h of hobbies) {
+		const kws							= HOBBY_MAJOR_MAP[h] || [];
+		if (kws.some(kw => gn.includes(kw))) boost += 6;
+	}
+	return boost;
+}
+
+
+/* 学科特长 × 专业映射（V1 占位） */
+const STRENGTH_MAJOR_MAP					= {
+	math:			['数学', '统计', '金融', '精算', '计算机', '软件', '物理', '经济', '数据科学'],
+	physics:		['物理', '材料', '电子', '能源', '机械', '航空', '航天', '核工程', '天文'],
+	chemistry:		['化学', '化工', '材料', '药学', '制药', '能源'],
+	biology:		['生物', '医学', '药学', '护理', '农学', '环境', '食品'],
+	chinese:		['汉语言', '新闻', '传播', '编辑', '教育', '师范', '文化'],
+	english:		['英语', '翻译', '外交', '国际关系', '国际贸易', '外国语'],
+	history:		['历史', '考古', '博物馆', '文化遗产', '旅游'],
+	politics:		['法学', '政治', '公共管理', '国际关系', '社会学'],
+	geography:		['地理', '地质', '测绘', '环境', '旅游', '城乡规划']
+};
+
+function compute_strength_boost(strengths, group_name) {
+	let boost								= 0;
+	const gn								= group_name || '';
+	for (const s of strengths) {
+		const kws							= STRENGTH_MAJOR_MAP[s] || [];
+		if (kws.some(kw => gn.includes(kw))) boost += 7;
+	}
+	return boost;
 }
 
 
@@ -363,6 +732,42 @@ const MAJOR_KEYWORDS						= {
 
 // 明显与主要方向无关的"小语种/冷门"关键词（默认会被推荐，但意向明确时应排除）
 const NICHE_KEYWORDS						= ['土耳其语', '印地语', '希伯来语', '斯瓦希里语', '越南语', '老挝语', '缅甸语', '泰语', '印尼语', '马来语', '波斯语', '孟加拉语', '蒙古语', '朝鲜语', '藏语', '维吾尔语', '哈萨克语'];
+
+
+/* 根据选科组合推理默认可报考的专业大类
+   物化生 → 工/医/理/农（STEM 方向为主，排除纯文史）
+   物化地 → 工/理/理论+地理相关
+   史地政 → 文/法/教/经管（纯文科）
+   物生地 → 医/地理/环境
+   等等 */
+function infer_default_majors_from_subjects(subjects) {
+	if (!subjects || subjects.length === 0) return null;
+	const s									= new Set(subjects);
+
+	const has_phy							= s.has('physics');
+	const has_chem							= s.has('chemistry');
+	const has_bio							= s.has('biology');
+	const has_hist							= s.has('history');
+	const has_pol							= s.has('politics');
+	const has_geo							= s.has('geography');
+
+	/* 纯理科组合（物化 + 理科任一）：STEM + 医 */
+	if (has_phy && has_chem) return ['tech', 'medical', 'econ', 'agri'];
+
+	/* 物化缺一：工科 + 理科为主，医学部分专业可报 */
+	if (has_phy && !has_chem) return ['tech', 'econ'];
+	if (!has_phy && has_chem) return ['medical', 'agri', 'econ'];
+
+	/* 纯文科组合（史政地 / 有两科文） */
+	if (has_hist && has_pol) return ['liberal', 'education', 'econ', 'art'];
+	if (has_hist && has_geo) return ['liberal', 'education', 'econ'];
+
+	/* 偏生物/地理（医学/环境/地理类） */
+	if (has_bio && has_geo) return ['medical', 'agri', 'tech'];
+
+	/* 默认全开 */
+	return null;
+}
 
 
 function check_major_match(user_majors, group_name) {

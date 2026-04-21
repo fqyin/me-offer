@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我的后台 · Me Offer</title>
+<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+<script>
+	tailwind.config = {
+		theme: {
+			extend: {
+				colors: {
+					brand: '#8B6914', gold: '#C9A96E', danger: '#C94A4A',
+					cream: '#FDF8F0', dark: '#1A1A1A', muted: '#8A8A8A'
+				}
+			}
+		}
+	}
+</script>
+<style>
+	* { margin:0; padding:0; box-sizing:border-box; }
+	html, body { overflow-x: hidden; }
+	body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+	.card { background: white; border: 1px solid #E5DDD0; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+	.section-title { font-size: 13px; font-weight: 700; color: #8B6914; padding: 4px 0; margin: 16px 4px 8px 4px; display: flex; align-items: center; gap: 6px; }
+	.btn-primary { background: linear-gradient(135deg, #C9A96E, #8B6914); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; }
+	.btn-secondary { background: white; border: 1px solid #E5DDD0; color: #666; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+	.btn-danger { background: white; border: 1px solid #FCA5A5; color: #C94A4A; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto pb-24" id="app">
+
+	<!-- 顶部 · 头像 + 手机号 -->
+	<div class="card mt-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border-color: #C9A96E;">
+		<div class="flex items-center gap-3">
+			<div id="user_avatar" class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style="background: linear-gradient(135deg, #C9A96E, #8B6914); font-size: 18px;">👤</div>
+			<div class="flex-1">
+				<div id="user_nickname" class="font-bold text-dark text-sm">加载中...</div>
+				<div class="text-[10px] text-muted mt-0.5" id="user_phone"></div>
+			</div>
+			<button onclick="go_apply_new()" class="btn-primary text-[11px]">+ 新建方案</button>
+		</div>
+	</div>
+
+	<!-- 我的方案列表 -->
+	<div class="section-title">📊 我的志愿方案 <span id="plans_count" class="text-muted text-[11px] font-normal"></span></div>
+	<div id="plans_list">
+		<div class="card text-center py-6 text-muted text-xs">加载中...</div>
+	</div>
+
+	<!-- 我的订阅 -->
+	<div class="section-title">⭐ 我的订阅</div>
+	<div class="card">
+		<div class="flex items-center justify-between">
+			<div>
+				<div class="font-bold text-dark text-sm">免费版</div>
+				<div class="text-[10px] text-muted mt-1">已支持 96 志愿 AI 推荐 · 3 次查询/天</div>
+			</div>
+			<button onclick="show_upgrade()" class="btn-primary">升级</button>
+		</div>
+	</div>
+
+	<!-- 学习记录（陪跑社区预留） -->
+	<div class="section-title">📚 我的学习记录 <span class="text-muted text-[10px] font-normal">（陪跑社区上线后启用）</span></div>
+	<div class="card">
+		<div class="flex justify-between text-xs text-muted py-1">
+			<span>🤖 AI 对话</span><span>0 次</span>
+		</div>
+		<div class="flex justify-between text-xs text-muted py-1 border-t border-dashed" style="border-color:#E5DDD0;">
+			<span>📝 错题本</span><span>0 本</span>
+		</div>
+		<div class="flex justify-between text-xs text-muted py-1 border-t border-dashed" style="border-color:#E5DDD0;">
+			<span>✏️ 学科练习</span><span>0 道</span>
+		</div>
+	</div>
+
+	<!-- 设置 -->
+	<div class="section-title">⚙️ 设置</div>
+	<div class="card p-0">
+		<div class="flex items-center justify-between p-3 border-b" style="border-color:#E5DDD0;">
+			<span class="text-sm">绑定微信</span>
+			<span class="text-[11px] text-muted">即将上线</span>
+		</div>
+		<div class="flex items-center justify-between p-3 border-b" style="border-color:#E5DDD0;">
+			<span class="text-sm">修改手机号</span>
+			<span class="text-[11px] text-muted">即将上线</span>
+		</div>
+		<div class="flex items-center justify-between p-3 cursor-pointer" onclick="do_logout()">
+			<span class="text-sm text-danger">退出登录</span>
+			<span class="text-[11px] text-muted">→</span>
+		</div>
+	</div>
+
+	<div class="text-center text-[10px] text-muted mt-6">
+		Me Offer · AI 高考陪跑社区<br>
+		© 2026 · 数据来自山东省教育招生考试院
+	</div>
+</div>
+
+
+<!-- 登录弹窗 -->
+<div id="login_modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" style="background: rgba(0,0,0,0.5);">
+	<div class="bg-white rounded-2xl p-5 max-w-sm w-full">
+		<div class="text-center mb-3">
+			<div class="text-2xl mb-2">📱</div>
+			<div class="text-base font-bold text-dark">登录 Me Offer</div>
+			<div class="text-[11px] text-muted mt-1">输入手机号即可登录 · 测试期无需验证码</div>
+		</div>
+		<input id="login_phone" type="tel" placeholder="手机号" maxlength="11" class="w-full px-3 py-2.5 rounded-xl text-sm mb-3" style="background:#FDF8F0; border:1px solid #E5DDD0; outline:none;">
+		<button onclick="do_login()" class="w-full py-2.5 rounded-xl text-sm font-bold text-white" style="background: linear-gradient(135deg, #C94A4A, #8B1A1A);">登录 / 注册</button>
+		<p class="text-[10px] text-muted text-center mt-2">新手机号自动注册 · 方案云端保存</p>
+	</div>
+</div>
+
+<script>
+const AUTH_KEY							= 'meoffer_auth';
+
+function get_token() {
+	try {
+		let obj							= JSON.parse(localStorage.getItem(AUTH_KEY) || '{}');
+		return obj.token || '';
+	} catch(e) { return ''; }
+}
+
+function set_auth(obj) {
+	localStorage.setItem(AUTH_KEY, JSON.stringify(obj));
+}
+
+function clear_auth() {
+	localStorage.removeItem(AUTH_KEY);
+}
+
+function auth_fetch(url, opts) {
+	opts								= opts || {};
+	opts.headers						= opts.headers || {};
+	opts.headers['Authorization']		= 'Bearer ' + get_token();
+	opts.headers['Content-Type']		= 'application/json';
+	return fetch(url, opts);
+}
+
+function format_date(iso) {
+	if (!iso) return '';
+	try {
+		let d							= new Date(iso);
+		let now							= new Date();
+		let diff_ms						= now - d;
+		let diff_day					= Math.floor(diff_ms / 86400000);
+		if (diff_day === 0) return '今天';
+		if (diff_day === 1) return '昨天';
+		if (diff_day < 7) return diff_day + ' 天前';
+		return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+	} catch(e) { return iso.slice(0,10); }
+}
+
+function subjects_cn(arr) {
+	let m = { physics:'物理', chemistry:'化学', biology:'生物', politics:'政治', history:'历史', geography:'地理' };
+	return (arr || []).map(s => m[s] || s).join('·');
+}
+
+function show_login() {
+	$('#login_modal').removeClass('hidden').addClass('flex');
+	$('#login_phone').focus();
+}
+
+function do_login() {
+	let phone							= $('#login_phone').val().trim();
+	if (!/^1[3-9]\d{9}$/.test(phone)) {
+		alert('请输入正确的 11 位手机号');
+		return;
+	}
+	$.ajax({
+		url: '/api/auth/login',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify({ phone: phone }),
+		success: function(r) {
+			if (r.token) {
+				set_auth({
+					token: r.token,
+					user_id: r.user_id,
+					phone: r.phone,
+					nickname: r.nickname
+				});
+				$('#login_modal').removeClass('flex').addClass('hidden');
+				load_dashboard();
+			} else {
+				alert('登录失败：' + (r.error || '未知错误'));
+			}
+		},
+		error: function() { alert('网络错误'); }
+	});
+}
+
+function do_logout() {
+	if (!confirm('确定退出登录吗？')) return;
+	clear_auth();
+	window.location.reload();
+}
+
+function load_dashboard() {
+	/* 加载用户信息 */
+	auth_fetch('/api/auth/me').then(r => r.json()).then(function(u) {
+		if (u.error) { show_login(); return; }
+		$('#user_nickname').text(u.nickname || '用户');
+		$('#user_phone').text('📱 ' + (u.phone || '').replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2'));
+	});
+
+	/* 加载方案列表 */
+	auth_fetch('/api/plans/list').then(r => r.json()).then(function(d) {
+		if (d.error) { show_login(); return; }
+		render_plans(d.plans || []);
+	});
+}
+
+function render_plans(plans) {
+	$('#plans_count').text('（' + plans.length + ' 个）');
+	let html							= '';
+	if (plans.length === 0) {
+		html							= '<div class="card text-center py-8">' +
+			'<div class="text-3xl mb-2">📋</div>' +
+			'<div class="text-sm font-bold text-dark mb-1">还没有保存的方案</div>' +
+			'<div class="text-[11px] text-muted mb-3">点击右上角 "+ 新建方案" 开始填报</div>' +
+			'<button onclick="go_apply_new()" class="btn-primary">+ 立即创建</button>' +
+		'</div>';
+	} else {
+		plans.forEach(function(p, i) {
+			let is_main					= i === 0;
+			let status_badge			= is_main
+				? '<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#C94A4A;color:white;">主方案</span>'
+				: (p.status === 'final' ? '<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#16A34A;color:white;">已定稿</span>' : '<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#F3F4F6;color:#666;">草稿</span>');
+			html						+=
+				'<div class="card">' +
+				'  <div class="flex items-start justify-between mb-2">' +
+				'    <div class="flex-1">' +
+				'      <div class="flex items-center gap-2 mb-1">' +
+				'        <span class="text-sm font-bold text-dark">' + escape_html(p.plan_name) + '</span>' +
+				'        ' + status_badge +
+				'      </div>' +
+				'      <div class="text-[10px] text-muted">' +
+				'        ' + (p.score || '-') + ' 分 · 位次 ' + (p.rank || '-').toLocaleString() + ' · ' + subjects_cn(p.subjects) +
+				'      </div>' +
+				'      <div class="text-[10px] text-muted mt-0.5">' +
+				'        📋 ' + p.volunteer_count + ' 志愿 · 最后编辑：' + format_date(p.updated_at) +
+				'      </div>' +
+				'    </div>' +
+				'  </div>' +
+				'  <div class="flex gap-2 mt-2">' +
+				'    <button onclick="restore_plan(' + p.plan_id + ')" class="btn-primary flex-1">恢复</button>' +
+				'    <button onclick="delete_plan(' + p.plan_id + ', \'' + escape_html(p.plan_name).replace(/\'/g,'') + '\')" class="btn-danger">删除</button>' +
+				'  </div>' +
+				'</div>';
+		});
+	}
+	$('#plans_list').html(html);
+}
+
+function restore_plan(plan_id) {
+	window.location.href = 'apply.html?restore=' + plan_id;
+}
+
+function delete_plan(plan_id, name) {
+	if (!confirm('确定删除「' + name + '」？删除后不可恢复')) return;
+	auth_fetch('/api/plans/delete', {
+		method: 'POST',
+		body: JSON.stringify({ plan_id: plan_id })
+	}).then(r => r.json()).then(function() {
+		load_dashboard();
+	});
+}
+
+function go_apply_new() {
+	window.location.href = 'apply.html';
+}
+
+function show_upgrade() {
+	alert('家庭 VIP 版开发中：AI 陪跑、错题本、学科练习、家长焦虑辅导...\n敬请期待！');
+}
+
+function escape_html(s) {
+	return String(s || '').replace(/[&<>"']/g, function(c) {
+		return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+	});
+}
+
+/* ------- 页面启动 ------- */
+$(document).ready(function() {
+	if (!get_token()) {
+		show_login();
+	} else {
+		load_dashboard();
+	}
+});
+</script>
+
+</body>
+</html>

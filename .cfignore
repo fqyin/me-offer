@@ -1,0 +1,11 @@
+data_raw/
+scripts/
+db/
+docs/
+worker/
+*.bak
+*.bak_*
+apply.html.bak_before_v4
+index.html.bak
+node_modules/
+*.sql
