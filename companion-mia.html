@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>树洞 · Mia 学姐陪你 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416',
+						hole:		'#6B4F8B'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.4s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		@keyframes leaf-fall {
+			0% { transform: translateY(-10px) rotate(0deg); opacity: 0.4; }
+			50% { transform: translateY(40px) rotate(180deg); opacity: 0.8; }
+			100% { transform: translateY(80px) rotate(360deg); opacity: 0; }
+		}
+		.leaf { animation: leaf-fall 8s linear infinite; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #6B4F8B; color: #6B4F8B; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.tab-btn.active { color: #6B4F8B; border-color: #6B4F8B; font-weight: 600; }
+		.tab-content { display: none; }
+		.tab-content.active { display: block; }
+
+		.btn-mia { background: #6B4F8B; color: white; }
+		.btn-mia:hover { background: #543E6E; }
+		.btn-ghost { border: 1px solid #6B4F8B; color: #6B4F8B; background: white; }
+		.btn-ghost:hover { background: #F5F0FA; }
+
+		.post-card {
+			background: white;
+			border: 1px solid #E5DDD0;
+			transition: all 0.2s;
+		}
+		.post-card:hover { border-color: #6B4F8B; }
+
+		.emotion-tag-anxious { background: #FEF3C7; color: #92400E; }
+		.emotion-tag-sad { background: #DBEAFE; color: #1E40AF; }
+		.emotion-tag-happy { background: #D1FAE5; color: #065F46; }
+		.emotion-tag-tired { background: #FCE7F3; color: #9F1239; }
+
+		.mia-bubble {
+			background: linear-gradient(135deg, #F5F0FA 0%, white 100%);
+			border: 1px solid #D6BFEA;
+			position: relative;
+		}
+
+		.mia-bubble::before {
+			content: "";
+			position: absolute;
+			top: -6px; left: 20px;
+			width: 12px; height: 12px;
+			background: linear-gradient(135deg, #F5F0FA 0%, #F5F0FA 100%);
+			border-top: 1px solid #D6BFEA;
+			border-left: 1px solid #D6BFEA;
+			transform: rotate(45deg);
+		}
+
+		textarea.tree-input {
+			width: 100%;
+			min-height: 140px;
+			padding: 16px;
+			border: 1px solid #E5DDD0;
+			border-radius: 12px;
+			background: white;
+			font-size: 14px;
+			line-height: 1.8;
+			font-family: 'Georgia', 'STSong', serif;
+			resize: vertical;
+			outline: none;
+		}
+		textarea.tree-input:focus { border-color: #6B4F8B; }
+
+		.tag-pill { cursor: pointer; transition: all 0.15s; }
+		.tag-pill:hover { background: #F5F0FA; border-color: #6B4F8B; }
+		.tag-pill.selected { background: #6B4F8B; color: white; border-color: #6B4F8B; }
+
+		.warn-banner { background: linear-gradient(90deg, #FEF3C7 0%, #FDE68A 100%); }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-20">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<a href="companion.html" class="text-muted text-sm">←</a>
+				<span class="font-bold text-sm">🌳 树洞</span>
+				<span class="stamp">Mia 学姐</span>
+			</div>
+			<button class="text-[10px] text-muted">🔒 完全匿名</button>
+		</div>
+	</header>
+
+	<!-- Hero: Mia 学姐卡 -->
+	<section class="px-4 pt-5 pb-4 fade-in">
+		<div class="bg-gradient-to-br from-hole to-[#543E6E] rounded-2xl p-5 text-white relative overflow-hidden">
+			<div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+			<div class="leaf absolute top-4 right-16 text-lg opacity-40">🍃</div>
+			<div class="leaf absolute top-0 right-8 text-lg opacity-30" style="animation-delay: 3s;">🍂</div>
+
+			<div class="flex items-start gap-3 relative">
+				<div class="w-14 h-14 rounded-full bg-gradient-to-br from-[#D6BFEA] to-[#B596D4] flex items-center justify-center text-2xl flex-shrink-0 shadow-lg">👩‍🎓</div>
+				<div class="flex-1">
+					<div class="flex items-center gap-2 mb-1">
+						<h2 class="font-bold text-base">Mia 学姐</h2>
+						<span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">AI 陪伴 · 清华 2024 届</span>
+					</div>
+					<p class="text-xs text-white/80 mb-3">已陪伴你 <span class="font-bold text-[#D6BFEA]">30</span> 天 · 24h 内回复</p>
+
+					<div class="bg-white/10 backdrop-blur rounded-xl p-3 mb-3">
+						<p class="text-sm leading-relaxed chinese-serif">"高三那年我也经常凌晨 1 点崩溃，然后第二天继续刷题。没关系的，我走过的路你也能走过来 🤗"</p>
+						<div class="text-[10px] text-white/60 mt-2">— Mia · 2026.04.22</div>
+					</div>
+
+					<div class="flex gap-2">
+						<button onclick="switchTab('write')" class="flex-1 bg-[#D6BFEA] text-[#543E6E] text-xs font-semibold py-2 rounded-lg hover:bg-[#C4A6DE]">✍️ 写下心事</button>
+						<button onclick="switchTab('my')" class="bg-white/20 text-white text-xs px-3 py-2 rounded-lg hover:bg-white/30">我的树洞</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Tabs -->
+	<div class="sticky top-[57px] bg-cream/95 backdrop-blur z-30 px-4 pt-2 border-b border-[#E5DDD0]">
+		<div class="flex gap-5 text-sm">
+			<button class="tab-btn py-2 border-b-2 border-transparent active" onclick="switchTab('hole')">树洞广场</button>
+			<button class="tab-btn py-2 border-b-2 border-transparent text-muted" onclick="switchTab('write')">写下心事</button>
+			<button class="tab-btn py-2 border-b-2 border-transparent text-muted" onclick="switchTab('my')">我的树洞</button>
+		</div>
+	</div>
+
+	<!-- ================= Tab: 树洞广场 ================= -->
+	<section id="tab_hole" class="tab-content active px-4 pt-4">
+
+		<div class="text-xs text-muted mb-3">👀 其他同学的心事 · 你不孤单</div>
+
+		<div class="space-y-3">
+
+			<!-- 帖子 1 -->
+			<div class="post-card rounded-xl p-4">
+				<div class="flex items-center gap-2 mb-2">
+					<div class="w-8 h-8 rounded-full bg-[#F5F0FA] flex items-center justify-center text-sm">🌙</div>
+					<div class="flex-1">
+						<div class="text-xs font-semibold">匿名同学 · 山东 · 高三</div>
+						<div class="text-[10px] text-muted">2 小时前</div>
+					</div>
+					<span class="emotion-tag-anxious text-[9px] px-2 py-0.5 rounded-full font-semibold">焦虑</span>
+				</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif mb-3">
+					距离高考 47 天，我的数学模考分数越来越低 😢 明明每天刷题到凌晨，怎么反而退步了？是不是我真的不适合学理...
+				</p>
+
+				<!-- Mia 回复 -->
+				<div class="mia-bubble rounded-xl p-3 mt-3">
+					<div class="flex items-center gap-2 mb-1">
+						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-[#D6BFEA] to-[#B596D4] flex items-center justify-center text-xs">👩‍🎓</div>
+						<span class="text-[10px] text-hole font-bold">Mia 学姐 · 1 小时后回复</span>
+					</div>
+					<p class="text-xs text-ink leading-relaxed chinese-serif">
+						我懂这种感受 —— 我高三 4 月也有过同样的"越刷题越退步"。<br/><br/>
+						这不是你不适合学理，而是<span class="font-bold text-hole">"疲劳型退步"</span>。大脑在高强度刷题下会进入"机械重复模式"，反而弱化了思考能力。<br/><br/>
+						试试这 2 天只做一件事：**做少量题，但做透**。选 3 道错题，每道题分析 30 分钟，不急着做新的。你会感觉回血 💪
+					</p>
+				</div>
+
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>❤️ 23 共鸣</span>
+					<span>💬 8 条回复</span>
+					<span class="ml-auto text-hole">我也经历过 →</span>
+				</div>
+			</div>
+
+			<!-- 帖子 2 -->
+			<div class="post-card rounded-xl p-4">
+				<div class="flex items-center gap-2 mb-2">
+					<div class="w-8 h-8 rounded-full bg-[#F5F0FA] flex items-center justify-center text-sm">🌸</div>
+					<div class="flex-1">
+						<div class="text-xs font-semibold">匿名同学 · 江苏 · 高三</div>
+						<div class="text-[10px] text-muted">昨天</div>
+					</div>
+					<span class="emotion-tag-sad text-[9px] px-2 py-0.5 rounded-full font-semibold">难过</span>
+				</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif mb-3">
+					爸妈今天又吵架了...他们一直因为我学习的事情吵，我觉得都是我的错 💔 如果我成绩好一点，他们是不是就不会这样...
+				</p>
+
+				<div class="mia-bubble rounded-xl p-3 mt-3">
+					<div class="flex items-center gap-2 mb-1">
+						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-[#D6BFEA] to-[#B596D4] flex items-center justify-center text-xs">👩‍🎓</div>
+						<span class="text-[10px] text-hole font-bold">Mia 学姐 · 3 小时后回复</span>
+					</div>
+					<p class="text-xs text-ink leading-relaxed chinese-serif">
+						亲爱的同学，想先给你一个大大的抱抱 🫂<br/><br/>
+						请记住：<span class="font-bold text-hole">爸妈的争吵不是你的错</span>。成年人的问题永远是成年人自己的问题。他们可能在用"关心你"来回避他们之间的矛盾。<br/><br/>
+						你能做的最好的事，不是成为"完美的孩子"，而是<span class="font-bold">好好照顾自己</span>。今晚戴上耳机，给自己泡杯热茶 ☕ 明天告诉我你感觉怎么样好吗？
+					</p>
+				</div>
+
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>❤️ 47 共鸣</span>
+					<span>💬 15 条回复</span>
+					<span class="ml-auto text-hole">抱抱你 →</span>
+				</div>
+			</div>
+
+			<!-- 帖子 3 -->
+			<div class="post-card rounded-xl p-4">
+				<div class="flex items-center gap-2 mb-2">
+					<div class="w-8 h-8 rounded-full bg-[#F5F0FA] flex items-center justify-center text-sm">🍀</div>
+					<div class="flex-1">
+						<div class="text-xs font-semibold">匿名同学 · 广东 · 高三</div>
+						<div class="text-[10px] text-muted">2 天前</div>
+					</div>
+					<span class="emotion-tag-happy text-[9px] px-2 py-0.5 rounded-full font-semibold">开心</span>
+				</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif mb-3">
+					今天数学月考我考了 128！！！这是我高三以来最高分！！！想和大家分享一下我的方法 —— 真的就是 Max 老师说的"少做题，做透题"...
+				</p>
+
+				<div class="mia-bubble rounded-xl p-3 mt-3">
+					<div class="flex items-center gap-2 mb-1">
+						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-[#D6BFEA] to-[#B596D4] flex items-center justify-center text-xs">👩‍🎓</div>
+						<span class="text-[10px] text-hole font-bold">Mia 学姐 · 5 小时后回复</span>
+					</div>
+					<p class="text-xs text-ink leading-relaxed chinese-serif">
+						恭喜你！！✨ 这条我要置顶 —— 因为你的经验可能拯救了另一个凌晨崩溃的同学。<br/><br/>
+						"少做题、做透题"是高三后期最重要的智慧。继续加油，6 月见 🎓
+					</p>
+				</div>
+
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>❤️ 156 共鸣</span>
+					<span>💬 42 条回复</span>
+					<span class="ml-auto text-hole">Mia 置顶 ⭐</span>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+	<!-- ================= Tab: 写下心事 ================= -->
+	<section id="tab_write" class="tab-content px-4 pt-4">
+
+		<!-- 安全提示 -->
+		<div class="bg-[#F5F0FA] rounded-xl p-3 mb-4 flex gap-2">
+			<div class="text-lg">🔒</div>
+			<div class="text-[10px] text-hole leading-relaxed">
+				<span class="font-bold">完全匿名</span> · Mia 看不到你的姓名 · 不会分享给李老师或家长<br/>
+				如果有紧急心理需求，随时点击下方「心理热线」
+			</div>
+		</div>
+
+		<!-- 今天心情 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<label class="text-xs font-bold mb-3 block">你现在的心情</label>
+			<div class="flex flex-wrap gap-2">
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">😰 焦虑</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">😢 难过</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full selected">😴 疲惫</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">😤 愤怒</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">😊 平静</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">🎉 开心</span>
+			</div>
+		</div>
+
+		<!-- 话题标签 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<label class="text-xs font-bold mb-3 block">想说什么？（可选）</label>
+			<div class="flex flex-wrap gap-2">
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-[11px] px-2.5 py-1 rounded-full">📚 学习压力</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-[11px] px-2.5 py-1 rounded-full">👨‍👩‍👧 家庭</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-[11px] px-2.5 py-1 rounded-full">💔 感情</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-[11px] px-2.5 py-1 rounded-full">🎯 志愿</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-[11px] px-2.5 py-1 rounded-full">😴 睡眠</span>
+				<span class="tag-pill bg-white border border-[#E5DDD0] text-[11px] px-2.5 py-1 rounded-full">💪 动力</span>
+			</div>
+		</div>
+
+		<!-- 内容 -->
+		<div class="mb-4">
+			<label class="text-xs text-muted mb-2 block">倾诉内容</label>
+			<textarea class="tree-input chinese-serif" placeholder="在这里写下你的心事...
+Mia 学姐会在 24 小时内温柔回复你 🌳"></textarea>
+			<div class="flex items-center justify-between mt-2">
+				<div class="text-[10px] text-muted">已输入 0 字 · 建议 50-300 字</div>
+				<div class="text-[10px] text-hole">🔒 完全匿名</div>
+			</div>
+		</div>
+
+		<!-- 是否公开 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<div class="flex items-center justify-between">
+				<div>
+					<div class="text-xs font-bold">公开到树洞广场</div>
+					<div class="text-[10px] text-muted mt-0.5">其他同学能看到并留言，也可能帮到别人</div>
+				</div>
+				<label class="relative inline-flex items-center cursor-pointer">
+					<input type="checkbox" checked class="sr-only peer">
+					<div class="w-10 h-5 bg-[#E5DDD0] peer-checked:bg-hole rounded-full peer transition"></div>
+					<div class="absolute w-4 h-4 bg-white rounded-full top-0.5 left-0.5 peer-checked:left-5 transition"></div>
+				</label>
+			</div>
+		</div>
+
+		<!-- 发送 -->
+		<button id="send_post" class="w-full btn-mia text-sm py-3.5 rounded-xl font-semibold shadow-lg">
+			🌳 投入树洞 · Mia 将在 24h 内回复
+		</button>
+
+		<!-- 紧急热线 -->
+		<div class="warn-banner rounded-xl p-3 mt-4 flex items-center gap-3">
+			<div class="text-xl">☎️</div>
+			<div class="flex-1">
+				<div class="text-xs font-bold text-ink">紧急情况？</div>
+				<div class="text-[10px] text-muted">全国 24h 心理援助：<span class="font-bold">400-161-9995</span></div>
+			</div>
+			<button class="btn-ghost text-[10px] px-2 py-1 rounded">拨打</button>
+		</div>
+	</section>
+
+	<!-- ================= Tab: 我的树洞 ================= -->
+	<section id="tab_my" class="tab-content px-4 pt-4">
+
+		<div class="text-xs text-muted mb-3">💜 Mia 已陪伴你 30 天 · 共 12 条心事</div>
+
+		<div class="space-y-3">
+
+			<!-- 我的帖子 1 -->
+			<div class="post-card rounded-xl p-4">
+				<div class="flex items-center gap-2 mb-2">
+					<span class="emotion-tag-tired text-[9px] px-2 py-0.5 rounded-full font-semibold">疲惫</span>
+					<span class="text-[10px] text-muted">📚 学习压力</span>
+					<span class="text-[10px] text-muted ml-auto">3 天前</span>
+				</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif mb-3">
+					最近每天睡不到 6 小时，脑子像一团浆糊 😵 但是不刷题又觉得不安，这个矛盾怎么破...
+				</p>
+
+				<div class="mia-bubble rounded-xl p-3 mt-3">
+					<div class="flex items-center gap-2 mb-1">
+						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-[#D6BFEA] to-[#B596D4] flex items-center justify-center text-xs">👩‍🎓</div>
+						<span class="text-[10px] text-hole font-bold">Mia 学姐 · 昨日 07:30 回复</span>
+					</div>
+					<p class="text-xs text-ink leading-relaxed chinese-serif">
+						吕同学，我想跟你说 —— <span class="font-bold text-hole">"睡眠剥夺"是高三最大的骗局</span>。<br/><br/>
+						我当年 4 月也是这样，后来痛下决心：**每天 22:30 断电**。一开始觉得亏了 1 小时刷题，结果第二天大脑清晰得像换了个人 🧠<br/><br/>
+						今晚试试 22:30 睡？明天早上告诉我感觉 💜
+					</p>
+				</div>
+
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>❤️ 12</span>
+					<span>💬 3</span>
+					<span class="ml-auto text-hole">继续对话 →</span>
+				</div>
+			</div>
+
+			<!-- 我的帖子 2 -->
+			<div class="post-card rounded-xl p-4">
+				<div class="flex items-center gap-2 mb-2">
+					<span class="emotion-tag-anxious text-[9px] px-2 py-0.5 rounded-full font-semibold">焦虑</span>
+					<span class="text-[10px] text-muted">🎯 志愿</span>
+					<span class="text-[10px] text-muted ml-auto">1 周前</span>
+				</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif mb-3">
+					爸爸想让我报临床医学，我自己其实想学计算机 💭 不知道怎么开口...
+				</p>
+
+				<div class="mia-bubble rounded-xl p-3 mt-3">
+					<div class="flex items-center gap-2 mb-1">
+						<div class="w-6 h-6 rounded-full bg-gradient-to-br from-[#D6BFEA] to-[#B596D4] flex items-center justify-center text-xs">👩‍🎓</div>
+						<span class="text-[10px] text-hole font-bold">Mia 学姐</span>
+					</div>
+					<p class="text-xs text-ink leading-relaxed chinese-serif">
+						这是我当年遇到过最难的事 —— 父母的期待 vs 自己的方向。<br/><br/>
+						我最后选择了：<span class="font-bold text-hole">不和爸爸"对抗"，而是"展示"</span>...
+					</p>
+				</div>
+
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>❤️ 5</span>
+					<span>💬 2</span>
+					<span class="ml-auto text-hole">继续对话 →</span>
+				</div>
+			</div>
+
+			<!-- 心情曲线 -->
+			<div class="bg-gradient-to-br from-hole to-[#543E6E] rounded-xl p-4 text-white">
+				<div class="flex items-center justify-between mb-3">
+					<div class="text-xs font-bold">💜 我的 30 天心情曲线</div>
+					<span class="stamp bg-white/90 !text-hole !border-hole">Mia 观察</span>
+				</div>
+				<svg viewBox="0 0 240 40" class="w-full h-10">
+					<polyline fill="none" stroke="#D6BFEA" stroke-width="2"
+						points="0,28 20,20 40,32 60,25 80,30 100,22 120,18 140,25 160,12 180,20 200,15 220,10 240,15" />
+				</svg>
+				<div class="flex justify-between text-[9px] text-white/60 mt-1">
+					<span>4月初</span>
+					<span>4月中</span>
+					<span>4月末</span>
+				</div>
+				<p class="text-[11px] text-white/80 mt-3 chinese-serif leading-relaxed">
+					"你这 30 天有 8 次情绪低谷，但都稳定回升了。特别是上周三之后，状态越来越好 ✨" — Mia
+				</p>
+			</div>
+		</div>
+	</section>
+
+</div>
+
+<script>
+	function switchTab(name) {
+		$('.tab-btn').removeClass('active').addClass('text-muted');
+		$('.tab-content').removeClass('active');
+
+		if (name === 'hole') $('.tab-btn').eq(0).removeClass('text-muted').addClass('active');
+		if (name === 'write') $('.tab-btn').eq(1).removeClass('text-muted').addClass('active');
+		if (name === 'my') $('.tab-btn').eq(2).removeClass('text-muted').addClass('active');
+
+		$('#tab_' + name).addClass('active');
+		window.scrollTo(0, 0);
+	}
+
+	$(function () {
+		$('.tag-pill').on('click', function () {
+			const parent = $(this).parent();
+			if (parent.find('.tag-pill.selected').length > 0) {
+				parent.find('.tag-pill').removeClass('selected');
+			}
+			$(this).toggleClass('selected');
+		});
+	});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>与老师对话 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.3s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		@keyframes typing {
+			0%, 20% { opacity: 0.3; }
+			50% { opacity: 1; }
+			100% { opacity: 0.3; }
+		}
+		.typing-dot { animation: typing 1.2s infinite; display: inline-block; }
+		.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+		.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.chat-bubble-ai {
+			background: white;
+			border: 1px solid #E5DDD0;
+			border-top-left-radius: 4px;
+		}
+		.chat-bubble-user {
+			background: #8B6914;
+			color: white;
+			border-top-right-radius: 4px;
+		}
+
+		.quick-prompt {
+			background: white;
+			border: 1px solid #E5DDD0;
+			transition: all 0.2s;
+			white-space: nowrap;
+		}
+		.quick-prompt:hover {
+			border-color: #C9A96E;
+			background: #FDF8F0;
+		}
+
+		.chat-input { width: 100%; padding: 10px 40px 10px 16px; border-radius: 22px; background: white; border: 1px solid #E5DDD0; font-size: 14px; outline: none; }
+		.chat-input:focus { border-color: #C9A96E; }
+
+		.memory-bar { background: linear-gradient(90deg, rgba(201,169,110,0.15) 0%, rgba(201,169,110,0.05) 100%); }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.scroll-x { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+
+		.attach-btn { transition: all 0.2s; }
+		.attach-btn:hover { background: #FDF8F0; border-color: #C9A96E; }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen flex flex-col" style="min-height: 100vh;">
+
+	<!-- Header: 老师资料 -->
+	<header class="sticky top-0 bg-white z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center gap-3 px-4 py-3">
+			<a href="companion.html" class="text-muted">←</a>
+			<div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-xl flex-shrink-0">👩‍🏫</div>
+			<div class="flex-1 min-w-0">
+				<div class="flex items-center gap-1">
+					<span class="font-bold text-sm">Lily 老师</span>
+					<span class="w-1.5 h-1.5 bg-green-500 rounded-full pulse-dot"></span>
+				</div>
+				<div class="text-[10px] text-muted truncate">语文 AI 特级 · 已陪伴你 30 天 · 317 次对话</div>
+			</div>
+			<button class="text-lg">⋯</button>
+		</div>
+
+		<!-- 记忆条 · 让学生感受到"老师记得我" -->
+		<div class="memory-bar px-4 py-2 flex items-center gap-2 border-t border-[#E5DDD0]">
+			<span class="text-[10px]">🧠</span>
+			<div class="text-[10px] text-brand flex-1 truncate">Lily 记得你：议论文立意进步明显 · 正在突破"结尾套话" · 最近 3 篇作文平均 46 分</div>
+		</div>
+	</header>
+
+	<!-- Chat Messages -->
+	<main class="flex-1 px-4 pt-4 pb-32 space-y-4 overflow-y-auto">
+
+		<!-- 日期分割线 -->
+		<div class="text-center text-[10px] text-muted my-2">── 2026-04-22 早上 08:15 ──</div>
+
+		<!-- AI 消息 · 早安问候 -->
+		<div class="flex items-start gap-2 fade-in">
+			<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-base flex-shrink-0">👩‍🏫</div>
+			<div class="flex-1">
+				<div class="chat-bubble-ai rounded-2xl p-3">
+					<p class="text-sm text-ink leading-relaxed chinese-serif">早上好吕同学 ☀️<br/>昨天你交的那篇《论"躺平"与"内卷"》我看完了。先说好的地方：你能想到用<span class="font-bold text-brand">《庄子·逍遥游》</span>里"无所待"来解构"内卷"，这个立意很高级。<br/><br/>但是有一处我想问问你 —— 你在第三段说"躺平是消极的表现"，这一句话有点武断。你是真的这么认为，还是怕立意太新被扣分？</p>
+				</div>
+				<div class="text-[10px] text-muted mt-1 ml-2">08:15</div>
+			</div>
+		</div>
+
+		<!-- User 消息 -->
+		<div class="flex items-start gap-2 justify-end fade-in">
+			<div class="flex-1 flex justify-end">
+				<div class="max-w-[80%]">
+					<div class="chat-bubble-user rounded-2xl p-3">
+						<p class="text-sm leading-relaxed">老师，其实我觉得躺平有时候也是一种反抗。但我怕写出来老师会扣分...</p>
+					</div>
+					<div class="text-[10px] text-muted mt-1 text-right mr-2">08:17</div>
+				</div>
+			</div>
+			<div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold flex-shrink-0">吕</div>
+		</div>
+
+		<!-- AI 消息 -->
+		<div class="flex items-start gap-2 fade-in">
+			<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-base flex-shrink-0">👩‍🏫</div>
+			<div class="flex-1">
+				<div class="chat-bubble-ai rounded-2xl p-3">
+					<p class="text-sm text-ink leading-relaxed chinese-serif">
+						这就是我要跟你说的。<span class="font-bold text-brand">高考阅卷老师最怕的不是观点"新"，是观点"空"</span>。<br/><br/>
+						你可以这样写：<br/>
+						"躺平不是放弃，而是对无意义消耗的<span class="underline text-danger">一种清醒拒绝</span>。"<br/><br/>
+						然后举 <span class="font-bold">陶渊明"归去来兮"</span>的例子 —— 他"躺"了，但是他活出了自己。这样的立意既新，又有古典文脉支撑，阅卷老师会眼前一亮。<br/><br/>
+						试试重写第三段，发我看看？
+					</p>
+				</div>
+				<div class="flex items-center gap-3 mt-2 ml-2 text-[10px] text-muted">
+					<span class="cursor-pointer hover:text-brand">🔊 听语音</span>
+					<span class="cursor-pointer hover:text-brand">📋 复制</span>
+					<span class="cursor-pointer hover:text-brand">👍 有帮助</span>
+					<span>08:18</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- User 消息 + 附件 (图片) -->
+		<div class="flex items-start gap-2 justify-end fade-in">
+			<div class="flex-1 flex justify-end">
+				<div class="max-w-[80%]">
+					<!-- 图片附件 -->
+					<div class="mb-2 rounded-xl overflow-hidden border-2 border-brand">
+						<div class="aspect-[4/3] bg-cream flex items-center justify-center text-muted text-xs">
+							📸 [作文照片 · 第三段重写]
+						</div>
+					</div>
+					<div class="chat-bubble-user rounded-2xl p-3">
+						<p class="text-sm leading-relaxed">老师，我重写了第三段，请您看看这样改可以吗？</p>
+					</div>
+					<div class="text-[10px] text-muted mt-1 text-right mr-2">08:35</div>
+				</div>
+			</div>
+			<div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold flex-shrink-0">吕</div>
+		</div>
+
+		<!-- AI 消息 -->
+		<div class="flex items-start gap-2 fade-in">
+			<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-base flex-shrink-0">👩‍🏫</div>
+			<div class="flex-1">
+				<div class="chat-bubble-ai rounded-2xl p-3">
+					<p class="text-sm text-ink leading-relaxed chinese-serif">
+						进步很大！✨ 我能看到你真的理解了我上周跟你说的<span class="font-bold text-brand">"辩证思维"</span>——你没有一刀切地评判"躺平"，而是给了一个清醒的视角。<br/><br/>
+						<span class="font-bold">两处细节建议：</span><br/>
+						① "对无意义消耗"改成 "<span class="text-danger">对无意义消耗</span>的清醒拒绝"更有力度（加"的"字）<br/>
+						② 陶渊明的例子可以再加一句背景 —— 他是辞官归田的，这个"主动选择"是关键<br/><br/>
+						建议你把整篇交上来，我做完整批改 📝
+					</p>
+				</div>
+				<div class="flex items-center gap-3 mt-2 ml-2 text-[10px] text-muted">
+					<a href="companion-essay.html" class="cursor-pointer text-brand underline">📝 去作文批改页</a>
+					<span>08:36</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- 输入中 -->
+		<div class="flex items-start gap-2 fade-in">
+			<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-base flex-shrink-0">👩‍🏫</div>
+			<div class="chat-bubble-ai rounded-2xl px-4 py-3">
+				<span class="typing-dot text-brand">●</span>
+				<span class="typing-dot text-brand">●</span>
+				<span class="typing-dot text-brand">●</span>
+			</div>
+		</div>
+
+	</main>
+
+	<!-- Bottom: 快速提问 + 输入框 -->
+	<div class="fixed bottom-0 left-0 right-0 bg-cream/95 backdrop-blur border-t border-[#E5DDD0] z-50">
+		<div class="max-w-[480px] mx-auto">
+
+			<!-- 快速提问 -->
+			<div class="px-4 pt-3 pb-2">
+				<div class="scroll-x">
+					<button class="quick-prompt text-xs px-3 py-1.5 rounded-full">📝 交作文</button>
+					<button class="quick-prompt text-xs px-3 py-1.5 rounded-full">💡 议论文立意</button>
+					<button class="quick-prompt text-xs px-3 py-1.5 rounded-full">📖 今日古诗文</button>
+					<button class="quick-prompt text-xs px-3 py-1.5 rounded-full">🎯 推荐高级素材</button>
+					<button class="quick-prompt text-xs px-3 py-1.5 rounded-full">📚 私房素材库</button>
+				</div>
+			</div>
+
+			<!-- 输入栏 -->
+			<div class="px-4 pb-3 flex items-center gap-2">
+				<button class="attach-btn w-10 h-10 bg-white rounded-full border border-[#E5DDD0] flex items-center justify-center text-lg flex-shrink-0">📎</button>
+				<div class="relative flex-1">
+					<input type="text" placeholder="问 Lily 老师..." class="chat-input" id="chat_input">
+					<button id="send_btn" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-brand text-white rounded-full text-sm hover:bg-[#6B4F0F]">↑</button>
+				</div>
+				<button class="attach-btn w-10 h-10 bg-white rounded-full border border-[#E5DDD0] flex items-center justify-center text-lg flex-shrink-0">🎤</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script>
+	$(function () {
+		$('#send_btn').on('click', function () {
+			const text = $('#chat_input').val().trim();
+			if (!text) return;
+			$('#chat_input').val('');
+		});
+
+		$('#chat_input').on('keypress', function (e) {
+			if (e.which === 13) $('#send_btn').click();
+		});
+	});
+</script>
+
+</body>
+</html>

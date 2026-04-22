@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2025 高考真题库 · Me Offer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+	body { font-family: -apple-system, "PingFang SC", sans-serif; background: #FDF8F0; color: #1A1A1A; }
+	.question-card { background: white; border: 1px solid #E5DDD0; border-radius: 10px; padding: 20px; margin-bottom: 18px; box-shadow: 0 1px 3px rgba(139,105,20,0.06); }
+	.q-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #E5DDD0; }
+	.q-no { font-weight: 700; color: #8B6914; font-size: 15px; }
+	.q-type { font-size: 11px; background: #FDF8F0; color: #8B6914; padding: 3px 10px; border-radius: 10px; }
+	.q-stem { line-height: 1.85; margin: 10px 0 14px; font-size: 14.5px; }
+	.q-stem .q-table { border-collapse: collapse; margin: 12px 0; background: #FDF8F0; }
+	.q-stem .q-table th, .q-stem .q-table td { border: 1px solid #8B6914; padding: 6px 14px; text-align: center; font-size: 13px; }
+	.q-stem .q-table th { background: #8B6914; color: white; font-weight: 700; }
+	.q-image { display: block; max-width: 100%; margin: 12px auto; border: 1px solid #E5DDD0; border-radius: 4px; background: white; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
+	.option { padding: 8px 14px; margin: 5px 0; background: #FDF8F0; border-radius: 6px; line-height: 1.6; font-size: 14px; }
+	.option-label { font-weight: 700; color: #8B6914; margin-right: 6px; }
+	.divider { margin: 16px 0; border-top: 1px dashed #E5DDD0; }
+	.answer-block { background: #E8F5E9; border-left: 4px solid #22C55E; padding: 12px 16px; border-radius: 4px; margin-top: 12px; }
+	.answer-block-full { background: #E8F5E9; border-left: 4px solid #22C55E; padding: 12px 16px; border-radius: 4px; margin-top: 10px; line-height: 1.8; font-size: 14px; white-space: pre-wrap; }
+	.analysis-block { background: #FFF4E6; border-left: 4px solid #C9A96E; padding: 14px 16px; border-radius: 4px; margin-top: 10px; line-height: 1.85; font-size: 13.5px; white-space: pre-wrap; }
+	.analysis-block strong { color: #8B6914; }
+	.badge-real { background: #22C55E; color: white; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 700; }
+	.source-hint { font-size: 11px; color: #999; margin-top: 8px; padding-top: 8px; border-top: 1px dotted #eee; }
+	.filter-btn { border: 1px solid #8B6914; font-weight: 600; transition: all 0.15s; }
+	.filter-btn.active { background: #8B6914; color: white; }
+	.filter-btn:not(.active) { background: white; color: #8B6914; }
+	.filter-btn:not(.active):hover { background: #FDF8F0; }
+</style>
+</head>
+<body>
+<div class="max-w-3xl mx-auto p-4">
+
+	<div class="mb-5">
+		<div class="flex items-center gap-3 mb-2">
+			<h1 class="text-xl font-bold">2025 高考真题库</h1>
+			<span class="badge-real">✓ 官方答案+详解</span>
+		</div>
+		<p class="text-xs text-gray-500" id="source-label">来源：cdn.gaokzx.com（北京高考在线团队 · 官方答案+详解版）</p>
+	</div>
+
+	<div class="mb-3">
+		<div class="text-xs text-gray-500 mb-1.5">省份</div>
+		<div class="flex gap-2 flex-wrap">
+			<button data-province="beijing" class="province-btn active px-3 py-1.5 rounded text-sm filter-btn">北京</button>
+			<button data-province="shandong" class="province-btn px-3 py-1.5 rounded text-sm filter-btn">山东</button>
+		</div>
+	</div>
+	<div class="mb-4">
+		<div class="text-xs text-gray-500 mb-1.5">科目</div>
+		<div class="flex gap-2 flex-wrap">
+			<button data-subject="biology" class="subject-btn active px-3 py-1.5 rounded text-sm filter-btn">生物</button>
+			<button data-subject="politics" class="subject-btn px-3 py-1.5 rounded text-sm filter-btn">政治</button>
+			<button data-subject="history" class="subject-btn px-3 py-1.5 rounded text-sm filter-btn">历史</button>
+			<button data-subject="geography" class="subject-btn px-3 py-1.5 rounded text-sm filter-btn">地理</button>
+		</div>
+	</div>
+
+	<div id="meta" class="text-xs text-gray-500 mb-3"></div>
+	<div id="loading" class="hidden text-center py-6 text-gray-500">加载中...</div>
+	<div id="list"></div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+	let current_province = 'beijing';
+	let current_subject = 'biology';
+
+	function escape_html(s) {
+		if (!s) return '';
+		return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	}
+
+	function render_stem(stem) {
+		// stem 可能含 <table> HTML，不能 escape
+		// 其他文本 escape，但保留 <table>/</table>/<tr>/<td>/<th>/<thead>/<tbody>
+		// 简单策略：先把 table 块提取出来，再对其余 escape
+		const tables = [];
+		let stem_with_placeholders = stem.replace(/<table[\s\S]*?<\/table>/g, function(m) {
+			tables.push(m);
+			return '\u0000TABLE' + (tables.length - 1) + '\u0000';
+		});
+		let escaped = escape_html(stem_with_placeholders);
+		// 换行变 <br>
+		escaped = escaped.replace(/\n/g, '<br>');
+		// 还原表格
+		escaped = escaped.replace(/\u0000TABLE(\d+)\u0000/g, function(_, i) {
+			return tables[parseInt(i, 10)];
+		});
+		return escaped;
+	}
+
+	function format_analysis(text) {
+		if (!text) return '';
+		let t = escape_html(text);
+		// 【xxx】加粗
+		t = t.replace(/【([^】]+)】/g, '<strong>【$1】</strong>');
+		t = t.replace(/\n/g, '<br>');
+		return t;
+	}
+
+	function render_question(q) {
+		const $c = $('<div class="question-card"></div>');
+
+		const $h = $('<div class="q-header"></div>');
+		$h.append('<span class="q-no">第 ' + q.no + ' 题</span>');
+		$h.append('<span class="q-type">' + escape_html(q.type) + '</span>');
+		$c.append($h);
+
+		$c.append('<div class="q-stem">' + render_stem(q.stem) + '</div>');
+
+		for (const img of q.stem_images || []) {
+			if (img.endsWith('.wmf')) continue;
+			$c.append('<img class="q-image" src="' + img + '" alt="题图" loading="lazy">');
+		}
+
+		if (q.options && q.options.length) {
+			const $o = $('<div class="options"></div>');
+			for (const o of q.options) {
+				$o.append(
+					'<div class="option"><span class="option-label">' + o.label + '.</span>' +
+					escape_html(o.text) + '</div>'
+				);
+			}
+			$c.append($o);
+		}
+
+		// 答案 + 详解
+		if (q.answer || q.answer_full || q.analysis) {
+			$c.append('<div class="divider"></div>');
+		}
+
+		if (q.answer_full && q.answer_full !== q.answer) {
+			// 多问题的主观题用 answer_full（含各小问）
+			$c.append(
+				'<div class="answer-block-full"><strong>✅ 参考答案：</strong><br>' +
+				escape_html(q.answer_full).replace(/\n/g, '<br>') + '</div>'
+			);
+		} else if (q.answer) {
+			$c.append(
+				'<div class="answer-block"><strong>✅ 参考答案：</strong>' +
+				escape_html(q.answer) + '</div>'
+			);
+		}
+
+		if (q.analysis) {
+			$c.append(
+				'<div class="analysis-block"><strong>📖 详细解析</strong><br>' +
+				format_analysis(q.analysis) + '</div>'
+			);
+		}
+
+		for (const img of q.analysis_images || []) {
+			if (img.endsWith('.wmf')) continue;
+			$c.append('<img class="q-image" src="' + img + '" alt="解析图" loading="lazy">');
+		}
+
+		if (q.source_pdf) {
+			$c.append('<div class="source-hint">源 PDF：' + escape_html(q.source_pdf) + '</div>');
+		}
+
+		return $c;
+	}
+
+	async function load_questions() {
+		$('#loading').removeClass('hidden');
+		$('#list').empty();
+
+		const url = '/api/gaokao/questions?province=' + current_province + '&subject=' + current_subject + '&year=2025';
+		let data;
+		try {
+			const resp = await fetch(url);
+			data = await resp.json();
+		} catch (e) {
+			$('#loading').text('加载失败：' + e.message);
+			return;
+		}
+		$('#loading').addClass('hidden');
+
+		const ans_count = data.questions.filter(function(q) { return q.answer || q.answer_full; }).length;
+		const ana_count = data.questions.filter(function(q) { return q.analysis; }).length;
+		const img_count = data.questions.reduce(function(s, q) {
+			return s + (q.stem_images || []).length + (q.analysis_images || []).length;
+		}, 0);
+		const tab_count = data.questions.filter(function(q) { return q.stem_has_table; }).length;
+
+		$('#meta').text(
+			data.province + ' · ' + data.subject + ' · ' + data.year +
+			' · ' + data.count + ' 题 · ' + ans_count + ' 题有答案 · ' + ana_count + ' 题有详解 · ' +
+			img_count + ' 图 · ' + tab_count + ' 表'
+		);
+		if (data.source) $('#source-label').text('来源：' + data.source);
+
+		const $list = $('#list');
+		for (const q of data.questions) {
+			$list.append(render_question(q));
+		}
+	}
+
+	$(document).on('click', '.province-btn', function() {
+		current_province = $(this).data('province');
+		$('.province-btn').removeClass('active');
+		$(this).addClass('active');
+		load_questions();
+	});
+
+	$(document).on('click', '.subject-btn', function() {
+		current_subject = $(this).data('subject');
+		$('.subject-btn').removeClass('active');
+		$(this).addClass('active');
+		load_questions();
+	});
+
+	$(function() { load_questions(); });
+</script>
+</body>
+</html>

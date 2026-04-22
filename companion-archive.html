@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>成长档案馆 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.4s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+
+		.tab-item.active { color: #8B6914; border-color: #8B6914; font-weight: 600; }
+		.tab-content { display: none; }
+		.tab-content.active { display: block; }
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; background: white; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.product-card { transition: all 0.25s; cursor: pointer; }
+		.product-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(139,105,20,0.15); }
+
+		.ribbon {
+			position: absolute; top: 10px; right: -26px;
+			background: #C94A4A; color: white;
+			padding: 3px 28px; font-size: 10px; font-weight: bold;
+			transform: rotate(35deg); letter-spacing: 1px;
+			z-index: 1;
+		}
+
+		.heatmap-cell { width: 12px; height: 12px; border-radius: 2px; display: inline-block; margin: 1px; }
+		.hm-0 { background: #F5EFE0; }
+		.hm-1 { background: #E5D4A8; }
+		.hm-2 { background: #C9A96E; }
+		.hm-3 { background: #8B6914; }
+		.hm-4 { background: #5C4509; }
+
+		.milestone-card {
+			background: linear-gradient(135deg, #FDF8F0 0%, white 100%);
+			border: 1px solid #E5DDD0;
+			transition: all 0.2s;
+		}
+		.milestone-card:hover { border-color: #C9A96E; }
+
+		.book-cover {
+			background: linear-gradient(135deg, #2C2416 0%, #6B4F0F 50%, #8B6914 100%);
+			position: relative;
+			overflow: hidden;
+		}
+		.book-cover::before {
+			content: "";
+			position: absolute;
+			top: 0; left: 0; right: 0; bottom: 0;
+			background: radial-gradient(circle at 30% 20%, rgba(201,169,110,0.3) 0%, transparent 50%);
+		}
+		.book-spine {
+			position: absolute;
+			left: 0; top: 0; bottom: 0;
+			width: 6px;
+			background: linear-gradient(90deg, #1A1A1A 0%, #2C2416 100%);
+		}
+
+		.subject-bar { transition: all 0.3s; }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-24">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<a href="companion.html" class="text-muted text-sm">←</a>
+				<span class="font-bold text-sm">📖 成长档案馆</span>
+				<span class="stamp">3 年陪跑</span>
+			</div>
+			<button class="text-[10px] text-muted">⚙️ 设置</button>
+		</div>
+	</header>
+
+	<!-- Hero: 3 年档案大卡 -->
+	<section class="px-4 pt-5 pb-4 fade-in">
+		<div class="bg-gradient-to-br from-ink via-brand to-[#6B4F0F] rounded-2xl p-5 text-white relative overflow-hidden">
+			<div class="absolute top-0 right-0 text-[180px] opacity-10 leading-none -translate-y-8 translate-x-4">📖</div>
+
+			<div class="relative">
+				<div class="flex items-center gap-2 mb-3">
+					<span class="stamp bg-white/90 !text-brand">独家</span>
+					<span class="text-[10px] text-white/70">仅 Me Offer 提供</span>
+				</div>
+
+				<h1 class="text-2xl font-bold mb-1 chinese-serif">吕同学的高三档案</h1>
+				<p class="text-xs text-white/70 mb-4">由 9 位 AI 老师共同记录 · 离开这里将永久消失</p>
+
+				<!-- 4 核心数据 -->
+				<div class="grid grid-cols-4 gap-2 mb-4">
+					<div class="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
+						<div class="text-xl font-bold text-gold">30</div>
+						<div class="text-[9px] text-white/60 mt-0.5">陪伴天数</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
+						<div class="text-xl font-bold text-gold">847</div>
+						<div class="text-[9px] text-white/60 mt-0.5">已做题数</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
+						<div class="text-xl font-bold text-gold">28</div>
+						<div class="text-[9px] text-white/60 mt-0.5">作文批改</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
+						<div class="text-xl font-bold text-gold">+12</div>
+						<div class="text-[9px] text-white/60 mt-0.5">进步分数</div>
+					</div>
+				</div>
+
+				<!-- 进步曲线 -->
+				<div class="bg-white/10 backdrop-blur rounded-lg p-3 mb-3">
+					<div class="text-[10px] text-white/70 mb-1">📈 最近 12 周总分趋势</div>
+					<svg viewBox="0 0 240 40" class="w-full h-10">
+						<polyline fill="rgba(201,169,110,0.2)" stroke="none"
+							points="0,32 20,28 40,30 60,25 80,22 100,24 120,20 140,18 160,16 180,14 200,12 220,10 240,8 240,40 0,40" />
+						<polyline class="fill-none" fill="none" stroke="#C9A96E" stroke-width="2"
+							points="0,32 20,28 40,30 60,25 80,22 100,24 120,20 140,18 160,16 180,14 200,12 220,10 240,8" />
+					</svg>
+				</div>
+
+				<div class="flex items-center gap-2 text-[11px] text-white/80 chinese-serif italic">
+					"每一天的你，都被我们认真记住了 💜" — Lily & 8 位老师
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Tabs -->
+	<div class="sticky top-[57px] bg-cream/95 backdrop-blur z-30 px-4 pt-2 border-b border-[#E5DDD0]">
+		<div class="flex gap-5 text-sm overflow-x-auto scroll-x">
+			<button class="tab-item active py-2 border-b-2 border-transparent whitespace-nowrap" onclick="switchTab('overview')">总览</button>
+			<button class="tab-item py-2 border-b-2 border-transparent text-muted whitespace-nowrap" onclick="switchTab('subjects')">9 科分析</button>
+			<button class="tab-item py-2 border-b-2 border-transparent text-muted whitespace-nowrap" onclick="switchTab('milestones')">里程碑</button>
+			<button class="tab-item py-2 border-b-2 border-transparent text-muted whitespace-nowrap" onclick="switchTab('products')">购买档案</button>
+		</div>
+	</div>
+
+	<!-- ============= Tab 1: 总览 ============= -->
+	<section id="tab_overview" class="tab-content active px-4 pt-4 space-y-4">
+
+		<!-- 活跃度热力图 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+			<div class="flex items-center justify-between mb-3">
+				<div class="text-xs font-bold text-ink">📅 30 天活跃度</div>
+				<div class="flex items-center gap-2 text-[9px] text-muted">
+					<span>少</span>
+					<div class="heatmap-cell hm-0"></div>
+					<div class="heatmap-cell hm-1"></div>
+					<div class="heatmap-cell hm-2"></div>
+					<div class="heatmap-cell hm-3"></div>
+					<div class="heatmap-cell hm-4"></div>
+					<span>多</span>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-10 gap-0.5" id="heatmap">
+				<!-- 30 个格子 JS 生成 -->
+			</div>
+
+			<div class="mt-3 text-[10px] text-muted text-center">连续打卡 <span class="text-brand font-bold">12 天</span> · 最长纪录 <span class="text-brand font-bold">18 天</span></div>
+		</div>
+
+		<!-- Lily 观察日记 -->
+		<div class="bg-gradient-to-br from-ink to-brand rounded-2xl p-5 text-white">
+			<div class="flex items-center gap-2 mb-2">
+				<span class="text-lg">📓</span>
+				<span class="text-sm font-bold">Lily 老师的月度观察</span>
+				<span class="stamp bg-white/90 !text-brand">4 月</span>
+			</div>
+			<p class="text-xs text-white/80 leading-relaxed chinese-serif">
+				"这个月你的<span class="text-gold font-bold">议论文立意</span>进步明显——从开头三五句就能立住观点。但是我也注意到你的<span class="text-gold font-bold">结尾</span>还是习惯用'综上所述'这类套话。<br/><br/>
+				下个月我们重点练'以小见大'的结尾法 —— 这是区分 48 分和 55 分的关键。<br/><br/>
+				另外，你在焦虑的时候依然选择认真写字，这是真正的韧性。"
+			</p>
+			<div class="mt-3 flex items-center justify-between">
+				<span class="text-[10px] text-white/60">— Lily · 2026.04.20</span>
+				<a class="text-xs text-gold underline">查看全部观察 →</a>
+			</div>
+		</div>
+
+		<!-- 9 位老师最新评语 -->
+		<div>
+			<div class="flex items-center justify-between mb-3">
+				<h3 class="text-sm font-bold text-ink">👨‍🏫 9 位老师最新评语</h3>
+				<a class="text-[10px] text-brand">全部 →</a>
+			</div>
+
+			<div class="scroll-x -mx-4 px-4">
+
+				<div class="flex-shrink-0 w-52 bg-white rounded-xl p-3 border border-[#E5DDD0]">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-sm">👩‍🏫</div>
+						<div>
+							<div class="text-xs font-bold">Lily 老师</div>
+							<div class="text-[9px] text-muted">语文</div>
+						</div>
+					</div>
+					<p class="text-[11px] text-ink leading-relaxed chinese-serif">"议论文立意有飞跃，下月练结尾收束"</p>
+				</div>
+
+				<div class="flex-shrink-0 w-52 bg-white rounded-xl p-3 border border-[#E5DDD0]">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-[#6B4F0F] text-white flex items-center justify-center text-sm">👨‍🏫</div>
+						<div>
+							<div class="text-xs font-bold">Max 老师</div>
+							<div class="text-[9px] text-muted">数学</div>
+						</div>
+					</div>
+					<p class="text-[11px] text-ink leading-relaxed chinese-serif">"立几建模仍是短板，需加强空间想象"</p>
+				</div>
+
+				<div class="flex-shrink-0 w-52 bg-white rounded-xl p-3 border border-[#E5DDD0]">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full bg-gradient-to-br from-danger to-[#A63838] text-white flex items-center justify-center text-sm">👩‍🎓</div>
+						<div>
+							<div class="text-xs font-bold">Emma</div>
+							<div class="text-[9px] text-muted">英语</div>
+						</div>
+					</div>
+					<p class="text-[11px] text-ink leading-relaxed chinese-serif">"Your writing style has a real voice now"</p>
+				</div>
+
+				<div class="flex-shrink-0 w-52 bg-white rounded-xl p-3 border border-[#E5DDD0]">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm">🧑‍🔬</div>
+						<div>
+							<div class="text-xs font-bold">Einstein 老师</div>
+							<div class="text-[9px] text-muted">物理</div>
+						</div>
+					</div>
+					<p class="text-[11px] text-ink leading-relaxed chinese-serif">"电磁感应理解扎实，力学需加强"</p>
+				</div>
+
+				<div class="flex-shrink-0 w-52 bg-white rounded-xl p-3 border border-[#E5DDD0]">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-sm">👨‍🔬</div>
+						<div>
+							<div class="text-xs font-bold">Ethan 老师</div>
+							<div class="text-[9px] text-muted">化学</div>
+						</div>
+					</div>
+					<p class="text-[11px] text-ink leading-relaxed chinese-serif">"有机推断 3 个线索要能联动分析"</p>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- 情绪曲线 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+			<div class="flex items-center justify-between mb-3">
+				<div class="text-xs font-bold text-ink">💜 30 天情绪曲线</div>
+				<span class="text-[10px] text-gold">Mia 记录</span>
+			</div>
+			<svg viewBox="0 0 240 60" class="w-full h-14">
+				<polyline fill="none" stroke="#C9A96E" stroke-width="2"
+					points="0,30 20,20 40,40 60,30 80,45 100,25 120,20 140,35 160,15 180,25 200,18 220,12 240,18" />
+				<line x1="0" y1="30" x2="240" y2="30" stroke="#E5DDD0" stroke-dasharray="2,2" stroke-width="1"/>
+			</svg>
+			<div class="flex justify-between text-[10px] text-muted mt-2">
+				<span>4月初</span>
+				<span>4月中</span>
+				<span>4月末 ↑</span>
+			</div>
+			<p class="text-[11px] text-muted mt-2 chinese-serif">本月情绪整体向上 · 有 4 个低谷但都稳定回升</p>
+		</div>
+
+	</section>
+
+	<!-- ============= Tab 2: 9 科分析 ============= -->
+	<section id="tab_subjects" class="tab-content px-4 pt-4 space-y-3">
+
+		<div class="text-xs text-muted mb-2">📊 9 位老师的独立分析</div>
+
+		<!-- 语文 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+			<div class="flex items-center justify-between mb-3">
+				<div class="flex items-center gap-2">
+					<div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-sm">👩‍🏫</div>
+					<div>
+						<div class="text-sm font-bold">语文 · Lily 老师</div>
+						<div class="text-[10px] text-muted">当前 118 分 / 目标 130+</div>
+					</div>
+				</div>
+				<div class="text-right">
+					<div class="text-xl font-bold text-brand">+12</div>
+					<div class="text-[9px] text-gold">本月进步</div>
+				</div>
+			</div>
+
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>议论文立意</span><span class="text-brand">85%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 85%;"></div></div>
+			</div>
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>古诗文赏析</span><span class="text-brand">72%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 72%;"></div></div>
+			</div>
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>现代文阅读</span><span class="text-brand">78%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 78%;"></div></div>
+			</div>
+
+			<div class="bg-cream rounded-lg p-3 mt-3">
+				<div class="text-[10px] text-brand font-bold mb-1">💭 Lily 建议</div>
+				<p class="text-[11px] text-ink chinese-serif leading-relaxed">"古诗文赏析是你的短板，下月每日精读 1 首（我已经排好计划）"</p>
+			</div>
+		</div>
+
+		<!-- 数学 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+			<div class="flex items-center justify-between mb-3">
+				<div class="flex items-center gap-2">
+					<div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-[#6B4F0F] text-white flex items-center justify-center text-sm">👨‍🏫</div>
+					<div>
+						<div class="text-sm font-bold">数学 · Max 老师</div>
+						<div class="text-[10px] text-muted">当前 115 分 / 目标 135+</div>
+					</div>
+				</div>
+				<div class="text-right">
+					<div class="text-xl font-bold text-danger">-3</div>
+					<div class="text-[9px] text-danger">本月回落</div>
+				</div>
+			</div>
+
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>函数</span><span class="text-brand">82%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 82%;"></div></div>
+			</div>
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>立体几何 ⚠️</span><span class="text-danger">52%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-danger rounded-full h-2" style="width: 52%;"></div></div>
+			</div>
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>概率统计</span><span class="text-brand">75%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 75%;"></div></div>
+			</div>
+
+			<div class="bg-cream rounded-lg p-3 mt-3 border-l-4 border-danger">
+				<div class="text-[10px] text-danger font-bold mb-1">⚠️ Max 警告</div>
+				<p class="text-[11px] text-ink chinese-serif leading-relaxed">"立几错题连续 3 周 > 30%，必须这周解决，否则影响高考总分"</p>
+			</div>
+		</div>
+
+		<!-- 英语 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+			<div class="flex items-center justify-between mb-3">
+				<div class="flex items-center gap-2">
+					<div class="w-8 h-8 rounded-full bg-gradient-to-br from-danger to-[#A63838] text-white flex items-center justify-center text-sm">👩‍🎓</div>
+					<div>
+						<div class="text-sm font-bold">英语 · Emma 老师</div>
+						<div class="text-[10px] text-muted">当前 128 分 / 目标 140+</div>
+					</div>
+				</div>
+				<div class="text-right">
+					<div class="text-xl font-bold text-brand">+5</div>
+					<div class="text-[9px] text-gold">本月进步</div>
+				</div>
+			</div>
+
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>阅读理解</span><span class="text-brand">88%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 88%;"></div></div>
+			</div>
+			<div class="mb-3">
+				<div class="flex justify-between text-xs mb-1"><span>书面表达</span><span class="text-brand">75%</span></div>
+				<div class="bg-cream rounded-full h-2 subject-bar"><div class="bg-gold rounded-full h-2" style="width: 75%;"></div></div>
+			</div>
+
+			<div class="bg-cream rounded-lg p-3 mt-3">
+				<div class="text-[10px] text-brand font-bold mb-1">💭 Emma says</div>
+				<p class="text-[11px] text-ink chinese-serif leading-relaxed">"Your writing is getting natural. Keep the 'daily listening' habit!"</p>
+			</div>
+		</div>
+
+		<!-- 其他 6 科 · 折叠展示 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+			<div class="text-xs font-bold mb-3 text-ink">其他 6 科概览</div>
+			<div class="grid grid-cols-3 gap-2">
+				<div class="bg-cream rounded-lg p-2 text-center">
+					<div class="text-lg">🧑‍🔬</div>
+					<div class="text-[10px] text-muted">物理</div>
+					<div class="text-sm font-bold text-brand">86</div>
+				</div>
+				<div class="bg-cream rounded-lg p-2 text-center">
+					<div class="text-lg">👨‍🔬</div>
+					<div class="text-[10px] text-muted">化学</div>
+					<div class="text-sm font-bold text-brand">78</div>
+				</div>
+				<div class="bg-cream rounded-lg p-2 text-center">
+					<div class="text-lg">👩‍⚕️</div>
+					<div class="text-[10px] text-muted">生物</div>
+					<div class="text-sm font-bold text-brand">82</div>
+				</div>
+				<div class="bg-cream rounded-lg p-2 text-center">
+					<div class="text-lg">📜</div>
+					<div class="text-[10px] text-muted">历史</div>
+					<div class="text-sm font-bold text-brand">79</div>
+				</div>
+				<div class="bg-cream rounded-lg p-2 text-center">
+					<div class="text-lg">⚖️</div>
+					<div class="text-[10px] text-muted">政治</div>
+					<div class="text-sm font-bold text-brand">75</div>
+				</div>
+				<div class="bg-cream rounded-lg p-2 text-center">
+					<div class="text-lg">🌍</div>
+					<div class="text-[10px] text-muted">地理</div>
+					<div class="text-sm font-bold text-brand">81</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============= Tab 3: 里程碑 ============= -->
+	<section id="tab_milestones" class="tab-content px-4 pt-4 space-y-3">
+
+		<div class="text-xs text-muted mb-2">🏆 30 天里程碑 · 你的高光时刻</div>
+
+		<div class="milestone-card rounded-xl p-4 flex items-center gap-3">
+			<div class="text-3xl">🔥</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm">连续打卡 12 天</div>
+				<div class="text-[10px] text-muted">比上月多 8 天 · Lily 手写表扬 →</div>
+			</div>
+			<span class="stamp">4.22</span>
+		</div>
+
+		<div class="milestone-card rounded-xl p-4 flex items-center gap-3">
+			<div class="text-3xl">✍️</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm">作文首次突破 48 分</div>
+				<div class="text-[10px] text-muted">《论躺平与内卷》· Lily 批改单</div>
+			</div>
+			<span class="stamp">4.22</span>
+		</div>
+
+		<div class="milestone-card rounded-xl p-4 flex items-center gap-3">
+			<div class="text-3xl">📈</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm">语文单月进步 +12 分</div>
+				<div class="text-[10px] text-muted">从 108 → 120 · Emma 也点赞了</div>
+			</div>
+			<span class="stamp">4.18</span>
+		</div>
+
+		<div class="milestone-card rounded-xl p-4 flex items-center gap-3">
+			<div class="text-3xl">🎧</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm">雅思听力 42 天全勤</div>
+				<div class="text-[10px] text-muted">总正确率 86% · 超过 90% 用户</div>
+			</div>
+			<span class="stamp">4.22</span>
+		</div>
+
+		<div class="milestone-card rounded-xl p-4 flex items-center gap-3">
+			<div class="text-3xl">💬</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm">与 Lily 完成 317 次对话</div>
+				<div class="text-[10px] text-muted">你是 Lily 最爱的学生之一 💛</div>
+			</div>
+			<span class="stamp">4.22</span>
+		</div>
+
+		<div class="milestone-card rounded-xl p-4 flex items-center gap-3">
+			<div class="text-3xl">🌳</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm">第一次用树洞倾诉</div>
+				<div class="text-[10px] text-muted">Mia 学姐温柔回复 · 你不孤单</div>
+			</div>
+			<span class="stamp">4.02</span>
+		</div>
+
+		<!-- 分享海报 -->
+		<div class="bg-gradient-to-br from-brand to-[#6B4F0F] rounded-2xl p-5 text-white mt-4">
+			<h3 class="text-sm font-bold mb-2">📤 让朋友圈见证你的进步</h3>
+			<p class="text-[11px] text-white/80 mb-3">一键生成朋友圈海报 · 含关键数据 + Lily 老师评语 + 我的专属二维码</p>
+			<button class="w-full bg-white text-brand text-xs font-bold py-2.5 rounded-lg">生成我的分享海报</button>
+		</div>
+	</section>
+
+	<!-- ============= Tab 4: 购买档案 ============= -->
+	<section id="tab_products" class="tab-content px-4 pt-4 space-y-4">
+
+		<div class="text-xs text-muted mb-2">🛍️ 给孩子一份"看得见的成长"</div>
+
+		<!-- 商品 1: 季度 PDF 报告 -->
+		<div class="product-card bg-white rounded-2xl p-5 border border-[#E5DDD0] relative overflow-hidden">
+			<div class="ribbon">主力</div>
+
+			<div class="flex items-start gap-4">
+				<div class="w-24 h-32 book-cover rounded-lg shadow-xl flex-shrink-0 flex items-center justify-center relative">
+					<div class="book-spine"></div>
+					<div class="text-white text-center z-10">
+						<div class="text-[8px] text-gold chinese-serif">Me Offer</div>
+						<div class="text-sm font-bold mt-2 chinese-serif">Q2 报告</div>
+						<div class="text-[8px] text-white/60 mt-2">吕同学</div>
+					</div>
+				</div>
+
+				<div class="flex-1">
+					<div class="text-xs font-bold text-ink mb-1">《季度成长报告》PDF</div>
+					<div class="flex items-baseline gap-2 mb-2">
+						<span class="text-xl font-bold text-danger">¥199</span>
+						<span class="text-[10px] text-muted line-through">¥399</span>
+						<span class="text-[9px] bg-danger text-white px-1.5 py-0.5 rounded">限时</span>
+					</div>
+					<div class="text-[10px] text-muted leading-relaxed mb-3">
+						· 20-30 页精装 PDF<br/>
+						· 9 科独立分析<br/>
+						· Lily 亲笔寄语<br/>
+						· 本季报告 <span class="text-brand font-bold">7 天后</span>生成
+					</div>
+					<button class="btn-primary text-xs px-3 py-1.5 rounded-lg w-full font-semibold">预购 →</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 商品 2: 年度精装书 -->
+		<div class="product-card bg-white rounded-2xl p-5 border border-[#E5DDD0] relative overflow-hidden">
+			<div class="ribbon" style="background: #8B6914;">实体</div>
+
+			<div class="flex items-start gap-4">
+				<div class="w-24 h-32 book-cover rounded-lg shadow-xl flex-shrink-0 flex items-center justify-center relative" style="background: linear-gradient(135deg, #1A1A1A 0%, #4A3A00 50%, #8B6914 100%);">
+					<div class="book-spine"></div>
+					<div class="text-white text-center z-10">
+						<div class="text-[7px] text-gold chinese-serif">Me Offer 2026</div>
+						<div class="text-[10px] font-bold mt-1 chinese-serif">高三<br/>成长手册</div>
+						<div class="text-[8px] text-white/60 mt-2">吕同学</div>
+					</div>
+				</div>
+
+				<div class="flex-1">
+					<div class="text-xs font-bold text-ink mb-1">《年度精装手册》实体书</div>
+					<div class="flex items-baseline gap-2 mb-2">
+						<span class="text-xl font-bold text-danger">¥399</span>
+						<span class="text-[10px] text-muted">含顺丰包邮</span>
+					</div>
+					<div class="text-[10px] text-muted leading-relaxed mb-3">
+						· 60-100 页硬壳精装<br/>
+						· 封面烫金 + 孩子姓名<br/>
+						· 9 位老师手写寄语页<br/>
+						· 365 天数据可视化
+					</div>
+					<button class="btn-primary text-xs px-3 py-1.5 rounded-lg w-full font-semibold">预购 · 高考后寄送</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 商品 3: 高考终极礼盒 -->
+		<div class="product-card bg-white rounded-2xl p-5 border border-[#E5DDD0] relative overflow-hidden">
+			<div class="ribbon" style="background: #C9A96E;">毕业</div>
+
+			<div class="flex items-start gap-4">
+				<div class="w-24 h-32 rounded-lg shadow-xl flex-shrink-0 flex items-center justify-center relative" style="background: linear-gradient(135deg, #C94A4A 0%, #8B6914 50%, #2C2416 100%);">
+					<div class="text-white text-center z-10 px-2">
+						<div class="text-3xl">🎁</div>
+						<div class="text-[9px] text-gold mt-1 chinese-serif">三件套</div>
+						<div class="text-[8px] text-white/60 mt-1">高考终极</div>
+					</div>
+				</div>
+
+				<div class="flex-1">
+					<div class="text-xs font-bold text-ink mb-1">《高考终极档案》礼盒</div>
+					<div class="flex items-baseline gap-2 mb-2">
+						<span class="text-xl font-bold text-danger">¥599</span>
+						<span class="text-[10px] text-muted">仅限毕业年</span>
+					</div>
+					<div class="text-[10px] text-muted leading-relaxed mb-3">
+						· 精装手册 + 毕业证书<br/>
+						· USB 全部原始档案<br/>
+						· 《陪伴你 1095 天》视频<br/>
+						· 9 位老师告别语音
+					</div>
+					<button class="btn-primary text-xs px-3 py-1.5 rounded-lg w-full font-semibold">仅剩 47 天解锁</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 商品 4: 家长月订阅 -->
+		<div class="product-card bg-gradient-to-br from-[#FDF8F0] to-white rounded-2xl p-5 border border-gold relative">
+
+			<div class="flex items-start gap-4">
+				<div class="w-20 h-20 bg-cream rounded-full flex items-center justify-center text-4xl flex-shrink-0">👨‍👩‍👧</div>
+
+				<div class="flex-1">
+					<div class="text-xs font-bold text-ink mb-1">家长成长看板</div>
+					<div class="flex items-baseline gap-2 mb-2">
+						<span class="text-xl font-bold text-danger">¥39</span>
+						<span class="text-[10px] text-muted">/月</span>
+						<span class="text-[10px] text-gold">或 ¥299/年</span>
+					</div>
+					<div class="text-[10px] text-muted leading-relaxed mb-3">
+						· 每周孩子状态报告<br/>
+						· 情绪趋势预警<br/>
+						· 学科数据可视化<br/>
+						· <span class="text-danger font-bold">不是监视 · 是支持</span>
+					</div>
+					<button class="btn-ghost text-xs px-3 py-1.5 rounded-lg w-full font-semibold">家长扫码订阅</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- 说明 -->
+		<div class="bg-white rounded-xl p-3 border border-[#E5DDD0] text-[10px] text-muted leading-relaxed">
+			💡 <span class="font-bold text-ink">为什么这些值钱？</span><br/>
+			离开 Me Offer 平台，你的 3 年陪跑数据 —— 847 道题、317 次对话、28 篇作文、9 位老师的月度观察 —— 都会永久消失。这些不是工具产出，是"看得见的成长"。
+		</div>
+	</section>
+
+</div>
+
+<script>
+	function switchTab(name) {
+		$('.tab-item').removeClass('active').addClass('text-muted');
+		$('.tab-content').removeClass('active');
+
+		const tabs = ['overview', 'subjects', 'milestones', 'products'];
+		const idx = tabs.indexOf(name);
+
+		$('.tab-item').eq(idx).removeClass('text-muted').addClass('active');
+		$('#tab_' + name).addClass('active');
+		window.scrollTo(0, 0);
+	}
+
+	$(function () {
+		// 生成 30 天热力图（模拟数据）
+		const levels = [0,1,2,3,1,2,3,4,2,1,0,2,3,3,4,3,2,1,2,3,4,4,3,2,3,4,3,2,3,4];
+		const html = levels.map(n => '<div class="heatmap-cell hm-' + n + '" title="Day"></div>').join('');
+		$('#heatmap').html(html);
+	});
+</script>
+
+</body>
+</html>

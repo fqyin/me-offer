@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>作文批改 · Lily 老师 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.4s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		@keyframes spin {
+			from { transform: rotate(0deg); }
+			to { transform: rotate(360deg); }
+		}
+		.spinner { animation: spin 1s linear infinite; }
+
+		@keyframes bounce-mild {
+			0%, 100% { transform: translateY(0); }
+			50% { transform: translateY(-4px); }
+		}
+		.bounce-mild { animation: bounce-mild 1.2s ease-in-out infinite; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.stamp-red { display: inline-block; border: 2px solid #C94A4A; color: #C94A4A; padding: 3px 10px; font-size: 11px; font-weight: bold; transform: rotate(-5deg); letter-spacing: 2px; font-family: Georgia, serif; }
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; background: white; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.tab-btn.active { background: #8B6914; color: white; }
+
+		.upload-zone {
+			border: 2px dashed #C9A96E;
+			background: repeating-linear-gradient(45deg, #FDF8F0, #FDF8F0 10px, white 10px, white 20px);
+			transition: all 0.2s;
+		}
+		.upload-zone:hover { background: #FDF8F0; border-color: #8B6914; }
+
+		.step-dot {
+			width: 24px; height: 24px;
+			border-radius: 50%;
+			display: flex; align-items: center; justify-content: center;
+			font-size: 11px; font-weight: bold;
+			background: #E5DDD0;
+			color: #8A8A8A;
+		}
+		.step-dot.active { background: #8B6914; color: white; }
+		.step-dot.done { background: #C9A96E; color: white; }
+
+		.step-line { height: 2px; flex: 1; background: #E5DDD0; }
+		.step-line.done { background: #C9A96E; }
+
+		.phase { display: none; }
+		.phase.active { display: block; }
+
+		/* 批改单样式 */
+		.correction-paper {
+			background:
+				linear-gradient(#FDF8F0, #FDF8F0),
+				repeating-linear-gradient(transparent, transparent 26px, #E5DDD0 26px, #E5DDD0 27px);
+			background-blend-mode: normal;
+			border: 1px solid #E5DDD0;
+			position: relative;
+		}
+
+		.red-mark {
+			color: #C94A4A;
+			border-bottom: 2px wavy #C94A4A;
+		}
+
+		.red-note {
+			color: #C94A4A;
+			font-family: 'Caveat', 'Kaiti SC', cursive;
+			font-style: italic;
+		}
+
+		.teacher-seal {
+			display: inline-block;
+			border: 3px solid #C94A4A;
+			color: #C94A4A;
+			padding: 8px 14px;
+			border-radius: 4px;
+			font-weight: bold;
+			font-family: 'STKaiti', 'Kaiti SC', serif;
+			letter-spacing: 2px;
+			transform: rotate(-4deg);
+			font-size: 14px;
+		}
+
+		.score-circle {
+			width: 72px; height: 72px;
+			border: 4px solid #C94A4A;
+			border-radius: 50%;
+			display: flex; align-items: center; justify-content: center;
+			flex-direction: column;
+			color: #C94A4A;
+			font-family: Georgia, serif;
+			font-weight: bold;
+			background: #FDF8F0;
+		}
+
+		.topic-card { transition: all 0.2s; cursor: pointer; }
+		.topic-card:hover { border-color: #C9A96E; background: #FDF8F0; }
+
+		textarea.essay-input {
+			width: 100%;
+			min-height: 280px;
+			padding: 16px;
+			border: 1px solid #E5DDD0;
+			border-radius: 12px;
+			background: white;
+			font-size: 14px;
+			line-height: 2;
+			font-family: 'Georgia', 'STSong', serif;
+			resize: vertical;
+			outline: none;
+		}
+		textarea.essay-input:focus { border-color: #C9A96E; }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-8">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<a href="companion.html" class="text-muted text-sm">←</a>
+				<span class="font-bold text-sm">作文批改</span>
+				<span class="stamp">Lily 老师</span>
+			</div>
+			<div class="text-[10px] text-muted">本月已批改 8 篇</div>
+		</div>
+
+		<!-- 步骤条 -->
+		<div class="px-4 pb-3">
+			<div class="flex items-center gap-2">
+				<div id="step_1" class="step-dot active">1</div>
+				<div id="line_1" class="step-line"></div>
+				<div id="step_2" class="step-dot">2</div>
+				<div id="line_2" class="step-line"></div>
+				<div id="step_3" class="step-dot">3</div>
+				<div id="line_3" class="step-line"></div>
+				<div id="step_4" class="step-dot">4</div>
+			</div>
+			<div class="flex justify-between text-[10px] text-muted mt-1">
+				<span>上传</span>
+				<span>批改中</span>
+				<span>查看</span>
+				<span>下载</span>
+			</div>
+		</div>
+	</header>
+
+	<!-- ===================== Phase 1: 上传作文 ===================== -->
+	<div id="phase_1" class="phase active px-4 pt-4 fade-in">
+
+		<!-- Lily 老师提示 -->
+		<div class="bg-white rounded-2xl p-4 border border-[#E5DDD0] mb-4 flex gap-3">
+			<div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-xl flex-shrink-0">👩‍🏫</div>
+			<div>
+				<div class="text-[11px] text-brand font-bold mb-1">Lily 老师说</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif">吕同学，今天交什么？我已经看了你最近 3 篇作文，平均 46 分 —— 按这个势头，我们这个月争取突破 50+ 📈</p>
+			</div>
+		</div>
+
+		<!-- 方式选择 Tab -->
+		<div class="bg-white rounded-xl p-1 flex border border-[#E5DDD0] mb-4">
+			<button class="tab-btn active flex-1 text-xs py-2 rounded-lg" data-method="text">✍️ 输入文字</button>
+			<button class="tab-btn flex-1 text-xs py-2 rounded-lg text-muted" data-method="photo">📷 拍照上传</button>
+		</div>
+
+		<!-- 作文标题 -->
+		<div class="mb-4">
+			<label class="text-xs text-muted mb-2 block">作文题目 / 材料</label>
+			<input type="text" value="论"躺平"与"内卷"的辩证关系" class="w-full px-4 py-3 rounded-xl border border-[#E5DDD0] bg-white text-sm outline-none focus:border-gold">
+		</div>
+
+		<!-- 热门题目建议 -->
+		<div class="mb-4">
+			<div class="text-xs text-muted mb-2">🔥 最近热门作文题</div>
+			<div class="flex flex-wrap gap-2">
+				<button class="topic-card bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">躺平 vs 内卷</button>
+				<button class="topic-card bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">AI 时代的人文精神</button>
+				<button class="topic-card bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">在快与慢之间</button>
+				<button class="topic-card bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">传统与创新</button>
+			</div>
+		</div>
+
+		<!-- 输入方式 A: 文字 -->
+		<div id="input_text" class="mb-4">
+			<label class="text-xs text-muted mb-2 block">作文正文 <span class="text-gold">(建议 800 字)</span></label>
+			<textarea class="essay-input chinese-serif" placeholder="在此粘贴或输入你的作文..." id="essay_textarea">      在当今社会，"内卷"二字频繁出现在每个人的嘴边。有人选择躺平，有人选择拼搏。但真正的智慧不在于选择哪一个，而在于理解两者背后的时代症候。
+
+      《庄子·逍遥游》中"无所待"的境界，或许给了我们一个超越"躺平/内卷"二元对立的视角。庄子笔下的大鹏并非不飞，而是不"因利而飞"——这与今天我们所说的"内卷"形成了鲜明对照。
+
+      躺平不是放弃，而是对无意义消耗一种清醒拒绝。陶渊明辞官归田，选择"采菊东篱下"，不是逃避，是对自我价值的重新确认...</textarea>
+			<div class="flex items-center justify-between mt-2">
+				<div class="text-[10px] text-muted">已输入 <span class="text-brand font-bold">342</span> 字</div>
+				<button class="text-[10px] text-gold">📋 从剪贴板粘贴</button>
+			</div>
+		</div>
+
+		<!-- 输入方式 B: 拍照（默认隐藏） -->
+		<div id="input_photo" class="mb-4 hidden">
+			<div class="upload-zone rounded-2xl p-8 text-center">
+				<div class="text-5xl mb-2">📷</div>
+				<div class="text-sm font-bold mb-1">拍照上传作文</div>
+				<div class="text-[11px] text-muted mb-3">支持手写稿 · 自动识别文字</div>
+				<button class="btn-primary text-xs px-4 py-2 rounded-lg">选择图片</button>
+			</div>
+			<div class="text-[10px] text-muted mt-2 text-center">💡 拍照清晰 · 光线充足 · 避免反光</div>
+		</div>
+
+		<!-- 批改维度选择 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<div class="text-xs font-bold mb-3 text-ink">选择批改维度</div>
+			<div class="space-y-2">
+				<label class="flex items-center gap-2 text-xs">
+					<input type="checkbox" checked class="accent-brand">
+					<span>📐 <strong>立意分析</strong> · 主题、深度、新颖度</span>
+				</label>
+				<label class="flex items-center gap-2 text-xs">
+					<input type="checkbox" checked class="accent-brand">
+					<span>🏗️ <strong>结构分析</strong> · 逻辑、过渡、详略</span>
+				</label>
+				<label class="flex items-center gap-2 text-xs">
+					<input type="checkbox" checked class="accent-brand">
+					<span>🖋️ <strong>语言分析</strong> · 文采、语法、表达</span>
+				</label>
+				<label class="flex items-center gap-2 text-xs">
+					<input type="checkbox" checked class="accent-brand">
+					<span>📚 <strong>素材分析</strong> · 引用、例证、文脉</span>
+				</label>
+				<label class="flex items-center gap-2 text-xs pt-1 border-t border-[#E5DDD0] mt-2">
+					<input type="checkbox" class="accent-brand">
+					<span>🎯 <strong>对照高考评分标准</strong>（山东卷）</span>
+					<span class="ml-auto text-[9px] text-gold">PRO</span>
+				</label>
+			</div>
+		</div>
+
+		<!-- 提交按钮 -->
+		<button id="submit_btn" class="w-full btn-primary text-sm py-3.5 rounded-xl font-semibold shadow-lg">
+			📝 提交给 Lily 老师批改（约 30 秒）
+		</button>
+
+		<div class="text-[10px] text-muted text-center mt-2">
+			今日第 <span class="text-brand">2</span> 次批改 · 本月剩余 <span class="text-brand">6</span> 次免费
+		</div>
+	</div>
+
+	<!-- ===================== Phase 2: 批改中 ===================== -->
+	<div id="phase_2" class="phase px-4 pt-8 fade-in">
+		<div class="bg-white rounded-2xl p-8 border border-[#E5DDD0] text-center">
+
+			<!-- 老师头像 + 动画 -->
+			<div class="relative inline-block mb-6">
+				<div class="w-24 h-24 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-5xl shadow-xl bounce-mild">👩‍🏫</div>
+				<div class="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full border-2 border-brand flex items-center justify-center">
+					<span class="spinner text-brand">⚙️</span>
+				</div>
+			</div>
+
+			<h3 class="text-lg font-bold text-ink mb-1">Lily 老师正在批改...</h3>
+			<p class="text-xs text-muted mb-6">调用 Claude 4.7 深度推理引擎</p>
+
+			<!-- 进度阶段 -->
+			<div class="space-y-3 text-left">
+
+				<div class="flex items-center gap-3 text-xs">
+					<div class="w-6 h-6 rounded-full bg-gold text-white flex items-center justify-center text-[10px]">✓</div>
+					<div class="flex-1">识别作文内容 · 342 字已读取</div>
+					<div class="text-muted">2s</div>
+				</div>
+
+				<div class="flex items-center gap-3 text-xs">
+					<div class="w-6 h-6 rounded-full bg-gold text-white flex items-center justify-center text-[10px]">✓</div>
+					<div class="flex-1">分析立意结构 · 识别到 3 处引用</div>
+					<div class="text-muted">5s</div>
+				</div>
+
+				<div class="flex items-center gap-3 text-xs">
+					<div class="w-6 h-6 rounded-full bg-brand text-white flex items-center justify-center text-[10px] spinner">⚙</div>
+					<div class="flex-1 font-semibold text-brand">正在深度批注 · 对比历届满分作文...</div>
+					<div class="text-muted">12s</div>
+				</div>
+
+				<div class="flex items-center gap-3 text-xs text-muted">
+					<div class="w-6 h-6 rounded-full bg-[#E5DDD0] flex items-center justify-center text-[10px]">4</div>
+					<div class="flex-1">生成评分 + 总评</div>
+				</div>
+
+				<div class="flex items-center gap-3 text-xs text-muted">
+					<div class="w-6 h-6 rounded-full bg-[#E5DDD0] flex items-center justify-center text-[10px]">5</div>
+					<div class="flex-1">生成精装 PDF 批改单</div>
+				</div>
+			</div>
+
+			<div class="mt-6 bg-cream rounded-lg p-3 text-left">
+				<div class="text-[10px] text-brand font-bold mb-1">💭 Lily 老师的话</div>
+				<p class="text-xs text-ink chinese-serif italic">"吕同学这篇的立意我已经看到亮点了 —— 能用《庄子》切入，这是高阶思维..."</p>
+			</div>
+
+			<button id="demo_next" class="mt-4 btn-ghost text-xs px-4 py-2 rounded-lg">[演示] 跳过等待 →</button>
+		</div>
+	</div>
+
+	<!-- ===================== Phase 3: 批改结果 ===================== -->
+	<div id="phase_3" class="phase px-4 pt-4 fade-in">
+
+		<!-- 完成提示 -->
+		<div class="bg-gradient-to-r from-gold/20 to-white rounded-xl p-4 border border-gold mb-4 flex items-center gap-3">
+			<div class="text-3xl">🎉</div>
+			<div class="flex-1">
+				<div class="font-bold text-sm text-ink">批改完成！</div>
+				<div class="text-[10px] text-muted">耗时 27 秒 · 共 12 处批注 · 4 维度评分</div>
+			</div>
+			<span class="stamp">完成</span>
+		</div>
+
+		<!-- 总分大卡 -->
+		<div class="bg-white rounded-2xl p-6 border border-[#E5DDD0] mb-4 text-center">
+			<div class="text-[10px] text-muted mb-2">本篇作文总分</div>
+			<div class="inline-block relative">
+				<div class="score-circle mx-auto" style="width: 100px; height: 100px; border-width: 5px;">
+					<div class="text-4xl">48</div>
+					<div class="text-[11px] -mt-1">/60</div>
+				</div>
+			</div>
+			<div class="text-xs text-brand mt-3 font-semibold">⭐ 较上次进步 +2 分</div>
+			<div class="text-[10px] text-muted mt-1">近 4 次平均: 46.5 分</div>
+		</div>
+
+		<!-- 分维度评分 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<div class="text-xs font-bold mb-3 text-ink">📊 分维度评分</div>
+
+			<div class="space-y-3">
+				<div>
+					<div class="flex justify-between text-xs mb-1">
+						<span>立意分析</span>
+						<span class="text-brand font-bold">8/10</span>
+					</div>
+					<div class="bg-cream rounded-full h-2">
+						<div class="bg-gold rounded-full h-2" style="width: 80%;"></div>
+					</div>
+					<div class="text-[10px] text-muted mt-1">用《庄子》切入很高级，但首段观点略武断</div>
+				</div>
+
+				<div>
+					<div class="flex justify-between text-xs mb-1">
+						<span>结构分析</span>
+						<span class="text-brand font-bold">7/10</span>
+					</div>
+					<div class="bg-cream rounded-full h-2">
+						<div class="bg-gold rounded-full h-2" style="width: 70%;"></div>
+					</div>
+					<div class="text-[10px] text-muted mt-1">转折处理漂亮，但结尾"综上所述"是套话</div>
+				</div>
+
+				<div>
+					<div class="flex justify-between text-xs mb-1">
+						<span>语言分析</span>
+						<span class="text-brand font-bold">8/10</span>
+					</div>
+					<div class="bg-cream rounded-full h-2">
+						<div class="bg-gold rounded-full h-2" style="width: 80%;"></div>
+					</div>
+					<div class="text-[10px] text-muted mt-1">句式丰富，有文采，个别表达可再精炼</div>
+				</div>
+
+				<div>
+					<div class="flex justify-between text-xs mb-1">
+						<span>素材分析</span>
+						<span class="text-brand font-bold">7/10</span>
+					</div>
+					<div class="bg-cream rounded-full h-2">
+						<div class="bg-gold rounded-full h-2" style="width: 70%;"></div>
+					</div>
+					<div class="text-[10px] text-muted mt-1">引用庄子/陶渊明很好，可再补一个现代案例</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 作文批改单 -->
+		<div class="correction-paper rounded-xl p-5 mb-4 relative">
+
+			<div class="flex items-center justify-between mb-4">
+				<div>
+					<div class="text-[10px] text-muted">Me Offer × Lily 老师</div>
+					<div class="text-sm font-bold chinese-serif">作文批改单</div>
+				</div>
+				<div class="teacher-seal">Lily 批</div>
+			</div>
+
+			<div class="bg-white rounded-lg p-4 mb-4 chinese-serif text-sm leading-[2] text-ink">
+				<div class="text-center font-bold mb-3">论"躺平"与"内卷"的辩证关系</div>
+				<div class="text-center text-[10px] text-muted mb-4">— 高三 吕同学</div>
+
+				<p class="indent-8">
+					在当今社会，<span class="red-mark">"内卷"</span>二字频繁出现在每个人的嘴边<span class="red-note">· [开头有点弱，可以用具体场景切入]</span>。有人选择躺平，有人选择拼搏。<span class="red-mark">躺平是消极的表现</span><span class="red-note">· [这句话太武断了！]</span>，而内卷则是无意义的消耗。
+				</p>
+
+				<p class="indent-8 mt-3">
+					然而，<span class="font-bold">真正的智慧</span>不在于选择哪一个，而在于理解两者背后的时代症候。
+					<span class="red-note block mt-1 ml-4">✓ 这一句转得漂亮！</span>
+				</p>
+
+				<p class="indent-8 mt-3 text-muted italic">
+					[...此处省略中段...]
+				</p>
+
+				<p class="indent-8 mt-3">
+					综上所述，<span class="red-mark">我们要辩证地看待这个问题</span><span class="red-note">· [套话！下次试试"以小见大"结尾法]</span>。
+				</p>
+			</div>
+
+			<!-- Lily 老师总评 -->
+			<div class="bg-white/80 rounded-lg p-4 border-l-4 border-danger">
+				<div class="text-xs font-bold text-danger mb-2 chinese-serif">📝 Lily 老师总评</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif">
+					吕同学，这篇文章你的<span class="font-bold">立意方向是对的</span>——能想到用《庄子·逍遥游》切入很难得。但是问题也很明显：<br/><br/>
+					<span class="font-bold">1. 开头太弱</span>：直接陈述概念，缺少具体场景。可以用"凌晨两点的自习室灯火通明..."这样的画面开场。<br/>
+					<span class="font-bold">2. 观点武断</span>：第一段把"躺平"定性为"消极"太草率了。我们下次一起练"辩证开题"。<br/>
+					<span class="font-bold">3. 结尾套话</span>：别用"综上所述"，试试"以小见大"——用陶渊明一句诗收束全文。<br/><br/>
+					<span class="text-brand font-bold">下次作业：</span>用"以小见大"重写这篇的结尾段，发我看看。
+				</p>
+				<div class="mt-3 text-right">
+					<span class="stamp">2026.04.22</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- 推荐素材（从 Lily 私房库匹配） -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<div class="flex items-center justify-between mb-3">
+				<div class="text-xs font-bold text-ink">🎯 Lily 为本篇推荐的素材</div>
+				<a href="companion-lily.html" class="text-[10px] text-brand">查看私房库 →</a>
+			</div>
+			<div class="space-y-2">
+				<div class="bg-cream rounded-lg p-3">
+					<div class="text-xs font-bold chinese-serif mb-1">苏轼的"一蓑烟雨任平生"</div>
+					<div class="text-[10px] text-muted leading-relaxed">贬谪黄州的苏轼，与陶渊明呼应 —— 可作为本文的第二案例。</div>
+				</div>
+				<div class="bg-cream rounded-lg p-3">
+					<div class="text-xs font-bold chinese-serif mb-1">北斗 26 年 55 颗星</div>
+					<div class="text-[10px] text-muted leading-relaxed">现代案例 —— 可补充你的文章"现代视角"缺失。</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 操作按钮 -->
+		<div class="grid grid-cols-2 gap-3 mb-4">
+			<button id="download_btn" class="btn-primary text-sm py-3 rounded-xl font-semibold">📄 下载精装 PDF</button>
+			<a href="companion-chat.html" class="btn-ghost text-sm py-3 rounded-xl font-semibold text-center">💬 和 Lily 继续聊</a>
+		</div>
+
+		<!-- 重新批改 -->
+		<button id="restart_btn" class="w-full text-xs text-muted py-2">← 重新提交另一篇</button>
+	</div>
+
+	<!-- ===================== Phase 4: PDF 下载完成 ===================== -->
+	<div id="phase_4" class="phase px-4 pt-8 fade-in">
+		<div class="bg-white rounded-2xl p-8 border border-[#E5DDD0] text-center">
+			<div class="text-6xl mb-4">📄</div>
+			<h3 class="text-lg font-bold text-ink mb-2">PDF 已生成</h3>
+			<p class="text-xs text-muted mb-6">《作文批改单_吕同学_20260422.pdf》</p>
+
+			<div class="bg-cream rounded-xl p-4 mb-4 text-left">
+				<div class="text-xs font-bold mb-2">📋 PDF 内容包含</div>
+				<div class="space-y-1 text-[11px] text-ink">
+					<div>✓ 完整作文原文（含红笔批注）</div>
+					<div>✓ 4 维度评分明细</div>
+					<div>✓ Lily 老师总评 300 字</div>
+					<div>✓ 推荐素材 2 条</div>
+					<div>✓ Lily 印章 + 批改日期</div>
+					<div>✓ 可打印 · 可分享朋友圈</div>
+				</div>
+			</div>
+
+			<button class="w-full btn-primary text-sm py-3 rounded-xl font-semibold mb-2">💾 保存到手机</button>
+			<button class="w-full btn-ghost text-sm py-3 rounded-xl font-semibold">📤 分享给爸妈</button>
+		</div>
+	</div>
+
+</div>
+
+<script>
+	$(function () {
+		// 方式切换
+		$('.tab-btn').on('click', function () {
+			$('.tab-btn').removeClass('active').addClass('text-muted');
+			$(this).removeClass('text-muted').addClass('active');
+
+			if ($(this).data('method') === 'text') {
+				$('#input_text').removeClass('hidden');
+				$('#input_photo').addClass('hidden');
+			} else {
+				$('#input_text').addClass('hidden');
+				$('#input_photo').removeClass('hidden');
+			}
+		});
+
+		// 提交 → 进入 Phase 2
+		$('#submit_btn').on('click', function () {
+			switchPhase(2);
+			$('#step_1').removeClass('active').addClass('done').text('✓');
+			$('#line_1').addClass('done');
+			$('#step_2').addClass('active');
+		});
+
+		// 演示跳过 → Phase 3
+		$('#demo_next').on('click', function () {
+			switchPhase(3);
+			$('#step_2').removeClass('active').addClass('done').text('✓');
+			$('#line_2').addClass('done');
+			$('#step_3').addClass('active');
+		});
+
+		// 下载 → Phase 4
+		$('#download_btn').on('click', function () {
+			switchPhase(4);
+			$('#step_3').removeClass('active').addClass('done').text('✓');
+			$('#line_3').addClass('done');
+			$('#step_4').addClass('active');
+		});
+
+		// 重新开始
+		$('#restart_btn').on('click', function () {
+			resetSteps();
+			switchPhase(1);
+		});
+	});
+
+	function switchPhase(n) {
+		$('.phase').removeClass('active');
+		$('#phase_' + n).addClass('active');
+		window.scrollTo(0, 0);
+	}
+
+	function resetSteps() {
+		$('.step-dot').removeClass('done active').text('');
+		$('.step-line').removeClass('done');
+		$('#step_1').addClass('active').text('1');
+		$('#step_2').text('2');
+		$('#step_3').text('3');
+		$('#step_4').text('4');
+	}
+</script>
+
+</body>
+</html>

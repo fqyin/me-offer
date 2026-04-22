@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>高考·每日新闻 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.4s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+
+		.filter-pill { cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+		.filter-pill:hover { background: #FDF8F0; border-color: #C9A96E; }
+		.filter-pill.active { background: #8B6914; color: white; border-color: #8B6914; }
+
+		.news-card { transition: all 0.2s; cursor: pointer; }
+		.news-card:hover { border-color: #C9A96E; box-shadow: 0 6px 18px rgba(139,105,20,0.1); }
+
+		.cat-policy { background: #FEF3C7; color: #92400E; }
+		.cat-trend { background: #DBEAFE; color: #1E40AF; }
+		.cat-university { background: #D1FAE5; color: #065F46; }
+		.cat-guide { background: #FCE7F3; color: #9F1239; }
+
+		.newspaper {
+			background-color: #FDF8F0;
+			background-image:
+				linear-gradient(transparent 95%, #E5DDD0 95%),
+				repeating-linear-gradient(90deg, transparent 0, transparent 48%, rgba(229,221,208,0.3) 50%, transparent 52%, transparent 100%);
+			background-size: 100% 26px, 100% 100%;
+			border: 1px solid #E5DDD0;
+		}
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; background: white; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.source-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+			background: #FDF8F0;
+			border: 1px solid #E5DDD0;
+			padding: 3px 8px;
+			border-radius: 12px;
+			font-size: 10px;
+			color: #8B6914;
+		}
+
+		.toc-item { transition: all 0.15s; cursor: pointer; padding: 6px 12px; border-radius: 6px; }
+		.toc-item:hover { background: #FDF8F0; }
+		.toc-item.active { background: #FDF8F0; color: #8B6914; font-weight: 600; }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-8">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<a href="companion.html" class="text-muted text-sm">←</a>
+				<span class="font-bold text-sm">📰 高考·每日新闻</span>
+				<span class="stamp">AI 挖掘</span>
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="w-1.5 h-1.5 bg-green-500 rounded-full pulse-dot"></span>
+				<span class="text-[10px] text-muted">今日已更新</span>
+			</div>
+		</div>
+	</header>
+
+	<!-- AI 挖掘说明 -->
+	<section class="px-4 pt-4 fade-in">
+		<div class="bg-white rounded-xl p-3 border border-[#E5DDD0] flex items-center gap-3">
+			<div class="text-xl">🤖</div>
+			<div class="flex-1 text-[11px] leading-relaxed">
+				<span class="font-bold text-brand">Claude AI 每天 07:00</span> 从教育部、各省招办、人民日报教育版、央视新闻等<span class="font-bold">官方源</span>挖掘 1 条重要新闻，并改写成学生看得懂的版本。
+			</div>
+		</div>
+	</section>
+
+	<!-- 筛选器 -->
+	<section class="px-4 pt-3 pb-2">
+		<div class="scroll-x -mx-4 px-4">
+			<button class="filter-pill active bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">全部</button>
+			<button class="filter-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">📜 招生政策</button>
+			<button class="filter-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">📊 命题趋势</button>
+			<button class="filter-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">🎓 高校动态</button>
+			<button class="filter-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">📝 备考指南</button>
+			<button class="filter-pill bg-white border border-[#E5DDD0] text-xs px-3 py-1.5 rounded-full">📍 我的省份</button>
+		</div>
+	</section>
+
+	<!-- 今日头条（展开全文） -->
+	<section class="px-4 pt-3">
+
+		<div class="bg-white rounded-2xl overflow-hidden border border-[#E5DDD0] shadow-sm">
+
+			<!-- 头条标识 -->
+			<div class="bg-gradient-to-r from-danger to-[#A63838] text-white px-4 py-2 flex items-center justify-between">
+				<div class="flex items-center gap-2">
+					<span class="text-xs font-bold">🔴 今日头条</span>
+					<span class="text-[9px] bg-white/20 px-2 py-0.5 rounded-full">刚刚 · 官方确认</span>
+				</div>
+				<span class="text-[9px]">2026.04.22 · 09:00</span>
+			</div>
+
+			<!-- 头图 -->
+			<div class="aspect-[16/8] bg-gradient-to-br from-brand via-[#6B4F0F] to-ink relative flex items-center justify-center">
+				<div class="text-center text-white">
+					<div class="text-5xl mb-2 opacity-40">📰</div>
+					<div class="text-[10px] opacity-60">山东省 2026 高考新规</div>
+				</div>
+			</div>
+
+			<!-- 内容 -->
+			<article class="p-5">
+
+				<!-- 分类标签 -->
+				<div class="flex items-center gap-2 mb-3">
+					<span class="cat-policy text-[10px] px-2 py-0.5 rounded-full font-semibold">招生政策</span>
+					<span class="text-[9px] bg-cream text-brand px-2 py-0.5 rounded-full">山东</span>
+					<span class="text-[9px] text-muted ml-auto">👁 2,341 阅读</span>
+				</div>
+
+				<!-- 标题 -->
+				<h1 class="text-lg font-bold leading-tight chinese-serif mb-3 text-ink">
+					山东省 2026 年高考志愿填报政策发布：新增 12 所高校招生，物理类本科线预计降 5 分
+				</h1>
+
+				<!-- 核心要点 -->
+				<div class="bg-cream rounded-xl p-4 mb-4">
+					<div class="text-xs font-bold text-brand mb-2 flex items-center gap-1">
+						<span>⭐ 5 秒速读</span>
+						<span class="text-[9px] text-muted font-normal">Claude 提炼</span>
+					</div>
+					<ul class="space-y-1.5 text-xs text-ink chinese-serif">
+						<li class="flex gap-2">
+							<span class="text-brand font-bold">①</span>
+							<span>96 志愿名额不变，"专业+院校"模式<span class="font-bold text-brand">新增强基通道</span></span>
+						</li>
+						<li class="flex gap-2">
+							<span class="text-brand font-bold">②</span>
+							<span><span class="font-bold text-brand">12 所高校</span>首次招生，含 3 所在鲁分校</span>
+						</li>
+						<li class="flex gap-2">
+							<span class="text-brand font-bold">③</span>
+							<span>物理类本科线预估<span class="font-bold text-danger">下降 5 分</span>（历史类基本持平）</span>
+						</li>
+						<li class="flex gap-2">
+							<span class="text-brand font-bold">④</span>
+							<span>征集志愿时间<span class="font-bold">提前 2 天</span>，给滑档考生更多机会</span>
+						</li>
+					</ul>
+				</div>
+
+				<!-- 正文 -->
+				<div class="newspaper rounded-xl p-4 mb-4 chinese-serif text-sm leading-[1.9] text-ink">
+					<p class="indent-8">
+						山东省教育招生考试院今日公布 2026 年普通高校招生工作规定。新规重点包括：
+					</p>
+					<p class="indent-8 mt-2">
+						<span class="font-bold">一、志愿填报模式保持稳定。</span>继续实行"专业(类)+院校"模式，每位考生可填报 <span class="text-danger font-bold">96 个志愿</span>，分为冲、稳、保三个档次。
+					</p>
+					<p class="indent-8 mt-2">
+						<span class="font-bold">二、新增强基计划通道。</span>2026 年起，清华、北大、复旦等 39 所高校的强基计划招生名额，可通过新设"强基通道"单独填报，不占用 96 个常规志愿。
+					</p>
+					<p class="indent-8 mt-2">
+						<span class="font-bold">三、录取批次微调。</span>本科提前批次时间提前 1 天，本科批次录取时间延长 2 天，以便考生有更充裕的考虑时间...
+					</p>
+					<div class="text-center mt-4">
+						<button class="text-xs text-brand underline">展开全文 (共 1,842 字)</button>
+					</div>
+				</div>
+
+				<!-- AI 解读 -->
+				<div class="bg-gradient-to-br from-ink to-brand rounded-xl p-4 text-white mb-4">
+					<div class="flex items-center gap-2 mb-2">
+						<span class="text-lg">💡</span>
+						<span class="text-xs font-bold">Claude AI 深度解读</span>
+						<span class="stamp bg-white/90 !text-brand !border-brand">独家</span>
+					</div>
+					<p class="text-xs text-white/90 leading-relaxed chinese-serif">
+						<span class="font-bold text-gold">对山东考生意味着什么？</span><br/>
+						① 如果你成绩在本科线附近（570-620），物理类降 5 分意味着你多了 10-15 个备选学校 —— 志愿策略要比往年更激进。<br/>
+						② 强基通道是"额外机会"而非"替代"，对目标 985 的同学是利好。<br/>
+						③ 征集志愿提前，意味着如果你真的滑档，留给你补救的时间更紧张 —— 所以<span class="font-bold text-gold">"保"档志愿今年特别重要</span>。
+					</p>
+				</div>
+
+				<!-- 来源 -->
+				<div class="bg-cream rounded-lg p-3 mb-4">
+					<div class="text-[10px] text-muted mb-1">📎 官方来源</div>
+					<div class="flex flex-wrap gap-2">
+						<a class="source-badge hover:bg-gold hover:text-white">
+							<span>📄</span> 山东省教育招生考试院
+						</a>
+						<a class="source-badge hover:bg-gold hover:text-white">
+							<span>📰</span> 人民日报教育版
+						</a>
+						<a class="source-badge hover:bg-gold hover:text-white">
+							<span>📺</span> 山东卫视新闻
+						</a>
+					</div>
+					<div class="text-[10px] text-muted mt-2">更新时间：2026-04-22 09:00 · 已通过 3 渠道交叉验证</div>
+				</div>
+
+				<!-- 相关行动 -->
+				<div class="grid grid-cols-2 gap-2 mb-4">
+					<button class="btn-primary text-xs py-2.5 rounded-lg font-semibold">🎯 重新生成志愿方案</button>
+					<button class="btn-ghost text-xs py-2.5 rounded-lg font-semibold">💬 问 Lily 老师详解</button>
+				</div>
+
+				<!-- 互动 -->
+				<div class="flex items-center justify-between pt-3 border-t border-[#E5DDD0] text-[11px] text-muted">
+					<div class="flex items-center gap-4">
+						<span class="cursor-pointer hover:text-brand">👍 234</span>
+						<span class="cursor-pointer hover:text-brand">💾 收藏</span>
+						<span class="cursor-pointer hover:text-brand">📤 分享给爸妈</span>
+					</div>
+					<span>8 分钟阅读</span>
+				</div>
+			</article>
+		</div>
+
+	</section>
+
+	<!-- 历史新闻列表 -->
+	<section class="px-4 pt-5 pb-2">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-sm font-bold text-ink">📚 往期新闻</h3>
+			<a class="text-[10px] text-brand">全部归档 →</a>
+		</div>
+
+		<div class="space-y-3">
+
+			<!-- 昨日 -->
+			<div class="news-card bg-white rounded-xl p-4 border border-[#E5DDD0]">
+				<div class="flex items-start gap-3">
+					<div class="w-16 h-16 bg-gradient-to-br from-[#FDF8F0] to-gold/30 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">📊</div>
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-1 mb-1">
+							<span class="cat-trend text-[9px] px-2 py-0.5 rounded-full font-semibold">命题趋势</span>
+							<span class="text-[9px] text-muted ml-auto">昨日 · 08:45</span>
+						</div>
+						<h4 class="font-bold text-sm leading-snug mb-1 chinese-serif">教育部：2026 年高考数学卷将增加"新情境应用题"占比</h4>
+						<p class="text-[11px] text-muted leading-relaxed mb-2">预计应用题占比从 28% 提升至 35%，重点考察学生用数学解决实际问题的能力...</p>
+						<div class="flex items-center gap-3 text-[10px] text-muted">
+							<span>📎 教育部考试中心</span>
+							<span>👁 1,892</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 前天 -->
+			<div class="news-card bg-white rounded-xl p-4 border border-[#E5DDD0]">
+				<div class="flex items-start gap-3">
+					<div class="w-16 h-16 bg-gradient-to-br from-[#FDF8F0] to-danger/30 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">🎓</div>
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-1 mb-1">
+							<span class="cat-university text-[9px] px-2 py-0.5 rounded-full font-semibold">高校动态</span>
+							<span class="text-[9px] text-muted ml-auto">2 天前</span>
+						</div>
+						<h4 class="font-bold text-sm leading-snug mb-1 chinese-serif">清华、北大公布 2026 年强基计划招生简章，新增 AI 方向</h4>
+						<p class="text-[11px] text-muted leading-relaxed mb-2">清华大学新增"人工智能基础学科交叉班"，北大新增"智能科学与技术"方向，招生 150 人...</p>
+						<div class="flex items-center gap-3 text-[10px] text-muted">
+							<span>📎 清华 / 北大招办</span>
+							<span>👁 3,241</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 3 天前 -->
+			<div class="news-card bg-white rounded-xl p-4 border border-[#E5DDD0]">
+				<div class="flex items-start gap-3">
+					<div class="w-16 h-16 bg-gradient-to-br from-[#FDF8F0] to-brand/30 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">📝</div>
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-1 mb-1">
+							<span class="cat-guide text-[9px] px-2 py-0.5 rounded-full font-semibold">备考指南</span>
+							<span class="text-[9px] text-muted ml-auto">3 天前</span>
+						</div>
+						<h4 class="font-bold text-sm leading-snug mb-1 chinese-serif">人民日报：距高考 50 天，考生如何调整作息？专家给出 7 条建议</h4>
+						<p class="text-[11px] text-muted leading-relaxed mb-2">北京协和医院睡眠中心专家建议：保证每天 7 小时睡眠 · 不熬夜刷题 · 午休 20 分钟...</p>
+						<div class="flex items-center gap-3 text-[10px] text-muted">
+							<span>📎 人民日报</span>
+							<span>👁 5,128</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 4 天前 -->
+			<div class="news-card bg-white rounded-xl p-4 border border-[#E5DDD0]">
+				<div class="flex items-start gap-3">
+					<div class="w-16 h-16 bg-gradient-to-br from-[#FDF8F0] to-green-200 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">⚖️</div>
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-1 mb-1">
+							<span class="cat-policy text-[9px] px-2 py-0.5 rounded-full font-semibold">招生政策</span>
+							<span class="text-[9px] text-muted ml-auto">4 天前</span>
+						</div>
+						<h4 class="font-bold text-sm leading-snug mb-1 chinese-serif">教育部重申：严禁炒作"高考状元" · 成绩只是起点</h4>
+						<p class="text-[11px] text-muted leading-relaxed mb-2">教育部召开新闻发布会，强调考核录取多元化，抵制"唯分数论"...</p>
+						<div class="flex items-center gap-3 text-[10px] text-muted">
+							<span>📎 教育部</span>
+							<span>👁 2,156</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 5 天前 -->
+			<div class="news-card bg-white rounded-xl p-4 border border-[#E5DDD0]">
+				<div class="flex items-start gap-3">
+					<div class="w-16 h-16 bg-gradient-to-br from-[#FDF8F0] to-blue-200 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">🎤</div>
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-1 mb-1">
+							<span class="cat-trend text-[9px] px-2 py-0.5 rounded-full font-semibold">命题趋势</span>
+							<span class="text-[9px] text-muted ml-auto">5 天前</span>
+						</div>
+						<h4 class="font-bold text-sm leading-snug mb-1 chinese-serif">2026 高考作文或将聚焦"科技与人文" · AI 命题专家分析</h4>
+						<p class="text-[11px] text-muted leading-relaxed mb-2">多位命题专家在研讨会上指出，ChatGPT、AI 绘画等时代议题有望成为作文热点...</p>
+						<div class="flex items-center gap-3 text-[10px] text-muted">
+							<span>📎 中国教育报</span>
+							<span>👁 4,782</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 归档 -->
+		<button class="w-full mt-4 btn-ghost text-xs py-2.5 rounded-xl">查看完整归档（共 30 篇） →</button>
+	</section>
+
+</div>
+
+<script>
+	$(function () {
+		$('.filter-pill').on('click', function () {
+			$('.filter-pill').removeClass('active');
+			$(this).addClass('active');
+		});
+	});
+</script>
+
+</body>
+</html>
