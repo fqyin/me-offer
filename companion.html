@@ -94,13 +94,23 @@
 </head>
 <body>
 
+<script>
+	/* 登录守卫：未登录跳转 login.html */
+	(function () {
+		const token = localStorage.getItem('me_offer_token');
+		if (!token) {
+			location.href = 'login.html';
+		}
+	})();
+</script>
+
 <div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-20">
 
 	<!-- Top Bar -->
 	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
 		<div class="flex items-center justify-between px-4 py-3">
 			<div class="flex items-center gap-2">
-				<a href="index.html" class="text-muted text-sm">←</a>
+				<a href="parent.html" class="text-muted text-sm">←</a>
 				<span class="text-brand font-bold text-lg">Me Offer</span>
 				<span class="stamp">陪跑社区</span>
 			</div>
@@ -109,7 +119,7 @@
 					<span class="text-lg">🔔</span>
 					<span class="absolute top-1 right-0 w-2 h-2 bg-danger rounded-full pulse-dot"></span>
 				</button>
-				<div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold">吕</div>
+				<div id="student_avatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold cursor-pointer" onclick="location.href='parent.html'">吕</div>
 			</div>
 		</div>
 	</header>
@@ -509,12 +519,45 @@
 </nav>
 
 <script>
+	const api_base = location.origin;
+	const token = localStorage.getItem('me_offer_token');
+
 	$(function () {
+		load_current_student();
+
 		$('.emotion-pill').on('click', function () {
 			$('.emotion-pill').removeClass('selected');
 			$(this).addClass('selected');
 		});
 	});
+
+	function load_current_student() {
+		$.ajax({
+			url:		api_base + '/api/auth/me',
+			method:		'GET',
+			headers:	{ 'Authorization': 'Bearer ' + token },
+			success:	function (data) {
+				if (!data.parent || !data.students || data.students.length === 0) {
+					location.href = 'login.html';
+					return;
+				}
+				const current = data.students.find(s => s.id === data.current_student_id) || data.students[0];
+				if (current) {
+					apply_student_info(current);
+				}
+			},
+			error:		function () {
+				localStorage.removeItem('me_offer_token');
+				location.href = 'login.html';
+			}
+		});
+	}
+
+	function apply_student_info(student) {
+		const first_char = (student.real_name || '同').charAt(0);
+		$('#student_avatar').text(first_char);
+		document.title = student.real_name + ' · 陪跑社区 · Me Offer';
+	}
 </script>
 
 </body>

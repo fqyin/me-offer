@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>家庭陪跑中心 · Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.5s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; background: white; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+
+		.card-hover { transition: all 0.2s; cursor: pointer; }
+		.card-hover:hover { border-color: #C9A96E; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139,105,20,0.1); }
+
+		.student-chip { transition: all 0.2s; cursor: pointer; }
+		.student-chip:hover { border-color: #C9A96E; }
+		.student-chip.active { border-color: #8B6914; background: #FDF8F0; }
+
+		.family-banner {
+			background:
+				linear-gradient(135deg, rgba(139,105,20,0.95) 0%, rgba(107,79,15,0.95) 100%),
+				radial-gradient(circle at 80% 20%, rgba(201,169,110,0.3) 0%, transparent 50%);
+		}
+
+		.motto-display {
+			font-family: 'STKaiti', 'Kaiti SC', serif;
+			letter-spacing: 6px;
+			color: rgba(255,255,255,0.9);
+		}
+
+		.sparkline { stroke: #C9A96E; stroke-width: 2; fill: none; }
+		.sparkline-fill { fill: rgba(201,169,110,0.15); stroke: none; }
+
+		.nav-item.active { color: #8B6914; font-weight: 600; }
+
+		.teacher-mini-card { transition: all 0.2s; cursor: pointer; }
+		.teacher-mini-card:hover { transform: scale(1.05); }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-20">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<span class="text-brand font-bold text-base">Me Offer</span>
+				<span class="stamp">家庭陪跑中心</span>
+			</div>
+			<div class="flex items-center gap-3">
+				<button class="relative w-8 h-8 flex items-center justify-center">
+					<span class="text-lg">🔔</span>
+					<span class="absolute top-1 right-0 w-2 h-2 bg-danger rounded-full pulse-dot"></span>
+				</button>
+				<div id="avatar_btn" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold cursor-pointer">家</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Family Banner · Hero -->
+	<section class="px-4 pt-4 fade-in">
+		<div class="family-banner rounded-2xl p-6 text-white relative overflow-hidden">
+			<div class="absolute top-0 right-0 text-[140px] opacity-10 leading-none -translate-y-4 translate-x-4">🏡</div>
+
+			<div class="relative">
+				<div class="flex items-center gap-2 mb-1">
+					<span class="stamp bg-white/90 !text-brand !border-brand">家庭账号</span>
+					<span id="vip_badge" class="hidden text-[9px] bg-gold text-ink px-2 py-0.5 rounded-full font-bold">VIP</span>
+				</div>
+
+				<h1 id="family_name" class="text-2xl font-bold chinese-serif mb-1">吕同学之家</h1>
+
+				<div id="motto_box" class="hidden mb-3">
+					<div class="motto-display text-sm" id="family_motto">—</div>
+				</div>
+
+				<!-- 数据条 -->
+				<div class="grid grid-cols-4 gap-2 mt-4">
+					<div class="bg-white/10 backdrop-blur rounded-lg py-2 text-center">
+						<div class="text-lg font-bold text-gold" id="stat_days">30</div>
+						<div class="text-[9px] text-white/60 mt-0.5">陪跑天数</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg py-2 text-center">
+						<div class="text-lg font-bold text-gold" id="stat_kids">1</div>
+						<div class="text-[9px] text-white/60 mt-0.5">孩子数</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg py-2 text-center">
+						<div class="text-lg font-bold text-gold">9</div>
+						<div class="text-[9px] text-white/60 mt-0.5">AI 名师</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg py-2 text-center">
+						<div class="text-lg font-bold text-gold" id="stat_score">+12</div>
+						<div class="text-[9px] text-white/60 mt-0.5">本月进步</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 切换孩子 -->
+	<section class="px-4 pt-4">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-sm font-bold text-ink">👨‍👩‍👧 家庭成员</h3>
+			<a href="add-child.html" class="text-xs text-brand">+ 添加孩子</a>
+		</div>
+
+		<div class="scroll-x -mx-4 px-4" id="students_list">
+			<!-- 动态填充 -->
+		</div>
+	</section>
+
+	<!-- 快速入口 · 进入陪跑社区 -->
+	<section class="px-4 pt-4 fade-in">
+		<div class="bg-gradient-to-r from-brand to-[#6B4F0F] rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer" onclick="enter_companion()">
+			<div class="absolute right-0 top-0 text-[100px] opacity-10 leading-none">🎯</div>
+			<div class="relative">
+				<div class="text-[10px] text-white/70 mb-1">今日已等待你 3 小时</div>
+				<h3 class="text-lg font-bold mb-1 chinese-serif">Lily 老师在陪跑社区等你</h3>
+				<p class="text-xs text-white/80 mb-3" id="current_student_hint">与 <span class="font-bold text-gold">吕同学</span> 一起进入今日学习</p>
+				<div class="flex items-center gap-2 text-xs">
+					<div class="bg-white/20 backdrop-blur px-3 py-1.5 rounded-full">📝 作文待批改 1 篇</div>
+					<div class="bg-white/20 backdrop-blur px-3 py-1.5 rounded-full">💬 老师 6 条未读</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 9 大功能板块 -->
+	<section class="px-4 pt-4">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-sm font-bold text-ink">陪跑社区</h3>
+			<a href="companion.html" class="text-xs text-brand">全部 →</a>
+		</div>
+
+		<div class="grid grid-cols-4 gap-3">
+
+			<a href="companion.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">👩‍🏫</div>
+				<div class="text-[11px] font-semibold">AI 名师</div>
+			</a>
+
+			<a href="companion.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">📝</div>
+				<div class="text-[11px] font-semibold">作文批改</div>
+			</a>
+
+			<a href="companion.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">🎯</div>
+				<div class="text-[11px] font-semibold">真题库</div>
+			</a>
+
+			<a href="companion-archive.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">📖</div>
+				<div class="text-[11px] font-semibold">成长档案</div>
+			</a>
+
+			<a href="companion-ielts.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">🎧</div>
+				<div class="text-[11px] font-semibold">雅思听力</div>
+			</a>
+
+			<a href="companion-mia.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">🌳</div>
+				<div class="text-[11px] font-semibold">树洞</div>
+			</a>
+
+			<a href="companion-news.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">📰</div>
+				<div class="text-[11px] font-semibold">每日新闻</div>
+			</a>
+
+			<a href="companion.html" class="card-hover bg-white rounded-xl p-3 border border-[#E5DDD0] text-center">
+				<div class="text-2xl mb-1">🔴</div>
+				<div class="text-[11px] font-semibold">今日直播</div>
+			</a>
+		</div>
+	</section>
+
+	<!-- 高考志愿填报入口 -->
+	<section class="px-4 pt-5">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-sm font-bold text-ink">🎯 高考志愿填报</h3>
+			<span id="apply_hint" class="text-[10px] text-muted">高三专属</span>
+		</div>
+
+		<div id="apply_card" class="bg-gradient-to-br from-danger to-[#8B2F2F] rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer card-hover" onclick="enter_apply_system()">
+			<div class="absolute top-0 right-0 text-[100px] opacity-10 leading-none -translate-y-2 translate-x-2">📋</div>
+
+			<div class="relative">
+				<div class="flex items-center gap-2 mb-2">
+					<span class="stamp bg-white/90 !text-danger !border-danger">独立系统</span>
+					<span id="current_student_badge" class="text-[9px] bg-white/20 px-2 py-0.5 rounded-full">吕同学 · 高三</span>
+				</div>
+				<h3 class="text-lg font-bold mb-1 chinese-serif">一键生成 96 志愿方案</h3>
+				<p class="text-xs text-white/80 mb-3" id="apply_desc">基于山东 2021-2025 五年投档数据 · 冲 24 · 稳 48 · 保 24</p>
+
+				<!-- 三档提示 -->
+				<div class="grid grid-cols-3 gap-2 mb-3">
+					<div class="bg-white/10 backdrop-blur rounded-lg py-2 text-center">
+						<div class="text-sm font-bold">¥9.9</div>
+						<div class="text-[9px] text-white/60">早鸟体验</div>
+					</div>
+					<div class="bg-white/20 backdrop-blur rounded-lg py-2 text-center border border-white/40">
+						<div class="text-sm font-bold">¥199</div>
+						<div class="text-[9px] text-white/80">精准方案 · 热销</div>
+					</div>
+					<div class="bg-white/10 backdrop-blur rounded-lg py-2 text-center">
+						<div class="text-sm font-bold">¥1999</div>
+						<div class="text-[9px] text-white/60">尊享 Offer 保障</div>
+					</div>
+				</div>
+
+				<div class="flex items-center justify-between">
+					<span class="text-[10px] text-white/70">💡 首次使用手机号即可登录 · 独立账号</span>
+					<span class="text-white/90 text-lg">→</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- 非高三提示 -->
+		<div id="apply_tip_lowgrade" class="hidden mt-3 bg-white rounded-xl p-3 border border-[#E5DDD0] flex items-start gap-3">
+			<div class="text-xl">💡</div>
+			<div class="flex-1 text-[11px] text-muted leading-relaxed">
+				<span class="font-bold text-brand">孩子目前 <span id="grade_now">高一</span></span>，志愿填报是高三的事。现在先把<span class="text-brand font-bold">陪跑社区</span>用起来，等到高三我们会第一时间提醒你启动志愿方案。
+			</div>
+		</div>
+	</section>
+
+	<!-- 本周孩子状态 -->
+	<section class="px-4 pt-5">
+		<h3 class="text-sm font-bold text-ink mb-3">📊 本周孩子状态</h3>
+
+		<div class="bg-white rounded-2xl p-4 border border-[#E5DDD0]">
+			<div class="grid grid-cols-3 gap-3 mb-3">
+				<div class="bg-cream rounded-lg p-3 text-center">
+					<div class="text-lg font-bold text-brand">6/7</div>
+					<div class="text-[10px] text-muted">学习天数</div>
+				</div>
+				<div class="bg-cream rounded-lg p-3 text-center">
+					<div class="text-lg font-bold text-brand">147</div>
+					<div class="text-[10px] text-muted">做题数</div>
+				</div>
+				<div class="bg-cream rounded-lg p-3 text-center">
+					<div class="text-lg font-bold text-gold">⭐⭐⭐⭐</div>
+					<div class="text-[10px] text-muted">情绪稳定</div>
+				</div>
+			</div>
+
+			<!-- 进步曲线 -->
+			<svg viewBox="0 0 240 40" class="w-full h-10 mb-2">
+				<polyline class="sparkline-fill" points="0,32 20,28 40,30 60,25 80,22 100,24 120,20 140,18 160,16 180,14 200,12 220,10 240,8 240,40 0,40" />
+				<polyline class="sparkline" points="0,32 20,28 40,30 60,25 80,22 100,24 120,20 140,18 160,16 180,14 200,12 220,10 240,8" />
+			</svg>
+
+			<div class="bg-cream rounded-lg p-3">
+				<div class="text-[10px] text-brand font-bold mb-1">👩‍🏫 Lily 老师本周观察</div>
+				<p class="text-xs text-ink leading-relaxed chinese-serif">"本周孩子作文立意有明显进步 +8 分。周三情绪略低，后半周恢复正常。建议周末多陪伴 💙"</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- 家长专属 · 付费商品 -->
+	<section class="px-4 pt-5">
+		<h3 class="text-sm font-bold text-ink mb-3">🛍️ 家长专属</h3>
+
+		<div class="space-y-3">
+
+			<!-- 季度报告 -->
+			<div class="card-hover bg-white rounded-xl p-4 border border-[#E5DDD0] flex gap-4">
+				<div class="w-16 h-20 bg-gradient-to-br from-ink to-brand rounded-lg flex flex-col items-center justify-center text-white text-[8px] flex-shrink-0">
+					<div class="chinese-serif">Me Offer</div>
+					<div class="font-bold text-xs mt-1">季度报告</div>
+				</div>
+				<div class="flex-1">
+					<div class="text-sm font-bold mb-1">《季度成长报告》PDF</div>
+					<div class="flex items-baseline gap-2 mb-1">
+						<span class="text-base font-bold text-danger">¥199</span>
+						<span class="text-[10px] text-muted line-through">¥399</span>
+					</div>
+					<div class="text-[10px] text-muted">20-30 页 · 9 科独立分析 · Lily 亲笔寄语</div>
+					<button class="btn-primary text-[11px] px-3 py-1 rounded-lg mt-2 font-semibold">预购 →</button>
+				</div>
+			</div>
+
+			<!-- 年度精装书 -->
+			<div class="card-hover bg-white rounded-xl p-4 border border-[#E5DDD0] flex gap-4">
+				<div class="w-16 h-20 bg-gradient-to-br from-[#1A1A1A] to-[#8B6914] rounded-lg flex flex-col items-center justify-center text-white text-[8px] flex-shrink-0">
+					<div class="chinese-serif">Me Offer</div>
+					<div class="font-bold text-xs mt-1">精装手册</div>
+				</div>
+				<div class="flex-1">
+					<div class="text-sm font-bold mb-1">《年度精装手册》实体书</div>
+					<div class="flex items-baseline gap-2 mb-1">
+						<span class="text-base font-bold text-danger">¥399</span>
+						<span class="text-[10px] text-muted">含包邮</span>
+					</div>
+					<div class="text-[10px] text-muted">硬壳精装 · 封面烫金姓名 · 高考后寄送</div>
+					<button class="btn-ghost text-[11px] px-3 py-1 rounded-lg mt-2 font-semibold">预购 →</button>
+				</div>
+			</div>
+
+			<!-- 家长会员 -->
+			<div class="card-hover bg-gradient-to-br from-gold to-[#E8C985] rounded-xl p-4 flex gap-4">
+				<div class="w-16 h-20 bg-white/30 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">👨‍👩‍👧</div>
+				<div class="flex-1">
+					<div class="text-sm font-bold text-ink mb-1">家长成长看板</div>
+					<div class="flex items-baseline gap-2 mb-1">
+						<span class="text-base font-bold">¥39<span class="text-[10px]">/月</span></span>
+						<span class="text-[10px]">或 ¥299/年</span>
+					</div>
+					<div class="text-[10px] text-ink/80">每周报告 · 情绪预警 · 学科数据</div>
+					<button class="bg-brand text-white text-[11px] px-3 py-1 rounded-lg mt-2 font-semibold">立即订阅</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 家庭账号管理 -->
+	<section class="px-4 pt-5 pb-6">
+		<h3 class="text-sm font-bold text-ink mb-3">⚙️ 家庭管理</h3>
+
+		<div class="bg-white rounded-xl border border-[#E5DDD0] divide-y divide-[#E5DDD0]">
+
+			<div class="p-3 flex items-center gap-3 card-hover" onclick="alert('邀请码：\n\n' + family_invite_code + '\n\n已复制 · 发给家人加入')">
+				<div class="text-xl">📮</div>
+				<div class="flex-1">
+					<div class="text-sm font-semibold">邀请家人加入</div>
+					<div class="text-[10px] text-muted">分享邀请码 · 爷爷奶奶也能一起陪跑</div>
+				</div>
+				<div class="text-brand text-sm" id="invite_code_mini">FAM-···</div>
+			</div>
+
+			<div class="p-3 flex items-center gap-3 card-hover">
+				<div class="text-xl">📝</div>
+				<div class="flex-1">
+					<div class="text-sm font-semibold">编辑家庭资料</div>
+					<div class="text-[10px] text-muted">家庭名 · 家训 · 地区</div>
+				</div>
+				<div class="text-muted">→</div>
+			</div>
+
+			<div class="p-3 flex items-center gap-3 card-hover">
+				<div class="text-xl">💳</div>
+				<div class="flex-1">
+					<div class="text-sm font-semibold">订单与会员</div>
+					<div class="text-[10px] text-muted">查看购买历史 · 发票</div>
+				</div>
+				<div class="text-muted">→</div>
+			</div>
+
+			<div class="p-3 flex items-center gap-3 card-hover" onclick="logout()">
+				<div class="text-xl">🚪</div>
+				<div class="flex-1">
+					<div class="text-sm font-semibold text-danger">退出登录</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5DDD0] z-50">
+	<div class="max-w-[480px] mx-auto grid grid-cols-5 py-2">
+		<a href="parent.html" class="nav-item active text-center text-[10px] py-1">
+			<div class="text-lg">🏡</div>
+			<div>家庭</div>
+		</a>
+		<a href="companion.html" class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">👩‍🏫</div>
+			<div>陪跑</div>
+		</a>
+		<a href="index.html" class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">🎯</div>
+			<div>志愿</div>
+		</a>
+		<a href="companion-archive.html" class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">📖</div>
+			<div>档案</div>
+		</a>
+		<a href="#" onclick="logout(); return false;" class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">👤</div>
+			<div>我的</div>
+		</a>
+	</div>
+</nav>
+
+<script>
+	const api_base = location.origin;
+	const token = localStorage.getItem('me_offer_token');
+	let family_invite_code = '';
+	let current_student_id = null;
+
+	if (!token) {
+		location.href = 'login.html';
+	}
+
+	$(function () {
+		load_family();
+	});
+
+	function load_family() {
+		$.ajax({
+			url:		api_base + '/api/auth/me',
+			method:		'GET',
+			headers:	{ 'Authorization': 'Bearer ' + token },
+			success:	function (data) {
+				if (!data.parent) {
+					logout();
+					return;
+				}
+
+				/* 资料不全跳转 */
+				if (!data.parent.real_name) {
+					location.href = 'setup-family.html';
+					return;
+				}
+				if (!data.students || data.students.length === 0) {
+					location.href = 'add-child.html';
+					return;
+				}
+
+				render_family(data);
+			},
+			error:		function () {
+				logout();
+			}
+		});
+	}
+
+	function render_family(data) {
+		/* Family 信息 */
+		$('#family_name').text(data.family.family_name);
+		if (data.family.family_motto) {
+			$('#family_motto').text(data.family.family_motto);
+			$('#motto_box').removeClass('hidden');
+		}
+		if (data.family.vip_level > 0) {
+			$('#vip_badge').removeClass('hidden');
+		}
+		family_invite_code = data.family.invite_code;
+		$('#invite_code_mini').text(family_invite_code);
+
+		/* 头像字 */
+		const avatar_text = data.family.family_name.charAt(0);
+		$('#avatar_btn').text(avatar_text);
+
+		/* 孩子数量 */
+		$('#stat_kids').text(data.students.length);
+
+		/* 当前孩子 */
+		current_student_id = data.current_student_id;
+		const current = data.students.find(s => s.id === current_student_id) || data.students[0];
+		if (current) {
+			$('#current_student_hint').html('与 <span class="font-bold text-gold">' + current.real_name + '</span> 一起进入今日学习');
+
+			/* 高考志愿卡适配孩子年级 */
+			$('#current_student_badge').text(current.real_name + ' · ' + current.grade);
+
+			if (current.grade === '高三') {
+				/* 高三：志愿卡高亮 + 隐藏提示 */
+				$('#apply_card').removeClass('opacity-60').off('click').on('click', enter_apply_system);
+				$('#apply_tip_lowgrade').addClass('hidden');
+				$('#apply_hint').text('即将高考 · 立即启动').addClass('text-danger').removeClass('text-muted');
+				$('#apply_desc').text('基于 ' + (current.province || '山东') + ' 2021-2025 五年投档数据 · 冲 24 · 稳 48 · 保 24');
+			} else {
+				/* 高一/高二：志愿卡变暗 + 显示提示 */
+				$('#apply_card').addClass('opacity-60');
+				$('#apply_tip_lowgrade').removeClass('hidden');
+				$('#grade_now').text(current.grade);
+				$('#apply_hint').text('暂不适用').addClass('text-muted');
+			}
+
+			window._current_student = current;
+		}
+
+		/* 渲染孩子列表 */
+		render_students(data.students, current_student_id);
+	}
+
+	function render_students(students, current_id) {
+		const box = $('#students_list');
+		box.empty();
+
+		for (let s of students) {
+			const active = s.id === current_id ? 'active' : '';
+			const gender_emoji = s.gender === 'female' ? '👧' : '👦';
+			const chip = $([
+				'<div class="student-chip flex-shrink-0 w-44 bg-white rounded-xl p-3 border-2 border-[#E5DDD0] ' + active + '" data-id="' + s.id + '">',
+				'  <div class="flex items-center gap-2 mb-2">',
+				'    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-xl">' + gender_emoji + '</div>',
+				'    <div class="flex-1 min-w-0">',
+				'      <div class="text-sm font-bold truncate">' + s.real_name + '</div>',
+				'      <div class="text-[10px] text-muted">' + s.grade + (s.province ? ' · ' + s.province : '') + '</div>',
+				'    </div>',
+				'  </div>',
+				'  <div class="text-[10px] text-muted truncate">🎯 ' + (s.target_univ || '目标待定') + '</div>',
+				'</div>'
+			].join(''));
+			box.append(chip);
+		}
+
+		/* 添加卡 */
+		if (students.length < 3) {
+			box.append([
+				'<a href="add-child.html" class="flex-shrink-0 w-32 bg-white/60 rounded-xl p-3 border-2 border-dashed border-[#C9A96E] flex flex-col items-center justify-center text-muted">',
+				'  <div class="text-3xl mb-1">➕</div>',
+				'  <div class="text-[11px]">添加孩子</div>',
+				'</a>'
+			].join(''));
+		}
+
+		$('.student-chip').on('click', function () {
+			const sid = $(this).data('id');
+			switch_student(sid);
+		});
+	}
+
+	function switch_student(student_id) {
+		if (student_id === current_student_id) return;
+
+		$.ajax({
+			url:			api_base + '/api/students/switch',
+			method:			'POST',
+			contentType:	'application/json',
+			headers:		{ 'Authorization': 'Bearer ' + token },
+			data:			JSON.stringify({ student_id: student_id }),
+			success:		function () {
+				location.reload();
+			}
+		});
+	}
+
+	function enter_companion() {
+		location.href = 'companion.html';
+	}
+
+	function enter_apply_system() {
+		const current = window._current_student;
+
+		if (!current || current.grade !== '高三') {
+			alert('高考志愿填报仅适用于高三年级。\n您的孩子当前 ' + (current ? current.grade : '未知') + '，请先使用陪跑社区。');
+			return;
+		}
+
+		/* 跳转到志愿填报系统（独立账号 · 预填孩子信息） */
+		const params = new URLSearchParams();
+		if (current.real_name) params.set('name', current.real_name);
+		if (current.province) params.set('province', current.province);
+		if (current.target_score) params.set('score', current.target_score);
+		if (current.target_univ) params.set('target', current.target_univ);
+		if (current.subject_type) params.set('subject', current.subject_type);
+
+		const query = params.toString();
+		location.href = 'apply.html' + (query ? '?' + query : '');
+	}
+
+	function logout() {
+		if (!confirm('确认退出家庭账号？')) return;
+		localStorage.removeItem('me_offer_token');
+		localStorage.removeItem('me_offer_parent_id');
+		location.href = 'login.html';
+	}
+</script>
+
+</body>
+</html>

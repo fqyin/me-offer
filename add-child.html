@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>添加孩子档案 · Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.5s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-primary:disabled { background: #C9A96E; cursor: not-allowed; opacity: 0.6; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; background: white; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.form-input {
+			width: 100%;
+			padding: 14px 16px;
+			border-radius: 12px;
+			background: white;
+			border: 2px solid #E5DDD0;
+			font-size: 15px;
+			outline: none;
+		}
+		.form-input:focus { border-color: #C9A96E; }
+
+		.choice-card { transition: all 0.2s; cursor: pointer; border: 2px solid #E5DDD0; background: white; }
+		.choice-card:hover { border-color: #C9A96E; background: #FDF8F0; }
+		.choice-card.selected { border-color: #8B6914; background: #FDF8F0; }
+
+		.subject-chip {
+			cursor: pointer; transition: all 0.15s;
+			border: 1.5px solid #E5DDD0;
+			background: white;
+			padding: 6px 14px;
+			border-radius: 20px;
+			font-size: 12px;
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+		}
+		.subject-chip:hover { border-color: #C9A96E; }
+		.subject-chip.selected { border-color: #8B6914; background: #8B6914; color: white; }
+
+		.hero-bg {
+			background:
+				radial-gradient(circle at 20% 20%, rgba(201,169,110,0.15) 0%, transparent 40%),
+				radial-gradient(circle at 80% 80%, rgba(139,105,20,0.1) 0%, transparent 40%),
+				#FDF8F0;
+		}
+
+		.step-indicator {
+			display: flex; align-items: center; gap: 8px;
+			background: white;
+			padding: 10px 14px;
+			border-radius: 20px;
+			border: 1px solid #E5DDD0;
+			font-size: 11px;
+			color: #8A8A8A;
+		}
+	</style>
+</head>
+<body class="hero-bg">
+
+<div class="max-w-[480px] mx-auto min-h-screen pb-8">
+
+	<!-- Header -->
+	<header class="px-6 pt-10 pb-6 text-center fade-in">
+		<div class="step-indicator inline-flex mb-4">
+			<span class="w-5 h-5 rounded-full bg-gold text-white flex items-center justify-center text-[10px]">✓</span>
+			<span class="text-muted">家庭资料</span>
+			<span class="text-muted">›</span>
+			<span class="w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center font-bold text-[10px]">2</span>
+			<span>孩子档案</span>
+			<span class="text-muted">›</span>
+			<span>开始陪跑</span>
+		</div>
+		<h1 class="text-2xl font-bold chinese-serif text-ink mb-2" id="page_title">🧑‍🎓 添加你的孩子</h1>
+		<p class="text-xs text-muted">Lily 老师需要了解孩子，才能定制专属陪跑方案</p>
+	</header>
+
+	<!-- Main -->
+	<main class="px-6 space-y-5 fade-in">
+
+		<!-- 基本信息 -->
+		<div class="bg-white rounded-2xl p-5 border border-[#E5DDD0]">
+			<label class="block text-xs font-bold text-brand mb-2">孩子真实姓名 <span class="text-danger">*</span></label>
+			<input type="text" id="real_name" class="form-input chinese-serif" placeholder="例如：吕同学" maxlength="20">
+
+			<label class="block text-xs font-bold text-brand mt-4 mb-2">昵称（Lily 对孩子的称呼）</label>
+			<input type="text" id="nickname" class="form-input chinese-serif" placeholder="例如：小吕、同学" maxlength="10">
+
+			<label class="block text-xs font-bold text-brand mt-4 mb-2">性别</label>
+			<div class="grid grid-cols-2 gap-3">
+				<div class="choice-card rounded-xl p-3 text-center" data-field="gender" data-value="male">
+					<div class="text-2xl mb-1">👦</div>
+					<div class="text-xs">男孩</div>
+				</div>
+				<div class="choice-card rounded-xl p-3 text-center" data-field="gender" data-value="female">
+					<div class="text-2xl mb-1">👧</div>
+					<div class="text-xs">女孩</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 年级 -->
+		<div class="bg-white rounded-2xl p-5 border border-[#E5DDD0]">
+			<label class="block text-xs font-bold text-brand mb-3">孩子年级 <span class="text-danger">*</span></label>
+			<div class="grid grid-cols-3 gap-3">
+				<div class="choice-card rounded-xl p-4 text-center" data-field="grade" data-value="高一">
+					<div class="text-sm font-bold">高一</div>
+					<div class="text-[10px] text-muted mt-0.5">基础打造</div>
+				</div>
+				<div class="choice-card rounded-xl p-4 text-center" data-field="grade" data-value="高二">
+					<div class="text-sm font-bold">高二</div>
+					<div class="text-[10px] text-muted mt-0.5">真题练习</div>
+				</div>
+				<div class="choice-card rounded-xl p-4 text-center" data-field="grade" data-value="高三">
+					<div class="text-sm font-bold">高三</div>
+					<div class="text-[10px] text-muted mt-0.5">冲刺陪跑</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 学校信息 -->
+		<div class="bg-white rounded-2xl p-5 border border-[#E5DDD0]">
+			<label class="block text-xs font-bold text-brand mb-2">所在学校 <span class="text-muted font-normal">（选填）</span></label>
+			<input type="text" id="school_name" class="form-input" placeholder="例如：山东省实验中学" maxlength="50">
+
+			<label class="block text-xs font-bold text-brand mt-4 mb-2">班级 <span class="text-muted font-normal">（选填）</span></label>
+			<input type="text" id="class_name" class="form-input" placeholder="例如：高三 (5) 班" maxlength="20">
+
+			<label class="block text-xs font-bold text-brand mt-4 mb-2">考试省份</label>
+			<select id="province" class="form-input">
+				<option value="">选择省份</option>
+				<option value="山东">山东（新高考 · 3+3）</option>
+				<option value="北京">北京（新高考 · 3+3）</option>
+				<option value="上海">上海（新高考 · 3+3）</option>
+				<option value="广东">广东（新高考 · 3+1+2）</option>
+				<option value="江苏">江苏（新高考 · 3+1+2）</option>
+				<option value="浙江">浙江（新高考 · 3+3）</option>
+				<option value="湖北">湖北（新高考 · 3+1+2）</option>
+				<option value="湖南">湖南（新高考 · 3+1+2）</option>
+				<option value="福建">福建（新高考 · 3+1+2）</option>
+				<option value="辽宁">辽宁（新高考 · 3+1+2）</option>
+				<option value="重庆">重庆（新高考 · 3+1+2）</option>
+				<option value="河北">河北（新高考 · 3+1+2）</option>
+				<option value="天津">天津（新高考 · 3+3）</option>
+				<option value="海南">海南（新高考 · 3+3）</option>
+				<option value="黑龙江">黑龙江（新高考 · 3+1+2）</option>
+				<option value="吉林">吉林（新高考 · 3+1+2）</option>
+				<option value="安徽">安徽（新高考 · 3+1+2）</option>
+				<option value="江西">江西（新高考 · 3+1+2）</option>
+				<option value="贵州">贵州（新高考 · 3+1+2）</option>
+				<option value="广西">广西（新高考 · 3+1+2）</option>
+				<option value="甘肃">甘肃（新高考 · 3+1+2）</option>
+				<option value="河南">河南（老高考 · 文理分科）</option>
+				<option value="山西">山西（老高考 · 文理分科）</option>
+				<option value="陕西">陕西（老高考 · 文理分科）</option>
+				<option value="四川">四川（老高考 · 文理分科）</option>
+				<option value="云南">云南（老高考 · 文理分科）</option>
+				<option value="新疆">新疆（老高考 · 文理分科）</option>
+				<option value="青海">青海（老高考 · 文理分科）</option>
+				<option value="宁夏">宁夏（老高考 · 文理分科）</option>
+				<option value="内蒙古">内蒙古（老高考 · 文理分科）</option>
+				<option value="西藏">西藏（老高考 · 文理分科）</option>
+			</select>
+		</div>
+
+		<!-- 选科 -->
+		<div class="bg-white rounded-2xl p-5 border border-[#E5DDD0]">
+			<label class="block text-xs font-bold text-brand mb-2">选考科目 <span class="text-muted font-normal">（可多选）</span></label>
+
+			<div class="text-[10px] text-muted mb-3">必考：语文 · 数学 · 英语</div>
+
+			<div class="mb-3">
+				<div class="text-[11px] font-bold text-ink mb-2">首选科目（1 科）</div>
+				<div class="flex flex-wrap gap-2">
+					<span class="subject-chip" data-subject="物理" data-group="first">🧑‍🔬 物理</span>
+					<span class="subject-chip" data-subject="历史" data-group="first">📜 历史</span>
+				</div>
+			</div>
+
+			<div>
+				<div class="text-[11px] font-bold text-ink mb-2">再选科目（2 科）</div>
+				<div class="flex flex-wrap gap-2">
+					<span class="subject-chip" data-subject="化学" data-group="second">👨‍🔬 化学</span>
+					<span class="subject-chip" data-subject="生物" data-group="second">👩‍⚕️ 生物</span>
+					<span class="subject-chip" data-subject="政治" data-group="second">⚖️ 政治</span>
+					<span class="subject-chip" data-subject="地理" data-group="second">🌍 地理</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- 目标大学 -->
+		<div class="bg-white rounded-2xl p-5 border border-[#E5DDD0]">
+			<label class="block text-xs font-bold text-brand mb-2">目标大学 <span class="text-muted font-normal">（选填）</span></label>
+			<input type="text" id="target_univ" class="form-input chinese-serif" placeholder="例如：清华大学、山东大学" maxlength="50">
+
+			<label class="block text-xs font-bold text-brand mt-4 mb-2">目标分数 <span class="text-muted font-normal">（选填）</span></label>
+			<input type="number" id="target_score" class="form-input" placeholder="例如：650" min="300" max="750">
+
+			<div class="mt-3 bg-cream rounded-lg p-3 text-[11px] text-brand leading-relaxed">
+				💡 9 位 AI 老师会根据目标自动定制每日任务 · 不必追求"高大上"，真实就好
+			</div>
+		</div>
+
+		<!-- 提交 -->
+		<button id="btn_submit" class="btn-primary w-full py-4 rounded-xl font-semibold text-sm shadow-lg" disabled>
+			<span id="submit_text">完成 · 进入家庭陪跑</span>
+		</button>
+
+		<button onclick="history.back()" class="w-full text-[11px] text-muted py-2">← 返回上一步</button>
+
+	</main>
+
+</div>
+
+<script>
+	const api_base = location.origin;
+	const token = localStorage.getItem('me_offer_token');
+	let form_data = {
+		gender: '',
+		grade: '',
+		subjects: []
+	};
+
+	if (!token) {
+		location.href = 'login.html';
+	}
+
+	$(function () {
+		/* 检测是不是已有孩子（用于"添加第二/三个孩子"场景） */
+		$.ajax({
+			url:		api_base + '/api/auth/me',
+			method:		'GET',
+			headers:	{ 'Authorization': 'Bearer ' + token },
+			success:	function (data) {
+				if (data.students && data.students.length > 0) {
+					const count = data.students.length;
+					$('#page_title').text('🧑‍🎓 添加第 ' + (count + 1) + ' 个孩子');
+					$('#submit_text').text('完成 · 添加孩子');
+				}
+			}
+		});
+
+		/* 单选卡 */
+		$('.choice-card').on('click', function () {
+			const field = $(this).data('field');
+			const value = $(this).data('value');
+			$('.choice-card[data-field="' + field + '"]').removeClass('selected');
+			$(this).addClass('selected');
+			form_data[field] = value;
+			check_valid();
+		});
+
+		/* 首选科目（单选） */
+		$('.subject-chip[data-group="first"]').on('click', function () {
+			const s = $(this).data('subject');
+			$('.subject-chip[data-group="first"]').removeClass('selected');
+			$(this).addClass('selected');
+
+			/* 更新 subject_type */
+			form_data.subject_type = (s === '物理') ? '物理类' : '历史类';
+
+			/* 更新 subjects 列表（移除旧的首选科目再加新的） */
+			form_data.subjects = form_data.subjects.filter(x => x !== '物理' && x !== '历史');
+			form_data.subjects.push(s);
+			check_valid();
+		});
+
+		/* 再选科目（多选，最多 2 个） */
+		$('.subject-chip[data-group="second"]').on('click', function () {
+			const s = $(this).data('subject');
+			const second_selected = $('.subject-chip[data-group="second"].selected');
+
+			if ($(this).hasClass('selected')) {
+				$(this).removeClass('selected');
+				form_data.subjects = form_data.subjects.filter(x => x !== s);
+			} else {
+				if (second_selected.length >= 2) {
+					alert('再选科目最多选 2 个');
+					return;
+				}
+				$(this).addClass('selected');
+				form_data.subjects.push(s);
+			}
+			check_valid();
+		});
+
+		/* 输入框校验 */
+		$('#real_name').on('input', check_valid);
+
+		/* 提交 */
+		$('#btn_submit').on('click', submit_child);
+	});
+
+	function check_valid() {
+		const ok = $('#real_name').val().trim() && form_data.grade && form_data.gender;
+		$('#btn_submit').prop('disabled', !ok);
+	}
+
+	function submit_child() {
+		$('#btn_submit').prop('disabled', true);
+		$('#submit_text').text('添加中...');
+
+		const payload = {
+			real_name:		$('#real_name').val().trim(),
+			nickname:		$('#nickname').val().trim(),
+			gender:			form_data.gender,
+			grade:			form_data.grade,
+			school_name:	$('#school_name').val().trim(),
+			class_name:		$('#class_name').val().trim(),
+			province:		$('#province').val(),
+			target_univ:	$('#target_univ').val().trim(),
+			target_score:	parseInt($('#target_score').val()) || null,
+			subject_type:	form_data.subject_type || '',
+			subjects:		form_data.subjects
+		};
+
+		$.ajax({
+			url:			api_base + '/api/students/add',
+			method:			'POST',
+			contentType:	'application/json',
+			headers:		{ 'Authorization': 'Bearer ' + token },
+			data:			JSON.stringify(payload),
+			success:		function () {
+				location.href = 'parent.html';
+			},
+			error:			function (xhr) {
+				$('#btn_submit').prop('disabled', false);
+				$('#submit_text').text('完成 · 进入家庭陪跑');
+				alert(xhr.responseJSON ? xhr.responseJSON.error : '添加失败，请重试');
+			}
+		});
+	}
+</script>
+
+</body>
+</html>

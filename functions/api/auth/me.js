@@ -1,7 +1,6 @@
-// Me Offer · 当前用户信息
+// Me Offer · 当前家长 + Family + 孩子列表
 // GET /api/auth/me
 // Header: Authorization: Bearer tk_xxxxx
-// Returns: { user_id, phone, nickname, avatar_url, created_at }
 
 export async function onRequestGet(context) {
 	const env								= context.env;
@@ -13,34 +12,39 @@ export async function onRequestGet(context) {
 	}
 
 	const session							= await env.DB.prepare(
-		'SELECT user_id, expires_at FROM user_sessions WHERE token = ?'
+		'SELECT parent_id, family_id, current_student_id, expires_at FROM parent_sessions WHERE token = ?'
 	).bind(token).first();
 
 	if (!session) {
 		return json_response({ error: 'invalid token' }, 401);
 	}
 
-	/* 检查是否过期 */
 	if (session.expires_at && new Date(session.expires_at) < new Date()) {
 		return json_response({ error: 'token expired' }, 401);
 	}
 
-	const user								= await env.DB.prepare(
-		'SELECT id, phone, wx_openid, nickname, avatar_url, created_at, last_login_at FROM users WHERE id = ?'
-	).bind(session.user_id).first();
+	const parent							= await env.DB.prepare(
+		'SELECT id, family_id, phone, wx_openid, nickname, real_name, relation, avatar_url, is_owner, created_at, last_login_at FROM parents WHERE id = ?'
+	).bind(session.parent_id).first();
 
-	if (!user) {
-		return json_response({ error: 'user not found' }, 404);
+	if (!parent) {
+		return json_response({ error: 'parent not found' }, 404);
 	}
 
+	const family							= await env.DB.prepare(
+		'SELECT id, family_name, family_motto, avatar_url, province, city, invite_code, vip_level, vip_expires_at, total_paid, created_at FROM families WHERE id = ?'
+	).bind(session.family_id).first();
+
+	const students_res						= await env.DB.prepare(
+		'SELECT id, real_name, nickname, gender, avatar_url, grade, province, school_name, class_name, target_univ, target_score, subject_type, subjects, created_at FROM students WHERE family_id = ? AND active = 1 ORDER BY id ASC'
+	).bind(session.family_id).all();
+
 	return json_response({
-		user_id:		user.id,
-		phone:			user.phone,
-		nickname:		user.nickname,
-		avatar_url:		user.avatar_url,
-		wx_bound:		!!user.wx_openid,
-		created_at:		user.created_at,
-		last_login_at:	user.last_login_at
+		parent:				parent,
+		family:				family,
+		students:			students_res.results || [],
+		current_student_id:	session.current_student_id,
+		profile_complete:	!!parent.real_name && (students_res.results || []).length > 0
 	});
 }
 
@@ -56,6 +60,10 @@ function json_response(data, status) {
 export async function onRequestOptions() {
 	return new Response(null, {
 		status:		204,
-		headers:	{ 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' }
+		headers:	{
+			'Access-Control-Allow-Origin':	'*',
+			'Access-Control-Allow-Methods':	'GET, OPTIONS',
+			'Access-Control-Allow-Headers':	'Content-Type, Authorization'
+		}
 	});
 }
