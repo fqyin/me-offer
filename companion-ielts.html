@@ -139,77 +139,34 @@
 			<div class="flex items-center gap-2">
 				<a href="companion.html" class="text-muted text-sm">←</a>
 				<span class="font-bold text-sm">🎧 雅思英语听力</span>
-				<span class="stamp">DAY 42</span>
+				<span class="stamp" id="header_day">DAY 1</span>
 			</div>
 			<div class="flex items-center gap-2">
-				<span class="text-[10px] text-gold">连续 42 天 🔥</span>
+				<span class="text-[10px] text-gold" id="header_streak">连续 0 天 🔥</span>
 			</div>
 		</div>
 	</header>
 
+	<!-- 期刊切换器 -->
+	<div class="px-4 pt-3">
+		<div class="text-[10px] text-muted mb-2">🎧 选一篇听力 · 5 期精选</div>
+		<div id="issue_switcher" class="scroll-x"></div>
+	</div>
+
 	<!-- Video Player -->
-	<section class="px-4 pt-4 fade-in">
-		<div class="video-player rounded-2xl overflow-hidden aspect-video relative">
+	<section class="px-4 pt-3 fade-in">
+		<div id="video_frame" class="video-player rounded-2xl overflow-hidden aspect-video relative bg-black"></div>
+		<div class="text-[10px] text-muted mt-2 text-center">🇨🇳 视频托管于阿里云北京节点 · 国内可直接播放</div>
 
-			<!-- YouTube 来源标 -->
-			<div class="absolute top-3 right-3 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded flex items-center gap-1 z-10">
-				<span>▶</span> YouTube
-			</div>
-
-			<!-- 难度 + 时长 -->
-			<div class="absolute top-3 left-3 flex flex-col gap-1 z-10">
-				<div class="bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">01:03</div>
-				<div class="bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">雅思 7.0</div>
-			</div>
-
-			<!-- 中心播放按钮 -->
-			<div class="absolute inset-0 flex items-center justify-center">
-				<div class="play-btn">
-					<span class="text-white text-3xl ml-1">▶</span>
-				</div>
-			</div>
-
-			<!-- 底部信息 -->
-			<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-				<div class="flex items-center gap-2 mb-1">
-					<span class="bg-white/90 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded">BBC News</span>
-					<span class="text-white/60 text-[10px]">· 学术类</span>
-				</div>
-				<div class="text-white font-bold text-sm">The Rise of AI in Education</div>
-			</div>
-
-			<!-- 播放中动画（状态示意） -->
-			<div class="absolute bottom-2 right-3 flex items-end h-6 z-10">
-				<span class="wave-bar"></span>
-				<span class="wave-bar"></span>
-				<span class="wave-bar"></span>
-				<span class="wave-bar"></span>
-				<span class="wave-bar"></span>
-			</div>
-		</div>
-
-		<!-- 进度条 + 控制 -->
+		<!-- 视频信息卡 -->
 		<div class="bg-white rounded-xl p-3 mt-3 border border-[#E5DDD0]">
-			<div class="flex items-center gap-3 text-xs mb-2">
-				<span class="text-muted">00:28</span>
-				<div class="flex-1 h-1.5 bg-cream rounded-full relative">
-					<div class="absolute left-0 top-0 h-full bg-brand rounded-full" style="width: 45%;"></div>
-					<div class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-brand rounded-full" style="left: 45%;"></div>
-				</div>
-				<span class="text-muted">01:03</span>
+			<div class="flex items-center gap-2 mb-1 flex-wrap">
+				<span class="bg-cream text-brand text-[10px] font-bold px-2 py-0.5 rounded" id="video_source">BBC News</span>
+				<span class="text-muted text-[10px]" id="video_type">· 学术类</span>
+				<span class="text-muted text-[10px] ml-auto" id="video_level">雅思 7.0</span>
+				<span class="text-muted text-[10px]" id="video_duration">01:03</span>
 			</div>
-			<div class="flex items-center justify-between text-xs">
-				<div class="flex items-center gap-3">
-					<button class="text-lg">⏪ 5s</button>
-					<button class="text-lg">⏸</button>
-					<button class="text-lg">5s ⏩</button>
-				</div>
-				<div class="flex items-center gap-2">
-					<button class="bg-cream text-brand px-2 py-0.5 rounded text-[10px]">1.0x</button>
-					<button class="text-muted px-2 py-0.5 rounded text-[10px]">0.75x</button>
-					<button class="text-muted px-2 py-0.5 rounded text-[10px]">字幕</button>
-				</div>
-			</div>
+			<div class="font-bold text-sm text-ink" id="video_title">听力标题</div>
 		</div>
 
 		<!-- Emma 老师提示 -->
@@ -217,7 +174,7 @@
 			<div class="w-9 h-9 rounded-full bg-gradient-to-br from-danger to-[#A63838] text-white flex items-center justify-center text-base flex-shrink-0">👩‍🎓</div>
 			<div class="flex-1">
 				<div class="text-[11px] text-brand font-bold mb-1">Emma says</div>
-				<p class="text-xs text-ink leading-relaxed chinese-serif">"Try to catch these 3 keywords first: <span class="font-bold text-danger">reshape</span> / <span class="font-bold text-danger">artificial</span> / <span class="font-bold text-danger">framework</span>. Don't worry if you don't understand every word ☺️"</p>
+				<p class="text-xs text-ink leading-relaxed chinese-serif" id="emma_intro">先抓这 3 个关键词...</p>
 			</div>
 		</div>
 	</section>
@@ -225,10 +182,10 @@
 	<!-- Tabs -->
 	<div class="sticky top-[57px] bg-cream/95 backdrop-blur z-30 px-4 pt-3 border-b border-[#E5DDD0] mt-4">
 		<div class="flex gap-5 text-sm">
-			<button class="tab-item active py-2 border-b-2 border-transparent" onclick="switchTab('transcript')">字幕原文</button>
-			<button class="tab-item py-2 border-b-2 border-transparent text-muted" onclick="switchTab('questions')">5 道听力题</button>
-			<button class="tab-item py-2 border-b-2 border-transparent text-muted" onclick="switchTab('keywords')">高频词</button>
-			<button class="tab-item py-2 border-b-2 border-transparent text-muted" onclick="switchTab('progress')">进步曲线</button>
+			<button class="tab-item active py-2 border-b-2 border-transparent" data-tab="transcript">字幕原文</button>
+			<button class="tab-item py-2 border-b-2 border-transparent text-muted" data-tab="questions">5 道听力题</button>
+			<button class="tab-item py-2 border-b-2 border-transparent text-muted" data-tab="keywords">高频词</button>
+			<button class="tab-item py-2 border-b-2 border-transparent text-muted" data-tab="progress">进步曲线</button>
 		</div>
 	</div>
 
@@ -242,49 +199,7 @@
 			</div>
 		</div>
 
-		<!-- 段落 1 -->
-		<div class="transcript-para active bg-white rounded-xl">
-			<div class="text-[10px] text-muted mb-1">00:00 - 00:15</div>
-			<p class="text-sm leading-relaxed mb-2">
-				Artificial intelligence is <span class="word-highlight">reshape</span>ing how students learn around the world. From personalized tutoring systems to automated essay grading, AI tools are becoming an integral part of modern classrooms.
-			</p>
-			<p class="text-[11px] text-muted chinese-serif leading-relaxed">
-				人工智能正在重塑全球学生的学习方式。从个性化辅导系统到自动作文评分，AI 工具正成为现代课堂不可或缺的一部分。
-			</p>
-		</div>
-
-		<!-- 段落 2 -->
-		<div class="transcript-para bg-white rounded-xl">
-			<div class="text-[10px] text-muted mb-1">00:15 - 00:35</div>
-			<p class="text-sm leading-relaxed mb-2">
-				However, concerns have been raised about the over-reliance on <span class="word-highlight">artificial</span> systems. Critics argue that students may lose essential skills such as critical thinking and creative problem-solving.
-			</p>
-			<p class="text-[11px] text-muted chinese-serif leading-relaxed">
-				然而，人们对过度依赖人工系统表示担忧。批评者认为，学生可能会失去批判性思维和创造性解决问题的基本技能。
-			</p>
-		</div>
-
-		<!-- 段落 3 -->
-		<div class="transcript-para bg-white rounded-xl">
-			<div class="text-[10px] text-muted mb-1">00:35 - 00:50</div>
-			<p class="text-sm leading-relaxed mb-2">
-				Educational experts suggest a balanced <span class="word-highlight">framework</span> where AI serves as a supplement, not a replacement, for traditional teaching methods.
-			</p>
-			<p class="text-[11px] text-muted chinese-serif leading-relaxed">
-				教育专家建议建立一个平衡的框架，让 AI 作为传统教学方法的补充而不是替代。
-			</p>
-		</div>
-
-		<!-- 段落 4 -->
-		<div class="transcript-para bg-white rounded-xl">
-			<div class="text-[10px] text-muted mb-1">00:50 - 01:03</div>
-			<p class="text-sm leading-relaxed mb-2">
-				The future of education likely lies in a thoughtful combination of human wisdom and technological innovation.
-			</p>
-			<p class="text-[11px] text-muted chinese-serif leading-relaxed">
-				教育的未来很可能在于人类智慧与技术创新的深思熟虑的结合。
-			</p>
-		</div>
+		<div id="transcript_list" class="space-y-2"></div>
 
 		<!-- 听完来测测 -->
 		<div class="bg-gradient-to-br from-brand to-[#6B4F0F] rounded-2xl p-5 text-white mt-4">
@@ -292,8 +207,8 @@
 				<span class="text-lg">🎯</span>
 				<span class="text-sm font-bold">听完了？来测测你听懂多少</span>
 			</div>
-			<p class="text-xs text-white/80 mb-3">5 道题 · 难度雅思 7.0 · Emma 精心设计</p>
-			<button onclick="switchTab('questions')" class="w-full bg-white text-brand text-sm font-bold py-2.5 rounded-lg">开始答题 →</button>
+			<p class="text-xs text-white/80 mb-3">5 道题 · Emma 精心设计</p>
+			<button class="tab-item-jump w-full bg-white text-brand text-sm font-bold py-2.5 rounded-lg" data-target="questions">开始答题 →</button>
 		</div>
 	</section>
 
@@ -301,87 +216,15 @@
 	<section id="tab_questions" class="tab-content px-4 pt-4 space-y-3">
 
 		<div class="flex items-center justify-between mb-1">
-			<div class="text-xs text-muted">共 5 题 · 限时 8 分钟</div>
-			<div class="text-xs text-brand font-bold">已答 2/5</div>
+			<div class="text-xs text-muted">共 5 题 · 答对自动打卡</div>
+			<div class="text-xs text-brand font-bold" id="q_progress_text">已答 0/5</div>
 		</div>
 
 		<div class="bg-white rounded-full h-2 mb-3">
-			<div class="bg-brand rounded-full h-2" style="width: 40%;"></div>
+			<div id="q_progress_bar" class="bg-brand rounded-full h-2 transition-all" style="width: 0%;"></div>
 		</div>
 
-		<!-- 题 1 (已答对) -->
-		<div class="question-card answered rounded-xl p-4 border border-[#E5DDD0]">
-			<div class="flex items-center gap-2 mb-2">
-				<span class="bg-green-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">1</span>
-				<span class="text-[10px] text-green-700 font-bold">✓ 答对了</span>
-				<span class="text-[10px] text-muted ml-auto">单选题</span>
-			</div>
-			<p class="text-sm font-semibold mb-3">According to the audio, how is AI changing education?</p>
-
-			<div class="space-y-2">
-				<button class="option-btn">A. By replacing all teachers</button>
-				<button class="option-btn correct">B. By reshaping how students learn ✓</button>
-				<button class="option-btn">C. By building new schools</button>
-				<button class="option-btn">D. By reducing class hours</button>
-			</div>
-
-			<div class="bg-cream rounded-lg p-3 mt-3">
-				<div class="text-[10px] text-brand font-bold mb-1">💭 Emma 解析</div>
-				<p class="text-[11px] text-ink chinese-serif leading-relaxed">关键词 "reshape how students learn" 在第 1 段开头就出现。这种"总起句"在雅思听力里往往就是答案点 —— 要第一时间捕捉。</p>
-			</div>
-		</div>
-
-		<!-- 题 2 (已答对) -->
-		<div class="question-card answered rounded-xl p-4 border border-[#E5DDD0]">
-			<div class="flex items-center gap-2 mb-2">
-				<span class="bg-green-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">2</span>
-				<span class="text-[10px] text-green-700 font-bold">✓ 答对了</span>
-				<span class="text-[10px] text-muted ml-auto">填空题</span>
-			</div>
-			<p class="text-sm font-semibold mb-3">Critics argue that students may lose skills such as critical thinking and _____ problem-solving.</p>
-
-			<div class="bg-green-50 border border-green-300 rounded-lg p-3">
-				<div class="text-xs text-muted mb-1">你的答案</div>
-				<div class="font-bold text-green-700">creative</div>
-			</div>
-		</div>
-
-		<!-- 题 3 (进行中) -->
-		<div class="question-card bg-white rounded-xl p-4 border-2 border-gold">
-			<div class="flex items-center gap-2 mb-2">
-				<span class="bg-brand text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">3</span>
-				<span class="text-[10px] text-brand font-bold">当前题目</span>
-				<span class="text-[10px] text-muted ml-auto">单选题</span>
-			</div>
-			<p class="text-sm font-semibold mb-3">What do educational experts suggest about AI in education?</p>
-
-			<div class="space-y-2">
-				<button class="option-btn">A. Ban AI in classrooms</button>
-				<button class="option-btn selected">B. Use AI as a supplement to teaching</button>
-				<button class="option-btn">C. Make AI the main teaching tool</button>
-				<button class="option-btn">D. Wait for better technology</button>
-			</div>
-
-			<button class="w-full btn-primary text-sm py-2.5 rounded-lg font-semibold mt-3">提交答案</button>
-		</div>
-
-		<!-- 题 4 (锁定) -->
-		<div class="question-card bg-white/60 rounded-xl p-4 border border-[#E5DDD0] opacity-60">
-			<div class="flex items-center gap-2 mb-2">
-				<span class="bg-muted text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">4</span>
-				<span class="text-[10px] text-muted">🔒 完成上一题解锁</span>
-			</div>
-			<p class="text-sm text-muted">...</p>
-		</div>
-
-		<!-- 题 5 (锁定) -->
-		<div class="question-card bg-white/60 rounded-xl p-4 border border-[#E5DDD0] opacity-60">
-			<div class="flex items-center gap-2 mb-2">
-				<span class="bg-muted text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">5</span>
-				<span class="text-[10px] text-muted">🔒 完成上一题解锁</span>
-			</div>
-			<p class="text-sm text-muted">...</p>
-		</div>
+		<div id="questions_list" class="space-y-3"></div>
 
 		<!-- Emma 小贴士 -->
 		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
@@ -389,112 +232,24 @@
 				<div class="w-8 h-8 rounded-full bg-gradient-to-br from-danger to-[#A63838] text-white flex items-center justify-center text-sm">👩‍🎓</div>
 				<span class="text-xs font-bold text-brand">Emma's Tip</span>
 			</div>
-			<p class="text-[11px] text-ink chinese-serif leading-relaxed">"听不清没关系 —— 这就是 42 天坚持的意义。最初正确率只有 40%，现在你已经到 86%。Keep going 💪"</p>
+			<p class="text-[11px] text-ink chinese-serif leading-relaxed">"听不清没关系 —— 每天 10 分钟，一个月后你会看到量变。Keep going 💪"</p>
 		</div>
 	</section>
 
 	<!-- ============= Tab 3: 高频词 ============= -->
 	<section id="tab_keywords" class="tab-content px-4 pt-4 space-y-3">
 
-		<div class="text-xs text-muted mb-2">📚 今日 3 个雅思高频词 · Emma 亲选</div>
+		<div class="text-xs text-muted mb-2">📚 本期 3 个雅思高频词 · Emma 亲选</div>
 
-		<!-- Word 1 -->
-		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
-			<div class="flex items-center justify-between mb-2">
-				<div class="flex items-center gap-2">
-					<span class="text-2xl font-bold text-ink">reshape</span>
-					<span class="text-[10px] text-muted">/riːˈʃeɪp/</span>
-				</div>
-				<button class="text-brand text-lg">🔊</button>
-			</div>
-
-			<div class="space-y-2 text-[11px]">
-				<div><span class="font-bold text-brand">词性：</span>动词</div>
-				<div><span class="font-bold text-brand">释义：</span>重塑、改变形状</div>
-				<div><span class="font-bold text-brand">雅思出现频率：</span>
-					<span class="ml-1 difficulty-bar inline-flex">
-						<div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div><div></div>
-					</span>
-					<span class="text-muted ml-1">高频</span>
-				</div>
-			</div>
-
-			<div class="bg-cream rounded-lg p-3 mt-3">
-				<div class="text-[10px] text-brand font-bold mb-1">🎯 Emma 例句</div>
-				<p class="text-[11px] text-ink mb-1">"The internet has <span class="text-danger font-bold">reshaped</span> how we communicate."</p>
-				<p class="text-[10px] text-muted chinese-serif">互联网重塑了我们的交流方式。</p>
-			</div>
-
-			<div class="flex items-center gap-2 mt-3 text-[10px] text-muted">
-				<span>已背 12 次</span>
-				<span class="ml-auto text-gold">⭐ 加入单词本</span>
-			</div>
-		</div>
-
-		<!-- Word 2 -->
-		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
-			<div class="flex items-center justify-between mb-2">
-				<div class="flex items-center gap-2">
-					<span class="text-2xl font-bold text-ink">artificial</span>
-					<span class="text-[10px] text-muted">/ˌɑːrtɪˈfɪʃl/</span>
-				</div>
-				<button class="text-brand text-lg">🔊</button>
-			</div>
-
-			<div class="space-y-2 text-[11px]">
-				<div><span class="font-bold text-brand">词性：</span>形容词</div>
-				<div><span class="font-bold text-brand">释义：</span>人造的、人工的</div>
-				<div><span class="font-bold text-brand">雅思出现频率：</span>
-					<span class="ml-1 difficulty-bar inline-flex">
-						<div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div>
-					</span>
-					<span class="text-muted ml-1">超高频</span>
-				</div>
-			</div>
-
-			<div class="bg-cream rounded-lg p-3 mt-3">
-				<div class="text-[10px] text-brand font-bold mb-1">🎯 Emma 例句</div>
-				<p class="text-[11px] text-ink mb-1">"<span class="text-danger font-bold">Artificial</span> intelligence will change our future."</p>
-				<p class="text-[10px] text-muted chinese-serif">人工智能将改变我们的未来。</p>
-			</div>
-		</div>
-
-		<!-- Word 3 -->
-		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
-			<div class="flex items-center justify-between mb-2">
-				<div class="flex items-center gap-2">
-					<span class="text-2xl font-bold text-ink">framework</span>
-					<span class="text-[10px] text-muted">/ˈfreɪmwɜːrk/</span>
-				</div>
-				<button class="text-brand text-lg">🔊</button>
-			</div>
-
-			<div class="space-y-2 text-[11px]">
-				<div><span class="font-bold text-brand">词性：</span>名词</div>
-				<div><span class="font-bold text-brand">释义：</span>框架、体系</div>
-				<div><span class="font-bold text-brand">雅思出现频率：</span>
-					<span class="ml-1 difficulty-bar inline-flex">
-						<div class="active"></div><div class="active"></div><div class="active"></div><div></div><div></div>
-					</span>
-					<span class="text-muted ml-1">中频</span>
-				</div>
-			</div>
-
-			<div class="bg-cream rounded-lg p-3 mt-3">
-				<div class="text-[10px] text-brand font-bold mb-1">🎯 Emma 例句</div>
-				<p class="text-[11px] text-ink mb-1">"We need a new <span class="text-danger font-bold">framework</span> for education."</p>
-				<p class="text-[10px] text-muted chinese-serif">我们需要一个新的教育框架。</p>
-			</div>
-		</div>
+		<div id="keywords_list" class="space-y-3"></div>
 
 		<!-- 我的单词本 -->
 		<div class="bg-gradient-to-br from-gold to-[#E8C985] rounded-xl p-4 text-ink mt-3">
 			<div class="flex items-center justify-between mb-1">
 				<div class="text-sm font-bold">📖 我的雅思单词本</div>
-				<span class="text-[10px]">已收录 128 词</span>
+				<span class="text-[10px]" id="vocab_count">已收录 0 词</span>
 			</div>
-			<p class="text-[11px] opacity-80">Emma 根据你的听力记录自动挑选 · 薄弱词优先</p>
-			<button class="mt-3 w-full bg-white text-brand text-xs font-bold py-2 rounded-lg">进入单词本 →</button>
+			<p class="text-[11px] opacity-80">点击单词卡片下方的"⭐加入单词本"保存 · 浏览器本地存储</p>
 		</div>
 	</section>
 
@@ -505,105 +260,641 @@
 		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
 			<div class="grid grid-cols-3 gap-2 text-center">
 				<div>
-					<div class="text-xl font-bold text-brand">42</div>
+					<div class="text-xl font-bold text-brand" id="stat_streak">0</div>
 					<div class="text-[10px] text-muted">连续天数</div>
 				</div>
 				<div>
-					<div class="text-xl font-bold text-brand">86%</div>
+					<div class="text-xl font-bold text-brand" id="stat_accuracy">0%</div>
 					<div class="text-[10px] text-muted">总正确率</div>
 				</div>
 				<div>
-					<div class="text-xl font-bold text-brand">128</div>
-					<div class="text-[10px] text-muted">已背单词</div>
+					<div class="text-xl font-bold text-brand" id="stat_vocab">0</div>
+					<div class="text-[10px] text-muted">已存单词</div>
 				</div>
-			</div>
-		</div>
-
-		<!-- 正确率曲线 -->
-		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
-			<div class="text-xs font-bold mb-3">📈 正确率变化（近 42 天）</div>
-			<svg viewBox="0 0 300 80" class="w-full">
-				<line x1="0" y1="20" x2="300" y2="20" stroke="#E5DDD0" stroke-dasharray="2,2" stroke-width="1"/>
-				<line x1="0" y1="40" x2="300" y2="40" stroke="#E5DDD0" stroke-dasharray="2,2" stroke-width="1"/>
-				<line x1="0" y1="60" x2="300" y2="60" stroke="#E5DDD0" stroke-dasharray="2,2" stroke-width="1"/>
-				<polyline fill="rgba(201,169,110,0.2)" stroke="none"
-					points="0,55 15,50 30,58 45,48 60,52 75,42 90,45 105,38 120,40 135,35 150,38 165,30 180,32 195,28 210,30 225,25 240,22 255,25 270,18 285,20 300,15 300,80 0,80" />
-				<polyline fill="none" stroke="#C9A96E" stroke-width="2"
-					points="0,55 15,50 30,58 45,48 60,52 75,42 90,45 105,38 120,40 135,35 150,38 165,30 180,32 195,28 210,30 225,25 240,22 255,25 270,18 285,20 300,15" />
-				<circle cx="300" cy="15" r="4" fill="#8B6914"/>
-			</svg>
-			<div class="flex justify-between text-[10px] text-muted mt-2">
-				<span>Day 1 · 40%</span>
-				<span>Day 21 · 62%</span>
-				<span>Day 42 · 86% ⭐</span>
 			</div>
 		</div>
 
 		<!-- 每日打卡日历 -->
 		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
 			<div class="flex items-center justify-between mb-3">
-				<div class="text-xs font-bold">📅 42 天打卡日历</div>
-				<span class="text-[10px] text-muted">完美记录 🏆</span>
+				<div class="text-xs font-bold">📅 近 7 周打卡日历</div>
+				<span class="text-[10px] text-muted" id="progress_today">今日</span>
 			</div>
 			<div class="progress-grid" id="calendar"></div>
 			<div class="flex items-center justify-center gap-4 mt-3 text-[10px] text-muted">
 				<span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#C9A96E] rounded"></span> 已完成</span>
 				<span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#8B6914] rounded"></span> 今日</span>
-				<span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#F5EFE0] rounded"></span> 未来</span>
+				<span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#F5EFE0] rounded"></span> 未来/缺</span>
 			</div>
+			<div class="text-[10px] text-muted mt-2" id="progress_from">起于 --</div>
 		</div>
 
-		<!-- Emma 评语 -->
+		<!-- Emma 鼓励 -->
 		<div class="bg-gradient-to-br from-ink to-brand rounded-2xl p-5 text-white">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="text-lg">📓</span>
-				<span class="text-sm font-bold">Emma's 42-Day Note</span>
+				<span class="text-sm font-bold">Emma's Note</span>
 			</div>
 			<p class="text-xs text-white/90 leading-relaxed chinese-serif">
-				"You've come so far in 42 days. Your accuracy jumped from <span class="text-gold font-bold">40% to 86%</span>. The biggest breakthrough: <span class="text-gold font-bold">you stopped panicking when you miss a word</span>. That's the mature listener's mindset. Proud of you 🌟"
+				"<span class="text-gold font-bold">Consistency beats intensity.</span> 每天 10 分钟，一个月后你会看到自己的量变。不要追求一次听懂，要追求听得更多次。"
 			</p>
-			<div class="mt-2 text-[10px] text-white/60">— Emma · 2026.04.22</div>
+			<div class="mt-2 text-[10px] text-white/60">— Emma · 雅思听力导师</div>
 		</div>
 
 		<!-- 继续动力 -->
 		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] text-center">
 			<div class="text-3xl mb-2">🎯</div>
-			<div class="text-sm font-bold mb-1">下一个目标：50 天全勤</div>
-			<div class="text-[10px] text-muted mb-3">还差 8 天 · 解锁 Emma 专属雅思口语练习包</div>
+			<div class="text-sm font-bold mb-1">下一个目标：30 天打卡</div>
+			<div class="text-[10px] text-muted mb-3">坚持到 30 天解锁 Emma 专属雅思口语练习包</div>
 			<div class="w-full bg-cream rounded-full h-2 mb-3">
-				<div class="bg-gradient-to-r from-gold to-brand rounded-full h-2" style="width: 84%;"></div>
+				<div class="bg-gradient-to-r from-gold to-brand rounded-full h-2 transition-all" id="goal_bar" style="width: 0%;"></div>
 			</div>
-			<div class="text-[10px] text-brand font-bold">84% 完成</div>
+			<div class="text-[10px] text-brand font-bold" id="goal_text">0% 完成</div>
 		</div>
 	</section>
 
 </div>
 
 <script>
-	function switchTab(name) {
+	/* ============ 期刊数据库（每期一个完整听力 + 题 + 词） ============ */
+	/* video_url 指向 OSS 视频文件，上传到 meuni-videos/ielts/ 下（复用 me-uni 的视频桶）
+	 * 例: https://meuni-videos.oss-accelerate.aliyuncs.com/ielts/ai-education.mp4
+	 * 管理员上传入口: /admin-videos.html（密码 meoffer2026，选"雅思听力"类型） */
+	const OSS_BASE							= 'https://meuni-videos.oss-accelerate.aliyuncs.com/ielts/';
+
+	const ISSUE_LIST						= [
+		{
+			code:			'ai-education',
+			title:			'The Rise of AI in Education',
+			source:			'BBC News',
+			type:			'学术类',
+			duration:		'01:03',
+			level:			'雅思 7.0',
+			video_file:		'ai-education.mp4',
+			paragraphs:		[
+				{time: '00:00 - 00:15', en: 'Artificial intelligence is reshaping how students learn around the world. From personalized tutoring systems to automated essay grading, AI tools are becoming an integral part of modern classrooms.', cn: '人工智能正在重塑全球学生的学习方式。从个性化辅导系统到自动作文评分，AI 工具正成为现代课堂不可或缺的一部分。', keywords: ['reshape']},
+				{time: '00:15 - 00:35', en: 'However, concerns have been raised about the over-reliance on artificial systems. Critics argue that students may lose essential skills such as critical thinking and creative problem-solving.', cn: '然而，人们对过度依赖人工系统表示担忧。批评者认为，学生可能会失去批判性思维和创造性解决问题的基本技能。', keywords: ['artificial']},
+				{time: '00:35 - 00:50', en: 'Educational experts suggest a balanced framework where AI serves as a supplement, not a replacement, for traditional teaching methods.', cn: '教育专家建议建立一个平衡的框架，让 AI 作为传统教学方法的补充而不是替代。', keywords: ['framework']},
+				{time: '00:50 - 01:03', en: 'The future of education likely lies in a thoughtful combination of human wisdom and technological innovation.', cn: '教育的未来很可能在于人类智慧与技术创新的深思熟虑的结合。', keywords: []}
+			],
+			questions:	[
+				{type: 'choice', q: 'According to the audio, how is AI changing education?', options: ['A. By replacing all teachers', 'B. By reshaping how students learn', 'C. By building new schools', 'D. By reducing class hours'], answer: 1, tip: '关键词 "reshape how students learn" 在第 1 段开头就出现。这种"总起句"在雅思听力里往往就是答案点 —— 要第一时间捕捉。'},
+				{type: 'fill', q: 'Critics argue that students may lose skills such as critical thinking and _____ problem-solving.', answer: 'creative', tip: '这里考察的是前后词的搭配: critical thinking 和 creative problem-solving 是雅思听力常考对立词组。'},
+				{type: 'choice', q: 'What do educational experts suggest about AI in education?', options: ['A. Ban AI in classrooms', 'B. Use AI as a supplement to teaching', 'C. Make AI the main teaching tool', 'D. Wait for better technology'], answer: 1, tip: '"supplement not replacement" 是雅思的高频表达，意思是"补充而非替代"。'},
+				{type: 'choice', q: 'What are critics concerned about regarding AI in education?', options: ['A. High costs', 'B. Loss of critical skills', 'C. Hardware failures', 'D. Teacher shortage'], answer: 1, tip: '第 2 段明确提到 "lose essential skills such as critical thinking" 是批评者的担忧。'},
+				{type: 'fill', q: 'The future of education lies in a thoughtful combination of human wisdom and _____ innovation.', answer: 'technological', tip: '最后一段的总结句常常是听力题眼。technological 的 /ˌteknəˈlɒdʒɪkl/ 重音在第三个音节。'}
+			],
+			keywords:	[
+				{word: 'reshape', phonetic: '/riːˈʃeɪp/', pos: '动词', meaning: '重塑、改变形状', freq: 4, example: 'The internet has reshaped how we communicate.', example_cn: '互联网重塑了我们的交流方式。'},
+				{word: 'artificial', phonetic: '/ˌɑːrtɪˈfɪʃl/', pos: '形容词', meaning: '人造的、人工的', freq: 5, example: 'Artificial intelligence will change our future.', example_cn: '人工智能将改变我们的未来。'},
+				{word: 'framework', phonetic: '/ˈfreɪmwɜːrk/', pos: '名词', meaning: '框架、体系', freq: 3, example: 'We need a new framework for education.', example_cn: '我们需要一个新的教育框架。'}
+			]
+		},
+		{
+			code:			'climate-solutions',
+			title:			'Climate Change: Creative Solutions',
+			source:			'TED-Ed',
+			type:			'环境类',
+			duration:		'01:18',
+			level:			'雅思 6.5',
+			video_file:		'climate-solutions.mp4',
+			paragraphs:	[
+				{time: '00:00 - 00:20', en: 'Climate change remains one of the most pressing challenges of our time. Rising sea levels, extreme weather, and biodiversity loss are just a few of the visible impacts.', cn: '气候变化仍然是当今最紧迫的挑战之一。海平面上升、极端天气和生物多样性丧失只是可见影响的一小部分。', keywords: ['pressing']},
+				{time: '00:20 - 00:45', en: 'Scientists around the globe are developing innovative solutions. From vertical farms in cities to ocean-based carbon capture, the approaches are becoming increasingly diverse.', cn: '全球科学家正在开发创新的解决方案。从城市垂直农场到海洋碳捕获，方法正变得越来越多样化。', keywords: ['innovative', 'diverse']},
+				{time: '00:45 - 01:05', en: 'However, technology alone cannot solve this crisis. Government policies, corporate responsibility, and individual lifestyle changes all play crucial roles.', cn: '然而，仅靠技术无法解决这场危机。政府政策、企业责任和个人生活方式的改变都发挥着关键作用。', keywords: ['crucial']},
+				{time: '01:05 - 01:18', en: 'The coming decade will be decisive. The actions we take today will shape the planet for centuries to come.', cn: '未来十年将是决定性的。我们今天采取的行动将塑造未来几个世纪的地球。', keywords: ['decisive']}
+			],
+			questions:	[
+				{type: 'choice', q: 'What does the speaker describe as pressing?', options: ['A. Climate change', 'B. Economic inequality', 'C. Space exploration', 'D. Internet regulation'], answer: 0, tip: '第 1 段第 1 句直接点题："Climate change remains one of the most pressing challenges." 开头总起句必考。'},
+				{type: 'fill', q: 'Scientists are developing _____ solutions, from vertical farms to carbon capture.', answer: 'innovative', tip: 'innovative 在雅思听力里 4 次以上平均每套题出现，是高频形容词。'},
+				{type: 'choice', q: 'Besides technology, what else matters for solving climate change?', options: ['A. Only government action', 'B. Policy, corporate, individual changes', 'C. Only corporate responsibility', 'D. Wait for natural solutions'], answer: 1, tip: '听到 "alone cannot solve" 就要警觉：后面会列出多个维度。雅思常考"对比型"。'},
+				{type: 'fill', q: 'The coming _____ will be decisive in shaping the planet.', answer: 'decade', tip: 'decade 十年 / decades 几十年——注意区分。雅思听写常考时间单位。'},
+				{type: 'choice', q: 'What is the main message of this audio?', options: ['A. Technology will save us', 'B. Climate change is unsolvable', 'C. Solutions require diverse effort', 'D. We should do nothing'], answer: 2, tip: '听力总结题要听尾段，"technology alone cannot solve" + "all play crucial roles" 指向"多元协作"。'}
+			],
+			keywords:	[
+				{word: 'pressing', phonetic: '/ˈpresɪŋ/', pos: '形容词', meaning: '紧迫的、迫切的', freq: 4, example: 'We face pressing environmental issues.', example_cn: '我们面临紧迫的环境问题。'},
+				{word: 'innovative', phonetic: '/ˈɪnəveɪtɪv/', pos: '形容词', meaning: '创新的、革新的', freq: 5, example: 'She came up with an innovative solution.', example_cn: '她想出了一个创新的解决方案。'},
+				{word: 'decisive', phonetic: '/dɪˈsaɪsɪv/', pos: '形容词', meaning: '决定性的、果断的', freq: 3, example: 'The next decade will be decisive for climate.', example_cn: '未来十年对气候将是决定性的。'}
+			]
+		},
+		{
+			code:			'future-work',
+			title:			'The Future of Remote Work',
+			source:			'The Economist',
+			type:			'社会类',
+			duration:		'01:10',
+			level:			'雅思 6.5',
+			video_file:		'future-work.mp4',
+			paragraphs:	[
+				{time: '00:00 - 00:20', en: 'Remote work has transformed the global economy in ways few predicted. Millions of employees now split their time between home and office, creating a hybrid model.', cn: '远程工作以很少有人预料到的方式改变了全球经济。数百万员工现在在家和办公室之间分配时间，形成了一种混合模式。', keywords: ['transformed', 'hybrid']},
+				{time: '00:20 - 00:40', en: 'Research suggests productivity has remained stable or even increased in many industries. Yet companies face challenges maintaining team culture and spontaneous collaboration.', cn: '研究表明，许多行业的生产力保持稳定甚至有所提高。然而，公司在维持团队文化和自发协作方面面临挑战。', keywords: ['productivity', 'spontaneous']},
+				{time: '00:40 - 01:00', en: 'The economic impact extends beyond business: city centers face reduced footfall, while suburban areas see new investment.', cn: '经济影响超越了商业: 市中心人流减少，而郊区看到新的投资。', keywords: ['footfall']},
+				{time: '01:00 - 01:10', en: 'The long-term consequences of this shift will reshape urban planning for generations.', cn: '这种转变的长期影响将重塑几代人的城市规划。', keywords: ['consequences']}
+			],
+			questions:	[
+				{type: 'fill', q: 'Millions of employees now split their time between home and office, creating a _____ model.', answer: 'hybrid', tip: 'hybrid 混合 · hybrid model 是后疫情时代的高频词，雅思阅读和听力都常见。'},
+				{type: 'choice', q: 'According to the research, what happened to productivity?', options: ['A. Decreased significantly', 'B. Remained stable or increased', 'C. Cannot be measured', 'D. Only improved in tech'], answer: 1, tip: '"remained stable or even increased" 是听力关键短语，even 表示强调"甚至"。'},
+				{type: 'choice', q: 'What challenges do companies face with remote work?', options: ['A. Higher costs', 'B. Team culture and collaboration', 'C. Technology failures', 'D. Employee theft'], answer: 1, tip: '雅思听力常用 "maintaining" 表示"维持"，后面接 team culture。'},
+				{type: 'fill', q: 'City centers face reduced _____, while suburban areas see new investment.', answer: 'footfall', tip: 'footfall /ˈfʊtfɔːl/ 人流量、行人客流——商业类雅思听力高频词。'},
+				{type: 'choice', q: 'What is the long-term impact mentioned?', options: ['A. No impact', 'B. Reshaping urban planning', 'C. Only economic effects', 'D. Better home life'], answer: 1, tip: '尾句 "reshape urban planning for generations" 是主题升华，常为听力最后一题。'}
+			],
+			keywords:	[
+				{word: 'hybrid', phonetic: '/ˈhaɪbrɪd/', pos: '形容词/名词', meaning: '混合的、杂交的', freq: 4, example: 'Most companies now use a hybrid model.', example_cn: '大多数公司现在使用混合模式。'},
+				{word: 'productivity', phonetic: '/ˌprɒdʌkˈtɪvəti/', pos: '名词', meaning: '生产力、生产率', freq: 5, example: 'Productivity has risen steadily this year.', example_cn: '今年生产力稳步上升。'},
+				{word: 'consequences', phonetic: '/ˈkɒnsɪkwənsɪz/', pos: '名词(复)', meaning: '结果、后果', freq: 4, example: 'The consequences will last for decades.', example_cn: '这些后果将持续数十年。'}
+			]
+		},
+		{
+			code:			'ocean-plastic',
+			title:			'Tackling Ocean Plastic Pollution',
+			source:			'National Geographic',
+			type:			'环境类',
+			duration:		'01:05',
+			level:			'雅思 6.0',
+			video_file:		'ocean-plastic.mp4',
+			paragraphs:	[
+				{time: '00:00 - 00:18', en: 'Ocean plastic pollution has reached alarming levels. Every year, roughly eight million tons of plastic waste enter our oceans, threatening marine ecosystems.', cn: '海洋塑料污染已达到惊人水平。每年大约有 800 万吨塑料垃圾进入我们的海洋，威胁海洋生态系统。', keywords: ['alarming', 'ecosystems']},
+				{time: '00:18 - 00:40', en: 'Scientists estimate that by 2050, there could be more plastic than fish in the sea if current trends continue. This projection has shocked governments and consumers alike.', cn: '科学家估计，如果目前的趋势继续下去，到 2050 年海里的塑料可能比鱼还多。这一预测震惊了各国政府和消费者。', keywords: ['estimate', 'trends']},
+				{time: '00:40 - 00:58', en: 'Innovative solutions are emerging: biodegradable packaging, cleanup ships, and global treaties are all part of the response.', cn: '创新的解决方案正在涌现: 可生物降解的包装、清理船只和全球条约都是应对措施的一部分。', keywords: ['biodegradable', 'treaties']},
+				{time: '00:58 - 01:05', en: 'The key lies in urgent global cooperation.', cn: '关键在于紧迫的全球合作。', keywords: ['urgent']}
+			],
+			questions:	[
+				{type: 'fill', q: 'Every year, roughly eight million tons of plastic waste enter our _____.', answer: 'oceans', tip: '数据 + 单位是雅思听力高频考点。注意 tons 和 oceans 都是复数。'},
+				{type: 'choice', q: 'What could happen by 2050 if trends continue?', options: ['A. Oceans will be cleaner', 'B. More plastic than fish', 'C. Sea levels will drop', 'D. No impact on marine life'], answer: 1, tip: '"more X than Y" 是典型比较结构，雅思必考。听到数字 2050 就要警觉。'},
+				{type: 'fill', q: 'Innovative solutions include _____ packaging and cleanup ships.', answer: 'biodegradable', tip: 'biodegradable /ˌbaɪəʊdɪˈɡreɪdəbl/ — 可生物降解的，环境类雅思高频长词。'},
+				{type: 'choice', q: 'What does the speaker say is the key to solving this problem?', options: ['A. New technology only', 'B. Global cooperation', 'C. Individual action', 'D. Higher prices'], answer: 1, tip: '"The key lies in..." 是典型总结句型，紧跟关键词。'},
+				{type: 'choice', q: 'Who is shocked by the projection?', options: ['A. Only scientists', 'B. Only governments', 'C. Governments and consumers', 'D. Nobody'], answer: 2, tip: '"governments and consumers alike" 里的 alike 表示"同样"，雅思常考这个连接词。'}
+			],
+			keywords:	[
+				{word: 'alarming', phonetic: '/əˈlɑːmɪŋ/', pos: '形容词', meaning: '令人担忧的、惊人的', freq: 4, example: 'Pollution has reached alarming levels.', example_cn: '污染已达到惊人水平。'},
+				{word: 'biodegradable', phonetic: '/ˌbaɪəʊdɪˈɡreɪdəbl/', pos: '形容词', meaning: '可生物降解的', freq: 3, example: 'We should choose biodegradable products.', example_cn: '我们应该选择可降解产品。'},
+				{word: 'urgent', phonetic: '/ˈɜːdʒənt/', pos: '形容词', meaning: '紧急的、迫切的', freq: 5, example: 'This is an urgent matter.', example_cn: '这是紧急事项。'}
+			]
+		},
+		{
+			code:			'sleep-science',
+			title:			'Why We Sleep: The Science',
+			source:			'BBC Science',
+			type:			'健康类',
+			duration:		'01:12',
+			level:			'雅思 7.0',
+			video_file:		'sleep-science.mp4',
+			paragraphs:	[
+				{time: '00:00 - 00:22', en: 'Sleep is no longer seen as a passive state. Modern neuroscience reveals that during sleep, the brain actively consolidates memories and removes toxic waste.', cn: '睡眠不再被视为被动状态。现代神经科学揭示，睡眠期间大脑会主动巩固记忆并清除有毒废物。', keywords: ['consolidates', 'neuroscience']},
+				{time: '00:22 - 00:48', en: 'Studies show that adults who consistently sleep less than six hours per night face higher risks of dementia, heart disease, and mental disorders.', cn: '研究表明，每晚持续睡眠少于六小时的成年人面临更高的痴呆、心脏病和精神障碍风险。', keywords: ['consistently', 'dementia']},
+				{time: '00:48 - 01:05', en: 'Yet modern lifestyles—blue light, stress, and long working hours—are severely disrupting our natural sleep cycles.', cn: '然而现代生活方式——蓝光、压力和长时间工作——正在严重干扰我们的自然睡眠周期。', keywords: ['disrupting', 'cycles']},
+				{time: '01:05 - 01:12', en: 'Prioritizing sleep may be the single most important health decision we make.', cn: '优先睡眠可能是我们做出的最重要的健康决定。', keywords: ['prioritizing']}
+			],
+			questions:	[
+				{type: 'choice', q: 'According to modern neuroscience, what happens during sleep?', options: ['A. The brain shuts down completely', 'B. The brain consolidates memories', 'C. Nothing important occurs', 'D. Muscles only relax'], answer: 1, tip: 'consolidate /kənˈsɒlɪdeɪt/ 巩固——是学术听力的高频动词，注意重音。'},
+				{type: 'fill', q: 'Adults who sleep less than _____ hours per night face higher health risks.', answer: 'six', tip: '数字听写题——注意发音 /sɪks/ 和 sixteen 区分。'},
+				{type: 'choice', q: 'What disrupts our sleep cycles?', options: ['A. Blue light, stress, and long hours', 'B. Only caffeine', 'C. Too much exercise', 'D. Diet changes'], answer: 0, tip: '听力题听到"列举"就要抓住三个并列名词：blue light + stress + long working hours。'},
+				{type: 'fill', q: 'The brain actively removes _____ waste during sleep.', answer: 'toxic', tip: 'toxic /ˈtɒksɪk/ 有毒的——科学类雅思高频词。'},
+				{type: 'choice', q: 'What is the speaker\'s final advice?', options: ['A. Sleep is unimportant', 'B. Prioritize sleep as a health decision', 'C. Take more pills', 'D. Exercise more'], answer: 1, tip: '"the single most important" 是强调结构，single 在这里指"单一最重要"。'}
+			],
+			keywords:	[
+				{word: 'consolidate', phonetic: '/kənˈsɒlɪdeɪt/', pos: '动词', meaning: '巩固、整合', freq: 4, example: 'Sleep helps consolidate memory.', example_cn: '睡眠有助于巩固记忆。'},
+				{word: 'disrupting', phonetic: '/dɪsˈrʌptɪŋ/', pos: '动词现在分词', meaning: '扰乱、使中断', freq: 5, example: 'Noise is disrupting my sleep.', example_cn: '噪音正在干扰我的睡眠。'},
+				{word: 'prioritizing', phonetic: '/praɪˈɒrɪtaɪzɪŋ/', pos: '动词现在分词', meaning: '优先考虑', freq: 3, example: 'Prioritizing health is essential.', example_cn: '优先考虑健康至关重要。'}
+			]
+		}
+	];
+
+	/* ============ 应用状态 ============ */
+	const LS_KEY							= 'meoffer_ielts_v1';
+
+	function load_state() {
+		try {
+			const raw						= localStorage.getItem(LS_KEY);
+			if (!raw) return null;
+
+			return JSON.parse(raw);
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function save_state(state) {
+		try {
+			localStorage.setItem(LS_KEY, JSON.stringify(state));
+		} catch (e) {}
+	}
+
+	function default_state() {
+		return {
+			current_issue:		'ai-education',
+			answers:			{},
+			vocab_book:			[],
+			check_in_days:		[],
+			start_date:			new Date().toISOString().slice(0, 10)
+		};
+	}
+
+	let state								= load_state() || default_state();
+
+	/* 记录今日打卡 */
+	function mark_today_checkin() {
+		const today							= new Date().toISOString().slice(0, 10);
+		if (state.check_in_days.indexOf(today) === -1) {
+			state.check_in_days.push(today);
+			save_state(state);
+		}
+	}
+
+	function count_streak() {
+		if (state.check_in_days.length === 0) return 0;
+
+		const sorted						= state.check_in_days.slice().sort();
+		let streak							= 1;
+		let prev							= new Date(sorted[sorted.length - 1]);
+		for (let i = sorted.length - 2; i >= 0; i = i - 1) {
+			const cur						= new Date(sorted[i]);
+			const diff						= Math.round((prev - cur) / (1000 * 60 * 60 * 24));
+			if (diff === 1) {
+				streak						= streak + 1;
+				prev						= cur;
+			} else {
+				break;
+			}
+		}
+		return streak;
+	}
+
+	function get_current_issue() {
+		for (let issue of ISSUE_LIST) {
+			if (issue.code === state.current_issue) return issue;
+		}
+		return ISSUE_LIST[0];
+	}
+
+	function get_accuracy() {
+		let total							= 0;
+		let correct							= 0;
+		for (let key in state.answers) {
+			total							= total + 1;
+			if (state.answers[key].correct) correct = correct + 1;
+		}
+		if (total === 0) return 0;
+
+		return Math.round((correct / total) * 100);
+	}
+
+	/* ============ 渲染期刊切换 ============ */
+	function render_issue_switcher() {
+		let html							= '';
+		for (let issue of ISSUE_LIST) {
+			const is_active					= (issue.code === state.current_issue);
+			html							= html + '<button class="issue-chip whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-semibold ' +
+				(is_active ? 'bg-brand text-white' : 'bg-white text-muted border border-[#E5DDD0]') + '" data-code="' + issue.code + '">' +
+				issue.title + ' · ' + issue.level + '</button>';
+		}
+		$('#issue_switcher').html(html);
+	}
+
+	/* ============ 渲染视频区 ============ */
+	function render_video() {
+		const issue							= get_current_issue();
+		$('#video_title').text(issue.title);
+		$('#video_source').text(issue.source);
+		$('#video_type').text('· ' + issue.type);
+		$('#video_duration').text(issue.duration);
+		$('#video_level').text(issue.level);
+
+		const video_url						= OSS_BASE + issue.video_file;
+		const player_html					= '<video class="w-full h-full" controls preload="metadata" playsinline crossorigin="anonymous" poster="" src="' + video_url + '">您的浏览器不支持 video 标签</video>' +
+			'<div class="video-placeholder absolute inset-0 flex flex-col items-center justify-center text-white/80 pointer-events-none">' +
+			'<div class="text-5xl mb-2">🎧</div>' +
+			'<div class="text-sm font-bold">' + issue.title + '</div>' +
+			'<div class="text-[11px] text-white/60 mt-1">视频待上传 · ' + issue.video_file + '</div>' +
+			'</div>';
+		$('#video_frame').html(player_html);
+
+		/* 视频加载成功后隐藏占位文字 */
+		const $video						= $('#video_frame video');
+		$video.on('loadeddata', function () {
+			$('#video_frame .video-placeholder').hide();
+		});
+		$video.on('error', function () {
+			$('#video_frame .video-placeholder').show();
+		});
+
+		/* Emma 话术也按内容切 */
+		const all_kw						= [];
+		for (let p of issue.paragraphs) {
+			if (p.keywords) {
+				for (let k of p.keywords) all_kw.push(k);
+			}
+		}
+		const emma_kw						= all_kw.slice(0, 3);
+		let emma_html						= '先抓这 3 个关键词：';
+		for (let i = 0; i < emma_kw.length; i = i + 1) {
+			emma_html						= emma_html + '<span class="font-bold text-danger">' + emma_kw[i] + '</span>';
+			if (i < emma_kw.length - 1) emma_html = emma_html + ' / ';
+		}
+		emma_html							= emma_html + '。不必每个词都听懂 ☺️';
+		$('#emma_intro').html(emma_html);
+	}
+
+	/* ============ 渲染字幕 ============ */
+	function render_transcript() {
+		const issue							= get_current_issue();
+		let html							= '';
+
+		for (let i = 0; i < issue.paragraphs.length; i = i + 1) {
+			const p							= issue.paragraphs[i];
+			let en							= p.en;
+
+			if (p.keywords) {
+				for (let kw of p.keywords) {
+					const regex				= new RegExp('\\b(' + kw + '[a-z]*)\\b', 'i');
+					en						= en.replace(regex, '<span class="word-highlight">$1</span>');
+				}
+			}
+
+			html							= html + '<div class="transcript-para ' + (i === 0 ? 'active' : '') + ' bg-white rounded-xl">' +
+				'<div class="text-[10px] text-muted mb-1">' + p.time + '</div>' +
+				'<p class="text-sm leading-relaxed mb-2">' + en + '</p>' +
+				'<p class="text-[11px] text-muted chinese-serif leading-relaxed">' + p.cn + '</p>' +
+				'</div>';
+		}
+		$('#transcript_list').html(html);
+	}
+
+	/* ============ 渲染题目 ============ */
+	function render_questions() {
+		const issue							= get_current_issue();
+		const key_prefix					= issue.code + '_';
+		let answered						= 0;
+		let html							= '';
+
+		for (let i = 0; i < issue.questions.length; i = i + 1) {
+			const q							= issue.questions[i];
+			const q_key						= key_prefix + i;
+			const user_answer				= state.answers[q_key];
+			const is_answered				= !!user_answer;
+			if (is_answered) answered		= answered + 1;
+
+			const status_mark				= is_answered
+				? (user_answer.correct ? '<span class="text-[10px] text-green-700 font-bold">✓ 答对</span>' : '<span class="text-[10px] text-red-700 font-bold">✗ 答错</span>')
+				: '<span class="text-[10px] text-muted">未答</span>';
+
+			const num_bg					= is_answered
+				? (user_answer.correct ? 'bg-green-600' : 'bg-red-500')
+				: 'bg-brand';
+
+			html							= html + '<div class="question-card ' + (is_answered ? 'answered' : '') + ' rounded-xl p-4 border border-[#E5DDD0] bg-white" data-qidx="' + i + '">' +
+				'<div class="flex items-center gap-2 mb-2">' +
+				'<span class="' + num_bg + ' text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">' + (i + 1) + '</span>' +
+				status_mark +
+				'<span class="text-[10px] text-muted ml-auto">' + (q.type === 'choice' ? '单选题' : '填空题') + '</span>' +
+				'</div>' +
+				'<p class="text-sm font-semibold mb-3">' + q.q + '</p>';
+
+			if (q.type === 'choice') {
+				html						= html + '<div class="space-y-2">';
+				for (let j = 0; j < q.options.length; j = j + 1) {
+					const opt				= q.options[j];
+					let cls					= 'option-btn';
+
+					if (is_answered) {
+						if (j === q.answer) cls = cls + ' correct';
+						else if (j === user_answer.choice) cls = cls + ' wrong';
+					}
+					html					= html + '<button class="' + cls + '" data-qidx="' + i + '" data-choice="' + j + '"' + (is_answered ? ' disabled' : '') + '>' + opt + '</button>';
+				}
+				html						= html + '</div>';
+			} else {
+				if (is_answered) {
+					const right				= user_answer.correct;
+					html					= html + '<div class="rounded-lg p-3 ' + (right ? 'bg-green-50 border border-green-300' : 'bg-red-50 border border-red-300') + '">' +
+						'<div class="text-xs text-muted mb-1">你的答案</div>' +
+						'<div class="font-bold ' + (right ? 'text-green-700' : 'text-red-700') + '">' + user_answer.text + (right ? '' : ' ✗') + '</div>' +
+						(right ? '' : '<div class="text-[11px] text-muted mt-1">正确答案: <span class="text-green-700 font-bold">' + q.answer + '</span></div>') +
+						'</div>';
+				} else {
+					html					= html + '<div class="flex gap-2">' +
+						'<input type="text" class="fill-input flex-1 px-3 py-2 rounded-lg text-sm" placeholder="输入答案" data-qidx="' + i + '" style="background: #FDF8F0; border: 1px solid #E5DDD0; outline: none;">' +
+						'<button class="fill-submit btn-primary px-4 text-xs font-bold rounded-lg" data-qidx="' + i + '">提交</button>' +
+						'</div>';
+				}
+			}
+
+			if (is_answered && q.tip) {
+				html						= html + '<div class="bg-cream rounded-lg p-3 mt-3">' +
+					'<div class="text-[10px] text-brand font-bold mb-1">💭 Emma 解析</div>' +
+					'<p class="text-[11px] text-ink chinese-serif leading-relaxed">' + q.tip + '</p>' +
+					'</div>';
+			}
+
+			html							= html + '</div>';
+		}
+
+		$('#questions_list').html(html);
+		$('#q_progress_text').text('已答 ' + answered + '/' + issue.questions.length);
+		$('#q_progress_bar').css('width', Math.round(answered / issue.questions.length * 100) + '%');
+
+		/* 全部答完就打卡 */
+		if (answered === issue.questions.length && answered > 0) {
+			mark_today_checkin();
+			refresh_header();
+		}
+	}
+
+	/* ============ 渲染高频词 ============ */
+	function render_keywords() {
+		const issue							= get_current_issue();
+		let html							= '';
+
+		for (let kw of issue.keywords) {
+			const is_saved					= state.vocab_book.indexOf(kw.word) !== -1;
+
+			let bar_html					= '';
+			for (let i = 0; i < 5; i = i + 1) {
+				bar_html					= bar_html + '<div class="' + (i < kw.freq ? 'active' : '') + '"></div>';
+			}
+
+			const freq_label				= kw.freq >= 5 ? '超高频' : (kw.freq >= 4 ? '高频' : '中频');
+
+			html							= html + '<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">' +
+				'<div class="flex items-center justify-between mb-2">' +
+				'<div class="flex items-center gap-2">' +
+				'<span class="text-2xl font-bold text-ink">' + kw.word + '</span>' +
+				'<span class="text-[10px] text-muted">' + kw.phonetic + '</span>' +
+				'</div>' +
+				'<button class="speak-btn text-brand text-lg" data-word="' + kw.word + '">🔊</button>' +
+				'</div>' +
+				'<div class="space-y-2 text-[11px]">' +
+				'<div><span class="font-bold text-brand">词性：</span>' + kw.pos + '</div>' +
+				'<div><span class="font-bold text-brand">释义：</span>' + kw.meaning + '</div>' +
+				'<div><span class="font-bold text-brand">频率：</span>' +
+				'<span class="ml-1 difficulty-bar inline-flex">' + bar_html + '</span>' +
+				'<span class="text-muted ml-1">' + freq_label + '</span>' +
+				'</div>' +
+				'</div>' +
+				'<div class="bg-cream rounded-lg p-3 mt-3">' +
+				'<div class="text-[10px] text-brand font-bold mb-1">🎯 Emma 例句</div>' +
+				'<p class="text-[11px] text-ink mb-1">' + kw.example.replace(new RegExp('\\b' + kw.word + '\\b', 'i'), '<span class="text-danger font-bold">' + kw.word + '</span>') + '</p>' +
+				'<p class="text-[10px] text-muted chinese-serif">' + kw.example_cn + '</p>' +
+				'</div>' +
+				'<div class="flex items-center gap-2 mt-3 text-[10px]">' +
+				'<button class="vocab-btn ' + (is_saved ? 'text-brand font-bold' : 'text-muted') + '" data-word="' + kw.word + '">' +
+				(is_saved ? '✓ 已加入单词本' : '⭐ 加入单词本') + '</button>' +
+				'</div>' +
+				'</div>';
+		}
+
+		$('#keywords_list').html(html);
+
+		$('#vocab_count').text('已收录 ' + state.vocab_book.length + ' 词');
+	}
+
+	/* ============ 渲染进度 ============ */
+	function render_progress() {
+		const streak						= count_streak();
+		const acc							= get_accuracy();
+		const vocab							= state.vocab_book.length;
+
+		$('#stat_streak').text(streak);
+		$('#stat_accuracy').text(acc + '%');
+		$('#stat_vocab').text(vocab);
+
+		/* 日历 49 格 = 7 周 */
+		const today							= new Date().toISOString().slice(0, 10);
+		const today_d						= new Date(today);
+		let html							= '';
+		for (let i = 48; i >= 0; i = i - 1) {
+			const d							= new Date(today_d);
+			d.setDate(d.getDate() - i);
+			const dstr						= d.toISOString().slice(0, 10);
+			const is_today					= (dstr === today);
+			const is_done					= state.check_in_days.indexOf(dstr) !== -1;
+
+			let cls							= 'progress-cell';
+			let mark						= '';
+			if (is_today) {
+				cls							= cls + ' today';
+				mark						= '今';
+			} else if (is_done) {
+				cls							= cls + ' done';
+				mark						= '✓';
+			}
+			html							= html + '<div class="' + cls + '">' + mark + '</div>';
+		}
+		$('#calendar').html(html);
+
+		const first_day						= state.check_in_days.length > 0 ? state.check_in_days.slice().sort()[0] : today;
+		$('#progress_from').text('起于 ' + first_day);
+		$('#progress_today').text('今日 · ' + today);
+
+		/* 30 天目标 */
+		const goal_pct						= Math.min(Math.round(streak / 30 * 100), 100);
+		$('#goal_bar').css('width', goal_pct + '%');
+		$('#goal_text').text(goal_pct + '% 完成');
+	}
+
+	function refresh_header() {
+		const streak						= count_streak();
+		$('#header_day').text('DAY ' + (streak > 0 ? streak : '1'));
+		$('#header_streak').text('连续 ' + streak + ' 天 🔥');
+	}
+
+	function refresh_all() {
+		render_issue_switcher();
+		render_video();
+		render_transcript();
+		render_questions();
+		render_keywords();
+		render_progress();
+		refresh_header();
+	}
+
+	/* ============ 交互 ============ */
+	function switch_tab(name) {
 		$('.tab-item').removeClass('active').addClass('text-muted');
 		$('.tab-content').removeClass('active');
 
-		const tabs = ['transcript', 'questions', 'keywords', 'progress'];
-		const idx = tabs.indexOf(name);
+		const tabs							= ['transcript', 'questions', 'keywords', 'progress'];
+		const idx							= tabs.indexOf(name);
 
 		$('.tab-item').eq(idx).removeClass('text-muted').addClass('active');
 		$('#tab_' + name).addClass('active');
-		window.scrollTo(0, 0);
+		$(document).scrollTop(0);
 	}
 
+	function handle_choice_click(e) {
+		const $btn							= $(e.currentTarget);
+		const qidx							= parseInt($btn.data('qidx'));
+		const choice						= parseInt($btn.data('choice'));
+		const issue							= get_current_issue();
+		const q_key							= issue.code + '_' + qidx;
+
+		if (state.answers[q_key]) return;
+
+		const correct						= (choice === issue.questions[qidx].answer);
+		state.answers[q_key]				= {choice: choice, correct: correct};
+		save_state(state);
+		render_questions();
+	}
+
+	function handle_fill_submit(e) {
+		const $btn							= $(e.currentTarget);
+		const qidx							= parseInt($btn.data('qidx'));
+		const text							= $('.fill-input[data-qidx="' + qidx + '"]').val().trim();
+		if (!text) return;
+
+		const issue							= get_current_issue();
+		const q_key							= issue.code + '_' + qidx;
+		const correct_answer				= issue.questions[qidx].answer.toLowerCase().trim();
+		const correct						= (text.toLowerCase().trim() === correct_answer);
+
+		state.answers[q_key]				= {text: text, correct: correct};
+		save_state(state);
+		render_questions();
+	}
+
+	function handle_vocab_toggle(e) {
+		const word							= $(e.currentTarget).data('word');
+		const idx							= state.vocab_book.indexOf(word);
+		if (idx === -1) state.vocab_book.push(word);
+		else state.vocab_book.splice(idx, 1);
+
+		save_state(state);
+		render_keywords();
+		render_progress();
+	}
+
+	function handle_speak(e) {
+		const word							= $(e.currentTarget).data('word');
+		if ('speechSynthesis' in window) {
+			const u							= new SpeechSynthesisUtterance(word);
+			u.lang							= 'en-US';
+			window.speechSynthesis.speak(u);
+		}
+	}
+
+	function handle_issue_switch(e) {
+		const code							= $(e.currentTarget).data('code');
+		state.current_issue					= code;
+		save_state(state);
+		refresh_all();
+		switch_tab('transcript');
+	}
+
+	/* ============ 初始化 ============ */
 	$(function () {
-		const cal = [];
-		for (let i = 0; i < 49; i = i + 1) {
-			if (i < 42) cal.push('done');
-			else if (i === 42) cal.push('today');
-			else cal.push('');
-		}
-		let html = '';
-		for (let cls of cal) {
-			html = html + '<div class="progress-cell ' + cls + '">' + (cls === 'today' ? '今' : (cls === 'done' ? '✓' : '')) + '</div>';
-		}
-		$('#calendar').html(html);
+		refresh_all();
+
+		$(document).on('click', '.tab-item', function () {
+			switch_tab($(this).data('tab'));
+		});
+		$(document).on('click', '.option-btn[data-qidx]', handle_choice_click);
+		$(document).on('click', '.fill-submit', handle_fill_submit);
+		$(document).on('click', '.vocab-btn', handle_vocab_toggle);
+		$(document).on('click', '.speak-btn', handle_speak);
+		$(document).on('click', '.issue-chip', handle_issue_switch);
+		$(document).on('click', '.tab-item-jump', function () {
+			switch_tab($(this).data('target'));
+		});
 	});
 </script>
 
