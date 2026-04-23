@@ -86,6 +86,19 @@
 		.mini-chip { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; margin: 2px 3px; background: #FDF8F0; color: #8B6914; cursor: pointer; border: 1px solid #E5DDD0; }
 		.mini-chip:hover { background: #F5EAD5; }
 		.mini-chip.active { background: #8B6914; color: white; border-color: #8B6914; }
+
+		/* 陪跑社区板块样式（从 companion-demo 迁移） */
+		.companion-card { transition: all 0.2s; }
+		.companion-card:hover { border-color: #C9A96E !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,169,110,0.15); }
+		.companion-scroll-x { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-top: 4px; padding-bottom: 4px; }
+		.companion-scroll-x::-webkit-scrollbar { display: none; }
+		.companion-scroll-x { scrollbar-width: none; }
+		.companion-teacher-card { flex-shrink: 0; width: 160px; background: white; border-radius: 12px; padding: 12px; border: 1px solid #E5DDD0; cursor: pointer; scroll-snap-align: start; transition: all 0.2s; }
+		.companion-teacher-card:hover { border-color: #C9A96E; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,169,110,0.15); }
+		.companion-stamp-left { position: absolute; top: 8px; left: 8px; background: white; color: #8B6914; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; border: 1px solid #E5DDD0; }
+		.companion-badge-right { position: absolute; top: 8px; right: 8px; color: white; font-size: 9px; padding: 2px 6px; border-radius: 6px; }
+		.companion-pulse { animation: companion-pulse-anim 1.4s infinite; }
+		@keyframes companion-pulse-anim { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 	</style>
 </head>
 <body class="bg-cream">
@@ -522,97 +535,179 @@
 			</div>
 		</section>
 
-		<!-- Section 7: 高考 AI 陪跑社区 -->
-		<section class="px-4 pb-6">
-			<div class="mb-1">
-				<span class="text-lg font-bold text-dark">&#x1F393; 高考 AI 陪跑社区</span>
-				<span class="text-[10px] text-muted ml-2">AI Gaokao Coach</span>
-			</div>
-			<p class="text-xs text-muted mb-4">三年全周期陪跑 &middot; 高一打基础 &middot; 高二练真题 &middot; 高三冲刺</p>
-
-			<!-- 三年分区入口 -->
-			<div class="grid grid-cols-3 gap-2 mb-4">
-				<div onclick="show_waitlist('coach_g1')" class="rounded-2xl p-3 cursor-pointer text-center" style="background: #F0F9F0; border: 1px solid #C5E5C5;">
-					<div class="text-2xl mb-1">&#x1F331;</div>
-					<div class="text-[12px] font-bold text-dark mb-0.5">高一</div>
-					<div class="text-[9px] text-muted">即将上线</div>
-				</div>
-				<div onclick="show_waitlist('coach_g2')" class="rounded-2xl p-3 cursor-pointer text-center" style="background: #F0F5FA; border: 1px solid #C5D5E5;">
-					<div class="text-2xl mb-1">&#x1F33F;</div>
-					<div class="text-[12px] font-bold text-dark mb-0.5">高二</div>
-					<div class="text-[9px] text-muted">即将上线</div>
-				</div>
-				<a href="coach/index.html" class="rounded-2xl p-3 text-center block no-underline" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 1px solid #C9A96E;">
-					<div class="text-2xl mb-1">&#x1F333;</div>
-					<div class="text-[12px] font-bold mb-0.5" style="color: #8B6914;">高三</div>
-					<div class="text-[9px] font-semibold" style="color: #C94A4A;">&#x2705; 已上线</div>
-				</a>
+		<!-- Section 7: 陪跑社区 · 五大功能模块 -->
+		<section class="px-4 pb-4">
+			<div class="mb-3 flex items-center gap-2">
+				<span class="text-lg font-bold text-dark">&#x1F393; 陪跑社区</span>
+				<span class="text-[10px] text-muted">五大功能模块</span>
 			</div>
 
-			<!-- 核心价值卡 · 北京 2025 理科四大科上线 -->
-			<a href="coach/g3/papers.html" class="block no-underline rounded-2xl overflow-hidden mb-3" style="background: white; border: 1px solid #E5DDD0; box-shadow: 0 4px 20px rgba(139,105,20,0.08);">
-				<div style="padding: 10px 12px; background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">
-					<div class="flex items-center justify-between">
-						<div class="flex items-center gap-2">
-							<span class="text-base">&#x1F525;</span>
-							<div>
-								<div class="text-[12px] font-bold text-white">高三真题库 &middot; 北京 + 山东 2025 全 9 科</div>
-								<div class="text-[9px]" style="color: #C9A96E;">生物+数学+物理+化学+语文+英语+地理+历史+政治 全上线</div>
-							</div>
-						</div>
-						<span class="text-[9px] px-2 py-0.5 rounded-full" style="background: #C94A4A; color: white;">NEW</span>
-					</div>
-				</div>
-				<div class="p-3">
-					<div class="grid grid-cols-4 gap-2 mb-3">
-						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
-							<div class="text-sm font-black" style="color: #8B6914;">2</div>
-							<div class="text-[9px] text-muted">省份</div>
-						</div>
-						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
-							<div class="text-sm font-black" style="color: #8B6914;">345</div>
-							<div class="text-[9px] text-muted">真题</div>
-						</div>
-						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
-							<div class="text-sm font-black" style="color: #8B6914;">2760</div>
-							<div class="text-[9px] text-muted">解析条目</div>
-						</div>
-						<div class="text-center rounded-lg py-2" style="background: #FDF8F0;">
-							<div class="text-sm font-black" style="color: #C94A4A;">免费</div>
-							<div class="text-[9px] text-muted">全开放</div>
-						</div>
-					</div>
-					<div class="flex items-center gap-1.5 text-[10px] mb-2 text-muted flex-wrap">
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">考点定位</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">看穿逻辑</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">推理链</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">典型错解</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">变式配图</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">命题趋势</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">解题心法</span>
-						<span class="px-1.5 py-0.5 rounded" style="background: #F5EAD5; color: #8B6914;">家长翻译</span>
-					</div>
-					<div class="rounded-lg p-2 text-[11px] mb-2" style="background: #FDF8F0; color: #8B6914;">
-						<span class="font-semibold">&#x1F393; 教研专家：</span>"AI 解析质量已通过教研流程审核"
-					</div>
-					<div class="text-center py-2 rounded-xl font-semibold text-[13px]" style="background: #8B6914; color: white;">立即体验理科真题 &rarr;</div>
-				</div>
-			</a>
+			<div class="grid grid-cols-2 gap-3">
 
-			<!-- 科目覆盖 -->
-			<div class="rounded-xl p-3" style="background: white; border: 1px solid #E5DDD0;">
-				<div class="text-[11px] font-semibold text-dark mb-2">&#x1F4CA; 科目覆盖 &middot; 9 科全上线</div>
-				<div class="flex flex-wrap gap-1.5">
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F9EC; 生物 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F4D0; 数学 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x2699;&#xFE0F; 物理 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F9EA; 化学 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F4DD; 语文 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F1EC;&#x1F1E7; 英语 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F5FA;&#xFE0F; 地理 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x1F4DC; 历史 &#x2705;</span>
-					<span class="text-[10px] px-2 py-1 rounded-full font-semibold" style="background: #22C55E; color: white;">&#x2696;&#xFE0F; 政治 &#x2705;</span>
+				<!-- 学科名师天团：滚动到 9 位名师区 -->
+				<div class="companion-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden cursor-pointer" onclick="document.getElementById('teacher_team').scrollIntoView({behavior:'smooth', block:'start'})">
+					<div class="absolute top-0 right-0 w-20 h-20 rounded-full" style="background: rgba(201,169,110,0.1); transform: translate(24px, -24px);"></div>
+					<div class="relative">
+						<div class="text-2xl mb-2">&#x1F4DA;</div>
+						<div class="font-bold text-sm mb-1 text-dark">AI 学科名师</div>
+						<div class="text-[10px] text-muted mb-2">9 位 AI 名师 &middot; 全学科覆盖</div>
+						<div class="flex" style="margin-left: 0;">
+							<div class="w-6 h-6 rounded-full border-2 border-white text-[10px] flex items-center justify-center" style="background: rgba(201,169,110,0.3); margin-left: 0;">语</div>
+							<div class="w-6 h-6 rounded-full border-2 border-white text-[10px] flex items-center justify-center" style="background: rgba(139,105,20,0.3); margin-left: -8px;">数</div>
+							<div class="w-6 h-6 rounded-full border-2 border-white text-[10px] flex items-center justify-center" style="background: rgba(201,74,74,0.3); margin-left: -8px;">英</div>
+							<div class="w-6 h-6 rounded-full border-2 border-white text-[10px] flex items-center justify-center text-muted" style="background: #E5DDD0; margin-left: -8px;">+6</div>
+						</div>
+					</div>
 				</div>
+
+				<!-- 真题库 -->
+				<div class="companion-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden cursor-pointer" onclick="window.location.href='coach/g3/papers.html'">
+					<span class="absolute top-2 right-2 px-2 py-0.5 text-[9px] font-bold text-white rounded-full" style="background: #C94A4A;">免费</span>
+					<div class="text-2xl mb-2">&#x1F3AF;</div>
+					<div class="font-bold text-sm mb-1 text-dark">真题+模考题库</div>
+					<div class="text-[10px] text-muted mb-2">2 省 5 年 &middot; 345 道真题</div>
+					<div class="flex items-center gap-1">
+						<div class="text-[10px]" style="color: #8B6914;">&#x1F4CA; AI 8 维度解析</div>
+					</div>
+				</div>
+
+				<!-- 雅思英语听力 -->
+				<div class="companion-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden cursor-pointer" onclick="window.location.href='companion-ielts.html'">
+					<div class="text-2xl mb-2">&#x1F3A7;</div>
+					<div class="font-bold text-sm mb-1 text-dark">雅思英语听力</div>
+					<div class="text-[10px] text-muted mb-2">YouTube 精选 &middot; Emma 精讲</div>
+					<div class="flex items-center gap-1">
+						<span class="w-2 h-2 rounded-full companion-pulse" style="background: #22C55E;"></span>
+						<span class="text-[10px] text-muted">连续更新</span>
+					</div>
+				</div>
+
+				<!-- 成长档案馆 -->
+				<div class="companion-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden cursor-pointer" onclick="window.location.href='companion-archive.html'">
+					<div class="absolute top-0 right-0 w-16 h-16 rounded-full" style="background: rgba(139,105,20,0.1); transform: translate(16px, -16px);"></div>
+					<div class="relative">
+						<div class="text-2xl mb-2">&#x1F4D6;</div>
+						<div class="font-bold text-sm mb-1 text-dark">成长档案馆</div>
+						<div class="text-[10px] text-muted mb-2">3 年陪伴 &middot; 可打印成册</div>
+						<div class="text-[10px]" style="color: #8B6914;">本季报告生成中</div>
+					</div>
+				</div>
+
+				<!-- 树洞 · 横幅 -->
+				<div class="col-span-2 companion-card rounded-xl p-4 border border-[#E5DDD0] cursor-pointer" style="background: linear-gradient(90deg, #FDF8F0, #FFFFFF);" onclick="window.location.href='companion-mia.html'">
+					<div class="flex items-center gap-3">
+						<div class="text-3xl">&#x1F333;</div>
+						<div class="flex-1">
+							<div class="font-bold text-sm text-dark">树洞 &middot; 情感支持</div>
+							<div class="text-[10px] text-muted mt-0.5">匿名发帖 &middot; AI Mia 学姐 24h 内回复</div>
+						</div>
+						<div class="text-xl" style="color: #C9A96E;">&rarr;</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+
+		<!-- Section 7b: AI 名师天团（横滑） -->
+		<section id="teacher_team" class="px-4 pb-6">
+			<div class="flex items-center justify-between mb-3">
+				<h3 class="text-base font-bold text-dark">认识你的 AI 名师天团</h3>
+				<a href="companion-teacher.html?code=lily" class="text-xs" style="color: #8B6914;">全部 &rarr;</a>
+			</div>
+
+			<div class="companion-scroll-x -mx-4 px-4">
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=lily'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, rgba(201,169,110,0.3));">&#x1F469;&#x200D;&#x1F3EB;</div>
+						<span class="companion-stamp-left">语文</span>
+						<span class="companion-badge-right" style="background: #8B6914;">班主任</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Lily 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">30 年教龄 &middot; 温柔严厉</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"文字是有温度的" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=max'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, rgba(139,105,20,0.2));">&#x1F468;&#x200D;&#x1F3EB;</div>
+						<span class="companion-stamp-left">数学</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Max 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">奥赛金牌 &middot; 话少毒辣</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"这题只有一种解法" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=emma'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, rgba(201,74,74,0.2));">&#x1F469;&#x200D;&#x1F393;</div>
+						<span class="companion-stamp-left">英语</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Emma</div>
+					<div class="text-[10px] text-muted mt-0.5">剑桥硕士 &middot; 地道母语</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"Let's think in English" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=einstein'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, rgba(201,169,110,0.3));">&#x1F9D1;&#x200D;&#x1F52C;</div>
+						<span class="companion-stamp-left">物理</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Einstein 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">清华物理 &middot; 生活派</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"想象一下这个场景..." &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=ethan'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, rgba(139,105,20,0.2));">&#x1F468;&#x200D;&#x1F52C;</div>
+						<span class="companion-stamp-left">化学</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Ethan 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">北大化学 &middot; 实验派</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"实验室见真章" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=bella'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, #D1FAE5);">&#x1F469;&#x200D;&#x2695;&#xFE0F;</div>
+						<span class="companion-stamp-left">生物</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Bella 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">协和医学 &middot; 故事派</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"一个细胞的旅行" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=henry'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, #FDE68A);">&#x1F4DC;</div>
+						<span class="companion-stamp-left">历史</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Henry 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">人大历史 &middot; 辩证派</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"历史没有标准答案" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=peter'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, #FECACA);">&#x2696;&#xFE0F;</div>
+						<span class="companion-stamp-left">政治</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Peter 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">特级教师 &middot; 时政通</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"从热点看考点" &rarr;</div>
+				</div>
+
+				<div class="companion-teacher-card" onclick="window.location.href='companion-teacher.html?code=gina'">
+					<div class="relative mb-3">
+						<div class="w-full aspect-square rounded-lg flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #FDF8F0, #99F6E4);">&#x1F30D;</div>
+						<span class="companion-stamp-left">地理</span>
+					</div>
+					<div class="font-bold text-sm text-dark">Gina 老师</div>
+					<div class="text-[10px] text-muted mt-0.5">北师大地理 &middot; 图表狂</div>
+					<div class="mt-2 text-[10px]" style="color: #8B6914;">"一张图胜过千言" &rarr;</div>
+				</div>
+
 			</div>
 		</section>
 
