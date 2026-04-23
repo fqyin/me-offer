@@ -131,21 +131,25 @@ async function handle_school(url, env) {
 	// 取第一个做详细展示（用 school_name 匹配所有年份，院校代码可能变化）
 	const first								= school_list[0];
 
-	// 每年单独查最低位次（确保 5 年都有数据）
+	// 每年单独查最低位次（确保 5 年都有数据，排除 NULL）
 	const trend_rows						= [];
 	for (const y of [2021, 2022, 2023, 2024, 2025]) {
 		const r								= await env.DB.prepare(`
 			SELECT year, group_name, min_rank FROM gaokao_scores
-			WHERE school_name = ? AND year = ?
+			WHERE school_name = ? AND year = ? AND min_rank IS NOT NULL
 			ORDER BY min_rank ASC LIMIT 1
 		`).bind(first.school_name, y).first();
-		if (r) trend_rows.push(r);
+		if (r) {
+			trend_rows.push(r);
+		} else {
+			trend_rows.push({ year: y, group_name: null, min_rank: null });
+		}
 	}
 
-	// Top 6 热门专业（2025 年最难进的）
+	// Top 6 热门专业（2025 年最难进的，排除 NULL）
 	const history							= await env.DB.prepare(`
 		SELECT year, group_name, min_rank, plan_count FROM gaokao_scores
-		WHERE school_name = ? AND year = 2025
+		WHERE school_name = ? AND year = 2025 AND min_rank IS NOT NULL
 		ORDER BY min_rank ASC LIMIT 6
 	`).bind(first.school_name).all();
 
@@ -254,11 +258,11 @@ async function handle_probability(url, env) {
 		return json_response({error: '无法计算位次'}, 500);
 	}
 
-	// 搜该校 2025 所有专业组
+	// 搜该校 2025 所有专业组（过滤 NULL 位次）
 	const school_groups						= await env.DB.prepare(`
 		SELECT school_name, group_name, min_rank, plan_count
 		FROM gaokao_scores
-		WHERE year = 2025 AND school_name LIKE ?
+		WHERE year = 2025 AND school_name LIKE ? AND min_rank IS NOT NULL
 		ORDER BY min_rank ASC
 		LIMIT 10
 	`).bind('%' + school_keyword + '%').all();

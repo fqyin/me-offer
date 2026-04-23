@@ -1111,9 +1111,18 @@
 
 		let d								= res.detail;
 		let trend_bars						= '';
-		let max_rank						= Math.max(...d.trend.map(t => t.min_rank));
+		let valid_trends					= (d.trend || []).filter(t => t.min_rank !== null && t.min_rank !== undefined);
+		let max_rank						= valid_trends.length > 0 ? Math.max(...valid_trends.map(t => t.min_rank)) : 1;
 
-		for (let t of d.trend) {
+		for (let t of (d.trend || [])) {
+			if (t.min_rank === null || t.min_rank === undefined) {
+				trend_bars					+= '<div class="text-center">' +
+					'<div class="text-[10px] font-bold mb-1 text-muted">--</div>' +
+					'<div class="mx-auto rounded-t-md" style="width: 24px; height: 6px; background: #E5DDD0;"></div>' +
+					'<div class="text-[10px] mt-1 text-muted">' + t.year + '</div>' +
+				'</div>';
+				continue;
+			}
 			let bar_height					= Math.round((t.min_rank / max_rank) * 80);
 			trend_bars						+= '<div class="text-center">' +
 				'<div class="text-[10px] font-bold mb-1" style="color: #8B6914;">' + t.min_rank.toLocaleString() + '</div>' +
@@ -1126,12 +1135,17 @@
 		let shown_majors					= new Set();
 		for (let m of (d.top_majors || [])) {
 			if (shown_majors.has(m.group_name)) continue;
+			if (m.min_rank === null || m.min_rank === undefined) continue;
 			shown_majors.add(m.group_name);
 			if (shown_majors.size > 5) break;
 			top_majors_html					+= '<div class="flex items-center justify-between py-1.5 border-b" style="border-color: #F3F4F6;">' +
 				'<span class="text-[12px] text-dark truncate" style="max-width: 60%;">' + escape_html_idx(m.group_name) + '</span>' +
 				'<span class="text-[12px]"><strong style="color: #8B6914;">' + m.min_rank.toLocaleString() + '</strong> <span class="text-[10px] text-muted">(' + m.year + ')</span></span>' +
 			'</div>';
+		}
+
+		if (!top_majors_html) {
+			top_majors_html					= '<div class="text-[11px] text-muted text-center py-2">该校暂无 2021-2025 年山东录取数据</div>';
 		}
 
 		let html							= '<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #C9A96E;">' +
@@ -1297,15 +1311,17 @@
 			'<div class="text-sm font-bold text-dark mt-1">' + escape_html_idx(res.school) + ' 各专业录取概率</div>' +
 		'</div>';
 
-		for (let r of res.results) {
+		for (let r of (res.results || [])) {
+			if (r.min_rank === null || r.min_rank === undefined) continue;
 			let color						= tier_color[r.tier];
 			let bg							= tier_bg[r.tier];
+			let plan_str					= (r.plan_count !== null && r.plan_count !== undefined) ? r.plan_count : '--';
 			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
 				'<div class="flex items-center justify-between mb-1">' +
 					'<span class="text-[12px] font-semibold text-dark truncate" style="max-width: 65%;">' + escape_html_idx(r.group_name) + '</span>' +
 					'<span class="text-[11px] px-2 py-0.5 rounded-full font-semibold" style="background: ' + bg + '; color: ' + color + ';">' + r.tier + ' ' + r.prob + '%</span>' +
 				'</div>' +
-				'<div class="text-[10px] text-muted">2025 最低位次 ' + r.min_rank.toLocaleString() + ' &middot; 计划 ' + r.plan_count + ' 人</div>' +
+				'<div class="text-[10px] text-muted">2025 最低位次 ' + r.min_rank.toLocaleString() + ' &middot; 计划 ' + plan_str + ' 人</div>' +
 			'</div>';
 		}
 
