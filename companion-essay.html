@@ -355,68 +355,25 @@
 			<div class="text-[10px] text-muted mb-2">本篇作文总分</div>
 			<div class="inline-block relative">
 				<div class="score-circle mx-auto" style="width: 100px; height: 100px; border-width: 5px;">
-					<div class="text-4xl">48</div>
-					<div class="text-[11px] -mt-1">/60</div>
+					<div class="text-4xl" id="result_total">--</div>
+					<div class="text-[11px] -mt-1">/50</div>
 				</div>
 			</div>
-			<div class="text-xs text-brand mt-3 font-semibold">⭐ 较上次进步 +2 分</div>
-			<div class="text-[10px] text-muted mt-1">近 4 次平均: 46.5 分</div>
+			<div class="text-xs text-brand mt-3 font-semibold" id="result_total_note">Claude Sonnet 4.6 深度批改</div>
+			<div class="text-[10px] text-muted mt-1" id="result_total_sub">5 维度 · 严格但有温度</div>
 		</div>
 
 		<!-- 分维度评分 -->
 		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
-			<div class="text-xs font-bold mb-3 text-ink">📊 分维度评分</div>
+			<div class="text-xs font-bold mb-3 text-ink">📊 5 维度评分</div>
 
-			<div class="space-y-3">
-				<div>
-					<div class="flex justify-between text-xs mb-1">
-						<span>立意分析</span>
-						<span class="text-brand font-bold">8/10</span>
-					</div>
-					<div class="bg-cream rounded-full h-2">
-						<div class="bg-gold rounded-full h-2" style="width: 80%;"></div>
-					</div>
-					<div class="text-[10px] text-muted mt-1">用《庄子》切入很高级，但首段观点略武断</div>
-				</div>
-
-				<div>
-					<div class="flex justify-between text-xs mb-1">
-						<span>结构分析</span>
-						<span class="text-brand font-bold">7/10</span>
-					</div>
-					<div class="bg-cream rounded-full h-2">
-						<div class="bg-gold rounded-full h-2" style="width: 70%;"></div>
-					</div>
-					<div class="text-[10px] text-muted mt-1">转折处理漂亮，但结尾"综上所述"是套话</div>
-				</div>
-
-				<div>
-					<div class="flex justify-between text-xs mb-1">
-						<span>语言分析</span>
-						<span class="text-brand font-bold">8/10</span>
-					</div>
-					<div class="bg-cream rounded-full h-2">
-						<div class="bg-gold rounded-full h-2" style="width: 80%;"></div>
-					</div>
-					<div class="text-[10px] text-muted mt-1">句式丰富，有文采，个别表达可再精炼</div>
-				</div>
-
-				<div>
-					<div class="flex justify-between text-xs mb-1">
-						<span>素材分析</span>
-						<span class="text-brand font-bold">7/10</span>
-					</div>
-					<div class="bg-cream rounded-full h-2">
-						<div class="bg-gold rounded-full h-2" style="width: 70%;"></div>
-					</div>
-					<div class="text-[10px] text-muted mt-1">引用庄子/陶渊明很好，可再补一个现代案例</div>
-				</div>
+			<div class="space-y-3" id="result_dimensions">
+				<!-- JS 渲染 -->
 			</div>
 		</div>
 
-		<!-- 作文批改单 -->
+		<!-- Lily 老师总评 -->
 		<div class="correction-paper rounded-xl p-5 mb-4 relative">
-
 			<div class="flex items-center justify-between mb-4">
 				<div>
 					<div class="text-[10px] text-muted">Me Offer × Lily 老师</div>
@@ -425,60 +382,38 @@
 				<div class="teacher-seal">Lily 批</div>
 			</div>
 
-			<div class="bg-white rounded-lg p-4 mb-4 chinese-serif text-sm leading-[2] text-ink">
-				<div class="text-center font-bold mb-3">论"躺平"与"内卷"的辩证关系</div>
-				<div class="text-center text-[10px] text-muted mb-4">— 高三 吕同学</div>
-
-				<p class="indent-8">
-					在当今社会，<span class="red-mark">"内卷"</span>二字频繁出现在每个人的嘴边<span class="red-note">· [开头有点弱，可以用具体场景切入]</span>。有人选择躺平，有人选择拼搏。<span class="red-mark">躺平是消极的表现</span><span class="red-note">· [这句话太武断了！]</span>，而内卷则是无意义的消耗。
-				</p>
-
-				<p class="indent-8 mt-3">
-					然而，<span class="font-bold">真正的智慧</span>不在于选择哪一个，而在于理解两者背后的时代症候。
-					<span class="red-note block mt-1 ml-4">✓ 这一句转得漂亮！</span>
-				</p>
-
-				<p class="indent-8 mt-3 text-muted italic">
-					[...此处省略中段...]
-				</p>
-
-				<p class="indent-8 mt-3">
-					综上所述，<span class="red-mark">我们要辩证地看待这个问题</span><span class="red-note">· [套话！下次试试"以小见大"结尾法]</span>。
-				</p>
-			</div>
-
-			<!-- Lily 老师总评 -->
-			<div class="bg-white/80 rounded-lg p-4 border-l-4 border-danger">
+			<!-- 总评 -->
+			<div class="bg-white/80 rounded-lg p-4 border-l-4 border-danger mb-3">
 				<div class="text-xs font-bold text-danger mb-2 chinese-serif">📝 Lily 老师总评</div>
-				<p class="text-xs text-ink leading-relaxed chinese-serif">
-					吕同学，这篇文章你的<span class="font-bold">立意方向是对的</span>——能想到用《庄子·逍遥游》切入很难得。但是问题也很明显：<br/><br/>
-					<span class="font-bold">1. 开头太弱</span>：直接陈述概念，缺少具体场景。可以用"凌晨两点的自习室灯火通明..."这样的画面开场。<br/>
-					<span class="font-bold">2. 观点武断</span>：第一段把"躺平"定性为"消极"太草率了。我们下次一起练"辩证开题"。<br/>
-					<span class="font-bold">3. 结尾套话</span>：别用"综上所述"，试试"以小见大"——用陶渊明一句诗收束全文。<br/><br/>
-					<span class="text-brand font-bold">下次作业：</span>用"以小见大"重写这篇的结尾段，发我看看。
-				</p>
+				<p class="text-xs text-ink leading-relaxed chinese-serif" id="result_summary">--</p>
 				<div class="mt-3 text-right">
-					<span class="stamp">2026.04.22</span>
+					<span class="stamp" id="result_date">2026.04.23</span>
 				</div>
 			</div>
 		</div>
 
-		<!-- 推荐素材（从 Lily 私房库匹配） -->
+		<!-- 亮点 -->
 		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
-			<div class="flex items-center justify-between mb-3">
-				<div class="text-xs font-bold text-ink">🎯 Lily 为本篇推荐的素材</div>
-				<a href="companion-lily.html" class="text-[10px] text-brand">查看私房库 →</a>
-			</div>
-			<div class="space-y-2">
-				<div class="bg-cream rounded-lg p-3">
-					<div class="text-xs font-bold chinese-serif mb-1">苏轼的"一蓑烟雨任平生"</div>
-					<div class="text-[10px] text-muted leading-relaxed">贬谪黄州的苏轼，与陶渊明呼应 —— 可作为本文的第二案例。</div>
-				</div>
-				<div class="bg-cream rounded-lg p-3">
-					<div class="text-xs font-bold chinese-serif mb-1">北斗 26 年 55 颗星</div>
-					<div class="text-[10px] text-muted leading-relaxed">现代案例 —— 可补充你的文章"现代视角"缺失。</div>
-				</div>
-			</div>
+			<div class="text-xs font-bold text-ink mb-2">✨ 亮点</div>
+			<ul class="space-y-1.5 text-[11px] text-ink leading-relaxed chinese-serif" id="result_strengths"></ul>
+		</div>
+
+		<!-- 弱点 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<div class="text-xs font-bold text-ink mb-2">⚠️ 待改进</div>
+			<ul class="space-y-1.5 text-[11px] text-ink leading-relaxed chinese-serif" id="result_weaknesses"></ul>
+		</div>
+
+		<!-- 建议 -->
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] mb-4">
+			<div class="text-xs font-bold text-ink mb-2">🎯 具体建议</div>
+			<ul class="space-y-1.5 text-[11px] text-ink leading-relaxed chinese-serif" id="result_suggestions"></ul>
+		</div>
+
+		<!-- 润色示范 -->
+		<div class="bg-cream rounded-xl p-4 border border-gold mb-4">
+			<div class="text-xs font-bold text-brand mb-2">✍️ Lily 老师润色示范</div>
+			<p class="text-[11px] text-ink leading-relaxed chinese-serif" id="result_polished">--</p>
 		</div>
 
 		<!-- 操作按钮 -->
@@ -533,15 +468,10 @@
 			}
 		});
 
-		// 提交 → 进入 Phase 2
-		$('#submit_btn').on('click', function () {
-			switchPhase(2);
-			$('#step_1').removeClass('active').addClass('done').text('✓');
-			$('#line_1').addClass('done');
-			$('#step_2').addClass('active');
-		});
+		// 提交 → 真实调用 API
+		$('#submit_btn').on('click', submit_essay);
 
-		// 演示跳过 → Phase 3
+		// 演示跳过 → Phase 3（仅开发调试用）
 		$('#demo_next').on('click', function () {
 			switchPhase(3);
 			$('#step_2').removeClass('active').addClass('done').text('✓');
@@ -577,6 +507,156 @@
 		$('#step_2').text('2');
 		$('#step_3').text('3');
 		$('#step_4').text('4');
+	}
+
+	/* ============ 真实批改：调用 /api/chat/essay ============ */
+	const DIM_LABEL							= {
+		liyi:		'立意分析',
+		jiegou:		'结构分析',
+		yuyan:		'语言分析',
+		sucai:		'素材分析',
+		shuxie:		'书写规范'
+	};
+
+	function submit_essay() {
+		const essay_text					= $('#essay_textarea').val().trim();
+		if (!essay_text) {
+			alert('作文内容不能为空');
+			return;
+		}
+		if (essay_text.length < 50) {
+			alert('作文至少 50 字');
+			return;
+		}
+		if (essay_text.length > 3000) {
+			alert('作文超过 3000 字，请精简后再试');
+			return;
+		}
+
+		/* 获取当前老师编码（默认 lily） */
+		const url_params					= new URLSearchParams(window.location.search);
+		const teacher						= url_params.get('teacher') || 'lily';
+
+		/* 从热门题目 button 里找一下哪个高亮了（若有）作为 topic，否则留空 */
+		let topic							= '';
+		$('.topic-card').each(function () {
+			if ($(this).hasClass('selected')) topic = $(this).text().trim();
+		});
+
+		/* 切到 Phase 2 */
+		switchPhase(2);
+		$('#step_1').removeClass('active').addClass('done').text('✓');
+		$('#line_1').addClass('done');
+		$('#step_2').addClass('active');
+
+		$.ajax({
+			url:		'/api/chat/essay',
+			method:		'POST',
+			contentType:	'application/json',
+			data:		JSON.stringify({
+				essay_text:		essay_text,
+				topic:			topic,
+				grade:			'senior3'
+			}),
+			timeout:	60000,
+			success: function (resp) {
+				if (!resp || !resp.result) {
+					alert('批改失败：' + (resp && resp.error ? resp.error : '未知错误'));
+					switchPhase(1);
+					resetSteps();
+					return;
+				}
+				render_result(resp.result);
+				$('#step_2').removeClass('active').addClass('done').text('✓');
+				$('#line_2').addClass('done');
+				$('#step_3').addClass('active');
+				switchPhase(3);
+			},
+			error: function (xhr) {
+				const msg					= xhr.responseJSON && xhr.responseJSON.error
+					? xhr.responseJSON.error
+					: 'AI 批改服务暂不可用（HTTP ' + xhr.status + '）';
+				alert(msg);
+				switchPhase(1);
+				resetSteps();
+			}
+		});
+	}
+
+	function render_result(r) {
+		/* 总分 */
+		$('#result_total').text(r.total_score || '--');
+		if (r.total_score) {
+			const pct						= Math.round(r.total_score / 50 * 100);
+			let rank_txt					= '一般';
+			if (pct >= 90) rank_txt			= '优秀 ⭐';
+			else if (pct >= 80) rank_txt	= '良好';
+			else if (pct >= 70) rank_txt	= '中等';
+			else if (pct >= 60) rank_txt	= '及格';
+			else rank_txt					= '需努力';
+			$('#result_total_note').text(rank_txt + ' · Claude Sonnet 4.6');
+		}
+
+		/* 5 维度 */
+		let dim_html						= '';
+		const dims							= r.dimensions || {};
+		for (let key of ['liyi', 'jiegou', 'yuyan', 'sucai', 'shuxie']) {
+			const d							= dims[key];
+			if (!d) continue;
+			const pct						= Math.round(d.score / d.max * 100);
+			dim_html						= dim_html +
+				'<div>' +
+				'<div class="flex justify-between text-xs mb-1">' +
+				'<span>' + DIM_LABEL[key] + '</span>' +
+				'<span class="text-brand font-bold">' + d.score + '/' + d.max + '</span>' +
+				'</div>' +
+				'<div class="bg-cream rounded-full h-2">' +
+				'<div class="bg-gold rounded-full h-2" style="width: ' + pct + '%;"></div>' +
+				'</div>' +
+				'<div class="text-[10px] text-muted mt-1">' + escape_html(d.comment || '') + '</div>' +
+				'</div>';
+		}
+		$('#result_dimensions').html(dim_html);
+
+		/* 总评 */
+		$('#result_summary').text(r.summary || '');
+
+		/* 亮点 */
+		let s_html							= '';
+		for (let s of (r.strengths || [])) {
+			s_html							= s_html + '<li class="flex gap-2"><span class="text-green-600">✓</span><span>' + escape_html(s) + '</span></li>';
+		}
+		$('#result_strengths').html(s_html || '<li class="text-muted">无</li>');
+
+		/* 弱点 */
+		let w_html							= '';
+		for (let w of (r.weaknesses || [])) {
+			w_html							= w_html + '<li class="flex gap-2"><span class="text-danger">·</span><span>' + escape_html(w) + '</span></li>';
+		}
+		$('#result_weaknesses').html(w_html || '<li class="text-muted">无</li>');
+
+		/* 建议 */
+		let su_html							= '';
+		for (let s of (r.suggestions || [])) {
+			su_html							= su_html + '<li class="flex gap-2"><span class="text-brand font-bold">→</span><span>' + escape_html(s) + '</span></li>';
+		}
+		$('#result_suggestions').html(su_html || '<li class="text-muted">无</li>');
+
+		/* 润色示范 */
+		$('#result_polished').text(r.polished_sample || '');
+
+		/* 日期 */
+		const today							= new Date();
+		const date_str						= today.getFullYear() + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + String(today.getDate()).padStart(2, '0');
+		$('#result_date').text(date_str);
+	}
+
+	function escape_html(s) {
+		return String(s || '')
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;');
 	}
 </script>
 
