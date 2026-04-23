@@ -37,7 +37,7 @@ export async function onRequestPost(context) {
 				'content-type':			'application/json'
 			},
 			body:		JSON.stringify({
-				model:			'claude-sonnet-4-5',
+				model:			'claude-sonnet-4-6',
 				max_tokens:		1024,
 				system:			'你是中国高考志愿填报专家。基于用户真实数据给出 3-5 条关键洞察。每条 JSON 格式：{"type": "match|risk|strength|warning", "title": "一句话标题", "content": "具体建议(50字内)"}。只返回 JSON 数组。',
 				messages:		[{role: 'user', content: user_prompt}]
@@ -70,7 +70,7 @@ export async function onRequestPost(context) {
 
 		return json_response({
 			insights:	insights,
-			source:		'claude-sonnet-4-5'
+			source:		'claude-sonnet-4-6'
 		});
 
 	} catch (e) {

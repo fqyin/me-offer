@@ -6,7 +6,7 @@
 //   reasons: { [volunteer_key]: string },  // 每个志愿的 AI 推荐理由（30-60 字）
 //   risks: string[],                       // 关键风险提示 3-5 条
 //   filling_order_tip: string,             // 填报顺序建议
-//   source: 'claude-sonnet-4-5' | 'rules_fallback'
+//   source: 'claude-sonnet-4-6' | 'rules_fallback'
 // }
 
 export async function onRequestPost(context) {
@@ -67,7 +67,7 @@ export async function onRequestPost(context) {
 				'content-type':			'application/json'
 			},
 			body:		JSON.stringify({
-				model:		'claude-sonnet-4-5',
+				model:		'claude-sonnet-4-6',
 				max_tokens:	2500,
 				system:		'你是专业的高考志愿填报顾问。基于学生数据和数据库推荐的志愿清单，生成结构化的策略报告。必须返回合法 JSON，不加任何解释。',
 				messages:	[{role: 'user', content: prompt}]
@@ -126,7 +126,7 @@ export async function onRequestPost(context) {
 			risks:				parsed.risks || build_rule_risks(body, vols),
 			filling_order_tip:	parsed.filling_order_tip || '按"冲-稳-保"顺序填报。务必勾选"服从专业调剂"。',
 			parent_report:		parsed.parent_report || build_rule_parent_report(body, vols),
-			source:				'claude-sonnet-4-5'
+			source:				'claude-sonnet-4-6'
 		});
 
 	}

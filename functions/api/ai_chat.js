@@ -6,7 +6,7 @@
 //   history: [{role: 'user|assistant', content: '...'}]   历史对话，由前端维护
 //   message: '用户本轮问题'
 // }
-// Returns: { reply: '...', source: 'claude-sonnet-4-5', tokens_used }
+// Returns: { reply: '...', source: 'claude-sonnet-4-6', tokens_used }
 
 export async function onRequestPost(context) {
 	const request							= context.request;
@@ -77,7 +77,7 @@ export async function onRequestPost(context) {
 				'content-type':			'application/json'
 			},
 			body:		JSON.stringify({
-				model:			'claude-sonnet-4-5',
+				model:			'claude-sonnet-4-6',
 				max_tokens:		800,
 				system:			system_prompt,
 				messages:		messages
@@ -102,7 +102,7 @@ export async function onRequestPost(context) {
 
 		return json_response({
 			reply:			reply,
-			source:			'claude-sonnet-4-5',
+			source:			'claude-sonnet-4-6',
 			tokens_used:	(usage.input_tokens || 0) + (usage.output_tokens || 0)
 		});
 
