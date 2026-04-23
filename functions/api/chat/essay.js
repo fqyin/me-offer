@@ -120,8 +120,9 @@ function build_essay_prompt(grade) {
 		'```\n\n' +
 		'【重要】\n' +
 		'- 只输出 JSON 对象，前后不要任何解释文字\n' +
-		'- 评价要具体，不能说"不错"、"一般"这种空话\n' +
-		'- 批改风格像"严格但有温度的语文老师"，既指出问题又给希望\n' +
+		'- JSON 字符串内不要使用中文引号，需要引用文字时用单引号或全角书名号\n' +
+		'- 评价要具体，不能说空话\n' +
+		'- 批改风格严格但有温度，既指出问题又给希望\n' +
 		'- 如果作文跑题或太简单，给出的分数要真实反映\n' +
 		'- 语言：简体中文';
 }
@@ -149,10 +150,18 @@ function try_parse_essay_json(text) {
 	const end								= text.lastIndexOf('}');
 	if (start === -1 || end === -1 || end < start) return null;
 
+	let json_str							= text.slice(start, end + 1);
+
 	try {
-		return JSON.parse(text.slice(start, end + 1));
+		return JSON.parse(json_str);
 	} catch (e) {
-		return null;
+		/* 尝试修复常见错误：中文引号 “ ” 混入 */
+		const fixed							= json_str.replace(/[\u201c\u201d]/g, '\\"').replace(/[\u2018\u2019]/g, "'");
+		try {
+			return JSON.parse(fixed);
+		} catch (e2) {
+			return null;
+		}
 	}
 }
 
