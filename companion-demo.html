@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>AI高考陪跑社区 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.5s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		@keyframes shimmer {
+			0% { background-position: -200px 0; }
+			100% { background-position: 200px 0; }
+		}
+		.shimmer-text {
+			background: linear-gradient(90deg, #8B6914 0%, #C9A96E 50%, #8B6914 100%);
+			background-size: 200px 100%;
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+			animation: shimmer 3s linear infinite;
+		}
+
+		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+
+		.teacher-card { transition: all 0.25s; cursor: pointer; }
+		.teacher-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(139,105,20,0.15); border-color: #C9A96E; }
+
+		.board-card { transition: all 0.2s; cursor: pointer; }
+		.board-card:hover { border-color: #C9A96E; box-shadow: 0 6px 18px rgba(139,105,20,0.1); }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.dot-bg {
+			background-image: radial-gradient(#E5DDD0 1px, transparent 1px);
+			background-size: 16px 16px;
+		}
+
+		.chat-bubble-ai { background: #FDF8F0; border: 1px solid #E5DDD0; border-top-left-radius: 4px; }
+		.chat-bubble-user { background: #8B6914; color: white; border-top-right-radius: 4px; }
+
+		.sparkline { stroke: #C9A96E; stroke-width: 2; fill: none; }
+		.sparkline-fill { fill: rgba(201,169,110,0.15); stroke: none; }
+
+		.nav-item.active { color: #8B6914; font-weight: 600; }
+		.nav-item.active .nav-dot { background: #8B6914; }
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.countdown-num { font-family: 'Georgia', serif; font-weight: bold; }
+
+		/* ribbon */
+		.ribbon {
+			position: absolute; top: 10px; right: -22px;
+			background: #C94A4A; color: white;
+			padding: 3px 28px; font-size: 10px; font-weight: bold;
+			transform: rotate(35deg); letter-spacing: 1px;
+		}
+
+		.emotion-pill { cursor: pointer; transition: all 0.2s; }
+		.emotion-pill:hover { transform: scale(1.08); }
+		.emotion-pill.selected { background: #8B6914; color: white; }
+
+		/* ═════ Agent 抽屉 CSS（从 index.html 移植） ═════ */
+		.agent-tile { transition: all 0.2s; }
+		.agent-tile:hover { border-color: #C9A96E !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,169,110,0.2); }
+		.agent-tile.active { border-color: #8B6914 !important; background: #FDF8F0 !important; }
+
+		.hidden-agent { display: none; }
+
+		.agent-drawer-overlay {
+			position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;
+			opacity: 0; pointer-events: none; transition: opacity 0.3s;
+		}
+		.agent-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+		.agent-drawer {
+			display: none;
+			position: fixed; bottom: 0; left: 0; right: 0;
+			margin-left: auto; margin-right: auto;
+			width: 100%; max-width: 480px; background: white;
+			border-radius: 20px 20px 0 0;
+			max-height: 85vh; overflow-y: auto;
+			z-index: 9999;
+			box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+			transform: none !important;
+			--tw-translate-x: 0 !important;
+			--tw-translate-y: 0 !important;
+		}
+		.agent-drawer.open {
+			display: block;
+			animation: drawer_slide_in 0.3s ease-out;
+		}
+		@keyframes drawer_slide_in {
+			from { opacity: 0; bottom: -50vh; }
+			to { opacity: 1; bottom: 0; }
+		}
+
+		.agent-drawer-handle {
+			width: 40px; height: 4px; border-radius: 2px;
+			background: #D1D5DB; margin: 10px auto 4px;
+		}
+
+		.agent-input { width: 100%; padding: 10px 12px; border-radius: 10px; background: #FDF8F0; border: 1px solid #E5DDD0; font-size: 13px; outline: none; }
+		.agent-input:focus { border-color: #C9A96E; }
+		.agent-btn { padding: 10px 20px; border-radius: 10px; background: #8B6914; color: white; font-size: 12px; font-weight: 600; border: none; cursor: pointer; white-space: nowrap; }
+		.agent-btn:hover { background: #6D5210; }
+		.agent-btn-gold { background: #C9A96E; }
+		.agent-btn-gold:hover { background: #B08F4A; }
+		.trend-bar { display: inline-block; width: 8px; border-radius: 2px; vertical-align: bottom; transition: height 0.3s; }
+		.mini-chip { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; margin: 2px 3px; background: #FDF8F0; color: #8B6914; cursor: pointer; border: 1px solid #E5DDD0; }
+		.mini-chip:hover { background: #F5EAD5; }
+		.mini-chip.active { background: #8B6914; color: white; border-color: #8B6914; }
+	</style>
+</head>
+<body>
+
+<script>
+	/* 【展示版】已拆除登录守卫 · 仅用于首页板块评审 */
+</script>
+
+<div class="max-w-[480px] mx-auto bg-cream min-h-screen pb-20">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<a href="parent.html" class="text-muted text-sm">←</a>
+				<span class="text-brand font-bold text-lg">Me Offer</span>
+				<span class="stamp">陪跑社区</span>
+			</div>
+			<div class="flex items-center gap-3">
+				<button id="btn_notif" class="relative w-8 h-8 flex items-center justify-center">
+					<span class="text-lg">🔔</span>
+					<span class="absolute top-1 right-0 w-2 h-2 bg-danger rounded-full pulse-dot"></span>
+				</button>
+				<div id="student_avatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold cursor-pointer" onclick="location.href='parent.html'">吕</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Section 1: AI 班主任问候 -->
+	<section class="px-4 pt-5 pb-4 fade-in">
+		<div class="bg-gradient-to-br from-brand to-[#6B4F0F] rounded-2xl p-5 text-white relative overflow-hidden">
+			<div class="absolute top-0 right-0 w-32 h-32 bg-gold/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+
+			<div class="flex items-start gap-3 relative">
+				<div class="w-14 h-14 rounded-full bg-gradient-to-br from-gold to-[#E8C985] flex items-center justify-center text-2xl flex-shrink-0 shadow-lg">
+					<span>👩‍🏫</span>
+				</div>
+				<div class="flex-1">
+					<div class="flex items-center gap-2 mb-1">
+						<h2 class="font-bold text-base">Lily 老师</h2>
+						<span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">AI 班主任 · 语文特级</span>
+					</div>
+					<p class="text-xs text-white/80 mb-3">已陪伴你 <span class="font-bold text-gold">30</span> 天 · 共同成长</p>
+
+					<div class="bg-white/10 backdrop-blur rounded-xl p-3 mb-3">
+						<p class="text-sm leading-relaxed">早上好吕同学 ☀️<br/>昨天你在立体几何上连错 3 道，我注意到都是"空间想象"出了问题。今天早读我给你准备了<span class="underline">3 张典型图形的建模讲解</span>，5 分钟就能看完。</p>
+					</div>
+
+					<div class="flex gap-2">
+						<button class="flex-1 bg-gold text-ink text-xs font-semibold py-2 rounded-lg hover:bg-[#E8C985]">开始今日任务</button>
+						<button onclick="window.location.href='companion-teacher.html?code=lily'" class="bg-white/20 text-white text-xs px-3 py-2 rounded-lg hover:bg-white/30">与老师对话 →</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 2: 左侧实时倒计时（小白卡）+ 右侧 4 个 Agent 按钮 -->
+	<section class="px-4 pb-4">
+		<div class="grid grid-cols-5 gap-3">
+			<!-- 左侧：实时倒计时（小白卡，秒级跳动） -->
+			<div class="col-span-2 bg-white rounded-xl p-4 border border-[#E5DDD0] text-center">
+				<div class="text-[10px] text-muted mb-1">距 2026 高考</div>
+				<div class="countdown-num text-4xl text-brand leading-none" id="countdown_days">--</div>
+				<div class="text-xs text-muted mt-1"><span id="countdown_label">还有 -- 天</span></div>
+				<div class="flex justify-center gap-1 mt-2 text-[10px]">
+					<span class="px-1.5 py-0.5 rounded" style="background: #FDF8F0; color: #8B6914;"><span id="countdown_hours">--</span>h</span>
+					<span class="px-1.5 py-0.5 rounded" style="background: #FDF8F0; color: #8B6914;"><span id="countdown_minutes">--</span>m</span>
+					<span class="px-1.5 py-0.5 rounded" style="background: #FDF8F0; color: #8B6914;"><span id="countdown_seconds">--</span>s</span>
+				</div>
+			</div>
+
+			<!-- 右侧：4 个 Agent 按钮 (2x2 九宫格) · 点击本页直接弹抽屉 -->
+			<div class="col-span-3 grid grid-cols-2 gap-2">
+				<div class="agent-tile agent-btn-card bg-white rounded-xl p-2.5 border border-[#E5DDD0] text-left flex flex-col cursor-pointer" data-agent="score">
+					<div class="flex items-start justify-between mb-1">
+						<span class="text-xl">📊</span>
+						<span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot mt-1.5"></span>
+					</div>
+					<div class="text-[11px] font-bold text-ink">分数 Agent</div>
+					<div class="text-[9px] text-muted leading-tight mt-0.5">位次换算 · 5 年等效分</div>
+				</div>
+				<div class="agent-tile agent-btn-card bg-white rounded-xl p-2.5 border border-[#E5DDD0] text-left flex flex-col cursor-pointer" data-agent="school">
+					<div class="flex items-start justify-between mb-1">
+						<span class="text-xl">🏫</span>
+						<span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot mt-1.5"></span>
+					</div>
+					<div class="text-[11px] font-bold text-ink">院校 Agent</div>
+					<div class="text-[9px] text-muted leading-tight mt-0.5">2,868 所 5 年走势</div>
+				</div>
+				<div class="agent-tile agent-btn-card bg-white rounded-xl p-2.5 border border-[#E5DDD0] text-left flex flex-col cursor-pointer" data-agent="major">
+					<div class="flex items-start justify-between mb-1">
+						<span class="text-xl">📚</span>
+						<span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot mt-1.5"></span>
+					</div>
+					<div class="text-[11px] font-bold text-ink">专业 Agent</div>
+					<div class="text-[9px] text-muted leading-tight mt-0.5">兴趣 + 就业 + 薪资</div>
+				</div>
+				<div class="agent-tile agent-btn-card bg-white rounded-xl p-2.5 border border-[#E5DDD0] text-left flex flex-col cursor-pointer" data-agent="probability">
+					<div class="flex items-start justify-between mb-1">
+						<span class="text-xl">🎯</span>
+						<span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot mt-1.5"></span>
+					</div>
+					<div class="text-[11px] font-bold text-ink">概率 Agent</div>
+					<div class="text-[9px] text-muted leading-tight mt-0.5">输入分数 算录取概率</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 3: 志愿管理工作台（原情绪日记位置） -->
+	<section class="px-4 pb-4">
+		<div class="flex items-center justify-between mb-2">
+			<div class="flex items-center gap-2">
+				<span class="text-base font-bold text-ink">📋 志愿管理工作台</span>
+				<span class="text-[10px] px-1.5 py-0.5 rounded-full" style="background: #FEF3C7; color: #D97706;">Workspace</span>
+			</div>
+			<span class="text-[10px] text-muted">585 分 · 物化生</span>
+		</div>
+
+		<!-- 工作台 demo（复用首页动画演示） -->
+		<div class="rounded-2xl overflow-hidden" style="background: white; border: 1px solid #E5DDD0; box-shadow: 0 4px 20px rgba(139,105,20,0.08);">
+			<!-- 模拟顶栏 -->
+			<div style="padding:10px 12px;background:linear-gradient(135deg, #FDF8F0, #F5EAD5);border-bottom:1px solid #E5DDD0;">
+				<div class="flex items-center justify-between">
+					<div>
+						<div class="text-[11px] font-bold text-ink">585 分 · 位次 37,499</div>
+						<div class="text-[9px] text-muted">2026 山东物化生</div>
+					</div>
+					<div class="flex gap-1">
+						<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#FEECEC;color:#C94A4A;">冲 24</span>
+						<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#FDF4E5;color:#8B6914;">稳 48</span>
+						<span class="text-[9px] px-1.5 py-0.5 rounded" style="background:#E8F7EE;color:#16A34A;">保 24</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 模拟两栏布局 -->
+			<div class="flex" style="min-height:180px;">
+				<div style="flex:1;background:#FAFAF7;padding:8px;border-right:1px solid #E5DDD0;">
+					<div class="text-[9px] font-bold mb-2" style="color:#8B6914;">🔍 AI 候选池</div>
+					<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:6px;margin-bottom:4px;position:relative;overflow:hidden;">
+						<div class="demo-card-shine"></div>
+						<div class="text-[10px] font-bold text-ink">山东大学（威海）</div>
+						<div class="text-[9px] text-muted">计算机类 · 位次 31,825</div>
+						<div class="flex items-center justify-between mt-1">
+							<span class="text-[9px] px-1.5 rounded" style="background:#C94A4A;color:white;">冲 40%</span>
+							<span class="text-[9px] px-1.5 rounded" style="background:#C9A96E;color:white;">+ 加入</span>
+						</div>
+					</div>
+					<div style="background:white;border:1px solid #E5DDD0;border-radius:6px;padding:6px;">
+						<div class="text-[10px] font-bold text-ink">青岛大学</div>
+						<div class="text-[9px] text-muted">电子信息 · 位次 37,421</div>
+						<div class="flex items-center justify-between mt-1">
+							<span class="text-[9px] px-1.5 rounded" style="background:#8B6914;color:white;">稳 72%</span>
+							<span class="text-[9px] px-1.5 rounded" style="background:#C9A96E;color:white;">+ 加入</span>
+						</div>
+					</div>
+				</div>
+				<div style="flex:1;padding:8px;">
+					<div class="text-[9px] font-bold mb-2" style="color:#C94A4A;">📝 我的志愿表</div>
+					<div style="background:#FDF8F0;border:1px solid #C9A96E;border-radius:6px;padding:6px;margin-bottom:4px;">
+						<div class="flex items-center gap-1 mb-0.5">
+							<span class="text-[8px] px-1" style="background:#F5F0E8;color:#8B6914;border-radius:2px;">01</span>
+							<span class="text-[10px] font-bold text-ink">山东大学（威海）</span>
+						</div>
+						<div class="text-[9px] text-muted">计算机类 · 40%</div>
+					</div>
+					<div style="background:#FDF8F0;border:1px solid #C9A96E;border-radius:6px;padding:6px;">
+						<div class="flex items-center gap-1 mb-0.5">
+							<span class="text-[8px] px-1" style="background:#F5F0E8;color:#8B6914;border-radius:2px;">02</span>
+							<span class="text-[10px] font-bold text-ink">青岛大学</span>
+						</div>
+						<div class="text-[9px] text-muted">电子信息 · 72%</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 底部特性 -->
+			<div class="grid grid-cols-3 text-center" style="background:#FDF8F0;padding:8px 0;border-top:1px solid #E5DDD0;">
+				<div class="text-[9px]" style="color:#8B6914;">🔍 搜索 2868 所</div>
+				<div class="text-[9px]" style="color:#8B6914;">✏️ 随意调整</div>
+				<div class="text-[9px]" style="color:#8B6914;">💾 自动保存</div>
+			</div>
+		</div>
+
+		<!-- 立即体验按钮 -->
+		<a href="apply.html?tier=early_bird" class="block w-full py-3 mt-3 rounded-xl text-center text-sm font-bold text-white no-underline" style="background: linear-gradient(135deg, #C94A4A, #8B1A1A); box-shadow: 0 4px 12px rgba(201,74,74,0.3);">
+			🚀 立即体验 · 搭建你的 96 志愿 →
+		</a>
+		<p class="text-center text-[10px] text-muted mt-2">基于山东考试院 2021-2025 五年真实数据 · Claude 4.7 AI 推理</p>
+	</section>
+
+	<!-- 工作台微光动画（复用 index.html 样式） -->
+	<style>
+		.demo-card-shine {
+			position: absolute;
+			top: 0; left: -100%;
+			width: 40%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(201,169,110,0.25), transparent);
+			animation: shine 2.5s infinite;
+		}
+		@keyframes shine {
+			0% { left: -40%; }
+			60% { left: 100%; }
+			100% { left: 100%; }
+		}
+		.agent-btn-card { cursor: pointer; }
+		.agent-btn-card:hover { border-color: #C9A96E !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,169,110,0.2); }
+	</style>
+
+	<!-- Section 4: 5 大板块入口 -->
+	<section class="px-4 pb-4">
+		<h3 class="text-base font-bold text-ink mb-3 flex items-center gap-2">
+			<span>陪跑社区</span>
+			<span class="text-[10px] text-muted font-normal">五大功能模块</span>
+		</h3>
+
+		<div class="grid grid-cols-2 gap-3">
+
+			<!-- 学科名师天团：滚动到本页 9 位名师区 -->
+			<div class="board-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden" onclick="document.getElementById('teacher_team').scrollIntoView({behavior:'smooth', block:'start'})">
+				<div class="absolute top-0 right-0 w-20 h-20 bg-gold/10 rounded-full translate-x-6 -translate-y-6"></div>
+				<div class="relative">
+					<div class="text-2xl mb-2">📚</div>
+					<div class="font-bold text-sm mb-1">AI 学科名师</div>
+					<div class="text-[10px] text-muted mb-2">9 位 AI 名师 · 全学科覆盖</div>
+					<div class="flex -space-x-2">
+						<div class="w-6 h-6 rounded-full bg-gold/30 border-2 border-white text-[10px] flex items-center justify-center">语</div>
+						<div class="w-6 h-6 rounded-full bg-brand/30 border-2 border-white text-[10px] flex items-center justify-center">数</div>
+						<div class="w-6 h-6 rounded-full bg-danger/30 border-2 border-white text-[10px] flex items-center justify-center">英</div>
+						<div class="w-6 h-6 rounded-full bg-[#E5DDD0] border-2 border-white text-[10px] flex items-center justify-center text-muted">+6</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 真题库 -->
+			<div class="board-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden" onclick="window.location.href='coach/g3/papers.html'">
+				<div class="ribbon">免费</div>
+				<div class="text-2xl mb-2">🎯</div>
+				<div class="font-bold text-sm mb-1">真题+模考题库</div>
+				<div class="text-[10px] text-muted mb-2">31 省 5 年 · 1,847 道真题</div>
+				<div class="flex items-center gap-1">
+					<div class="text-[10px] text-brand">📊 AI 智能出题</div>
+				</div>
+			</div>
+
+			<!-- 陪跑社区 -->
+			<div class="board-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative" onclick="window.location.href='companion-ielts.html'">
+				<div class="text-2xl mb-2">🎧</div>
+				<div class="font-bold text-sm mb-1">雅思英语听力</div>
+				<div class="text-[10px] text-muted mb-2">YouTube 精选 · Emma 精讲</div>
+				<div class="flex items-center gap-1">
+					<span class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></span>
+					<span class="text-[10px] text-muted">连续 42 天</span>
+				</div>
+			</div>
+
+			<!-- 成长档案 -->
+			<div class="board-card bg-white rounded-xl p-4 border border-[#E5DDD0] relative overflow-hidden" onclick="window.location.href='companion-archive.html'">
+				<div class="absolute top-0 right-0 w-16 h-16 bg-brand/10 rounded-full translate-x-4 -translate-y-4"></div>
+				<div class="relative">
+					<div class="text-2xl mb-2">📖</div>
+					<div class="font-bold text-sm mb-1">成长档案馆</div>
+					<div class="text-[10px] text-muted mb-2">3 年陪伴 · 可打印成册</div>
+					<div class="text-[10px] text-brand">本季报告 7 天后生成</div>
+				</div>
+			</div>
+
+			<!-- 树洞 · 横幅 -->
+			<div class="col-span-2 board-card bg-gradient-to-r from-[#FDF8F0] to-white rounded-xl p-4 border border-[#E5DDD0]" onclick="window.location.href='companion-mia.html'">
+				<div class="flex items-center gap-3">
+					<div class="text-3xl">🌳</div>
+					<div class="flex-1">
+						<div class="font-bold text-sm">树洞 · 情感支持</div>
+						<div class="text-[10px] text-muted mt-0.5">匿名发帖 · AI Mia 学姐 24h 内回复 · 已陪伴吕同学 30 天</div>
+					</div>
+					<div class="text-gold text-xl">→</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+	<!-- Section 5: 学科 AI 名师 (横向滑动) -->
+	<section id="teacher_team" class="px-4 pb-4">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-base font-bold text-ink">认识你的 AI 名师天团</h3>
+			<a class="text-xs text-brand">全部 →</a>
+		</div>
+
+		<div class="scroll-x -mx-4 px-4">
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=lily'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-gold/30 flex items-center justify-center text-5xl">👩‍🏫</div>
+					<span class="absolute top-2 left-2 stamp bg-white">语文</span>
+					<span class="absolute top-2 right-2 text-[9px] bg-brand text-white px-1.5 py-0.5 rounded">班主任</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Lily 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">30 年教龄 · 温柔严厉</div>
+				<div class="mt-2 text-[10px] text-brand">"文字是有温度的" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=max'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-brand/20 flex items-center justify-center text-5xl">👨‍🏫</div>
+					<span class="absolute top-2 left-2 stamp bg-white">数学</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Max 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">奥赛金牌 · 话少毒辣</div>
+				<div class="mt-2 text-[10px] text-brand">"这题只有一种解法" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=emma'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-danger/20 flex items-center justify-center text-5xl">👩‍🎓</div>
+					<span class="absolute top-2 left-2 stamp bg-white">英语</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Emma</div>
+				<div class="text-[10px] text-muted mt-0.5">剑桥硕士 · 地道母语</div>
+				<div class="mt-2 text-[10px] text-brand">"Let's think in English" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=einstein'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-gold/30 flex items-center justify-center text-5xl">🧑‍🔬</div>
+					<span class="absolute top-2 left-2 stamp bg-white">物理</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Einstein 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">清华物理 · 生活派</div>
+				<div class="mt-2 text-[10px] text-brand">"想象一下这个场景..." →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=ethan'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-brand/20 flex items-center justify-center text-5xl">👨‍🔬</div>
+					<span class="absolute top-2 left-2 stamp bg-white">化学</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Ethan 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">北大化学 · 实验派</div>
+				<div class="mt-2 text-[10px] text-brand">"实验室见真章" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=bella'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-green-200 flex items-center justify-center text-5xl">👩‍⚕️</div>
+					<span class="absolute top-2 left-2 stamp bg-white">生物</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Bella 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">协和医学 · 故事派</div>
+				<div class="mt-2 text-[10px] text-brand">"一个细胞的旅行" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=henry'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-amber-200 flex items-center justify-center text-5xl">📜</div>
+					<span class="absolute top-2 left-2 stamp bg-white">历史</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Henry 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">人大历史 · 辩证派</div>
+				<div class="mt-2 text-[10px] text-brand">"历史没有标准答案" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=peter'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-red-200 flex items-center justify-center text-5xl">⚖️</div>
+					<span class="absolute top-2 left-2 stamp bg-white">政治</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Peter 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">特级教师 · 时政通</div>
+				<div class="mt-2 text-[10px] text-brand">"从热点看考点" →</div>
+			</div>
+
+			<div class="teacher-card flex-shrink-0 w-40 bg-white rounded-xl p-3 border border-[#E5DDD0]" onclick="window.location.href='companion-teacher.html?code=gina'">
+				<div class="relative mb-3">
+					<div class="w-full aspect-square rounded-lg bg-gradient-to-br from-[#FDF8F0] to-teal-200 flex items-center justify-center text-5xl">🌍</div>
+					<span class="absolute top-2 left-2 stamp bg-white">地理</span>
+				</div>
+				<div class="font-bold text-sm text-ink">Gina 老师</div>
+				<div class="text-[10px] text-muted mt-0.5">北师大地理 · 图表狂</div>
+				<div class="mt-2 text-[10px] text-brand">"一张图胜过千言" →</div>
+			</div>
+
+		</div>
+	</section>
+
+	<!-- Section 6: 今日直播 -->
+	<section class="px-4 pb-4">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-base font-bold text-ink flex items-center gap-2">
+				<span>今日直播</span>
+				<span class="w-2 h-2 bg-danger rounded-full pulse-dot"></span>
+				<span class="text-[10px] text-danger font-normal">LIVE · 342 人在看</span>
+			</h3>
+			<a class="text-xs text-brand">课表 →</a>
+		</div>
+
+		<div class="bg-white rounded-xl overflow-hidden border border-[#E5DDD0]">
+			<div class="aspect-[16/9] bg-gradient-to-br from-ink to-brand relative flex items-center justify-center">
+				<span class="text-white text-6xl opacity-20">▶</span>
+				<div class="absolute top-3 left-3 bg-danger text-white text-[10px] px-2 py-0.5 rounded-full font-bold">直播中</div>
+				<div class="absolute bottom-3 left-3 text-white">
+					<div class="font-bold text-sm">高考数学：立体几何压轴题突破</div>
+					<div class="text-[10px] opacity-80">Max 老师 · 90 分钟</div>
+				</div>
+			</div>
+			<div class="p-3 flex items-center justify-between">
+				<div class="text-[10px] text-muted">直播结束自动生成 AI 笔记 PDF</div>
+				<button class="bg-brand text-white text-xs px-3 py-1.5 rounded-lg">进入直播</button>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 7: 雅思英语听力 -->
+	<section class="px-4 pb-4">
+		<div class="flex items-center justify-between mb-3">
+			<h3 class="text-base font-bold text-ink">🎧 雅思英语听力</h3>
+			<a href="companion-ielts.html" class="text-xs text-brand">更多 →</a>
+		</div>
+
+		<div class="space-y-3">
+
+			<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] cursor-pointer" onclick="window.location.href='companion-ielts.html'">
+				<div class="flex items-center gap-3 mb-2">
+					<div class="w-10 h-10 rounded-full bg-gold/30 flex items-center justify-center text-lg">🎬</div>
+					<div class="flex-1">
+						<div class="font-bold text-sm">BBC News · 今日精选</div>
+						<div class="text-[10px] text-muted">YouTube 截取 · 雅思 7.0 难度 · 01:03</div>
+					</div>
+					<button class="text-[10px] bg-cream border border-gold text-brand px-2 py-1 rounded-full">▶ 播放</button>
+				</div>
+				<p class="text-xs text-ink leading-relaxed">"Artificial intelligence is reshaping how students learn around the world..." — Emma 老师精讲 3 个雅思高频词：reshape / artificial / framework。</p>
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>🎯 听力题 5 道</span>
+					<span>📝 单词 3 个</span>
+					<span class="ml-auto">今日更新</span>
+				</div>
+			</div>
+
+			<div class="bg-white rounded-xl p-4 border border-[#E5DDD0]">
+				<div class="flex items-center gap-3 mb-2">
+					<div class="w-10 h-10 rounded-full bg-brand/20 flex items-center justify-center text-lg">🎬</div>
+					<div class="flex-1">
+						<div class="font-bold text-sm">TED Talks · 昨日</div>
+						<div class="text-[10px] text-muted">YouTube 截取 · 雅思 6.5 难度 · 00:58</div>
+					</div>
+					<button class="text-[10px] bg-cream border border-gold text-brand px-2 py-1 rounded-full">✓ 已听</button>
+				</div>
+				<p class="text-xs text-ink leading-relaxed">"The secret to language learning is not talent, but consistency..." — Emma 老师带你剖析地道句型 "not A, but B" 的高考应用。</p>
+				<div class="flex items-center gap-4 mt-3 text-[10px] text-muted">
+					<span>✓ 5/5 正确</span>
+					<span>💬 8</span>
+					<span class="ml-auto">昨天</span>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+		<!-- Section 5: Three Plans -->
+		<section class="px-4 pb-6" id="gaokao_plans">
+			<div class="mb-1">
+				<span class="text-lg font-bold text-dark">三档方案</span>
+				<span class="text-[10px] text-muted ml-2">Choose Plan</span>
+			</div>
+			<p class="text-xs text-muted mb-4">从早鸟体验到填报机构 AI 服务 &middot; 三档阶梯</p>
+
+			<!-- Plan 1: Early Bird · 早鸟体验 -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border: 2px solid #C9A96E;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: linear-gradient(135deg, #F59E0B, #D97706);">&#x1F426; 早鸟价</span>
+				</div>
+				<div class="text-base font-bold text-dark mb-1 mt-1">早鸟体验</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">EARLY BIRD · 限时尝鲜</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">志愿管理工作台 + AI 推荐 96 志愿 + 位次/分数/招生数据 + PDF 下载（可随时编辑）</p>
+				<div class="flex items-baseline gap-2 mb-1">
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;9.9</span>
+					<span class="text-sm line-through" style="color: #AAAAAA;">&#xFFE5;39</span>
+					<span class="text-[10px] ml-2 px-2 py-0.5 rounded" style="background: #FEF3C7; color: #D97706; font-weight: 600;">限时 75 折</span>
+				</div>
+				<p class="text-[10px] text-muted mb-4">测试期限时优惠 &middot; 首批体验用户享 75 折</p>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #C94A4A, #8B1A1A);" onclick="goto_apply('early_bird')">&#x1F680; 立即体验 &#xFFE5;9.9 &#x2192;</button>
+			</div>
+
+			<!-- Plan 2: Precision ¥199 (Recommended) -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: white; border: 2px solid #C9A96E;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 &middot; 推荐</span>
+				</div>
+				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
+				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
+				<p class="text-xs text-muted leading-relaxed mb-3">完整 96 志愿 + PDF 下载 + Claude 4.5 AI 对话 + 可多次重算</p>
+				<div class="flex items-baseline gap-2 mb-4">
+					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;199</span>
+					<span class="text-sm line-through text-muted">原价 &#xFFE5;399</span>
+				</div>
+				<div class="space-y-2 mb-4">
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">包含早鸟体验所有内容</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark"><strong>PDF 下载</strong> &middot; 可直接抄到考试院</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark"><strong>AI 对话答疑</strong>（Claude 4.5 追问调整）</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark"><strong>多次重算</strong>（改偏好实时更新）</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">个性化风险深度洞察</span>
+					</div>
+				</div>
+				<!-- Bar Chart -->
+				<div class="rounded-xl p-3 mb-4" style="background: #FDF8F0; border: 1px solid #E5DDD0;">
+					<div class="flex items-end justify-center gap-4 mb-2" style="height: 80px;">
+						<div class="bar-chart-segment">
+							<div class="text-[10px] font-bold mb-1" style="color: #C94A4A;">24</div>
+							<div class="rounded-t-md" style="width: 48px; height: 32px; background: #C94A4A;"></div>
+							<div class="text-[10px] mt-1 font-semibold" style="color: #C94A4A;">冲</div>
+						</div>
+						<div class="bar-chart-segment">
+							<div class="text-[10px] font-bold mb-1" style="color: #C9A96E;">48</div>
+							<div class="rounded-t-md" style="width: 48px; height: 60px; background: #C9A96E;"></div>
+							<div class="text-[10px] mt-1 font-semibold" style="color: #C9A96E;">稳</div>
+						</div>
+						<div class="bar-chart-segment">
+							<div class="text-[10px] font-bold mb-1" style="color: #22C55E;">24</div>
+							<div class="rounded-t-md" style="width: 48px; height: 32px; background: #22C55E;"></div>
+							<div class="text-[10px] mt-1 font-semibold" style="color: #22C55E;">保</div>
+						</div>
+					</div>
+					<p class="text-[10px] text-muted text-center leading-snug">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
+				</div>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">&#xFFE5;199 解锁精准方案 &#x2192;</button>
+			</div>
+
+			<!-- Plan 3: AI Review ¥1999 -->
+			<div class="rounded-2xl p-4 mb-4 relative" style="background: #1A1A1A;">
+				<div class="absolute top-3 right-3">
+					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">尊享档</span>
+				</div>
+				<div class="text-base font-bold text-white mb-1 mt-1">填报机构 AI 服务</div>
+				<div class="text-[10px] tracking-wider uppercase mb-2" style="color: #8A8A8A;">REVIEW</div>
+				<p class="text-xs leading-relaxed mb-3" style="color: #AAAAAA;">Claude 4.5 多轮深度推理 + 6 Agent 交叉验证 + 大小年波动报告 + 72h 内可申请重做或退款（具体见服务条款）</p>
+				<div class="flex items-baseline gap-2 mb-4">
+					<span class="text-3xl font-black text-white">&#xFFE5;1,999</span>
+					<span class="text-sm line-through" style="color: #666666;">名师 &#xFFE5;17,999</span>
+				</div>
+				<div class="space-y-2 mb-4">
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">包含 &#xFFE5;199 精准方案所有内容</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">Claude 4.5 深度推理 &middot; 多 Agent 交叉验证</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">模拟投档 &middot; 退档风险深度排查</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">7&#xD7;24 AI 答疑 &middot; 填报窗口期陪跑</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">征集志愿实时推送</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">6 Agent 多次交叉验证</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-white">Claude 4.5 多轮推理排查</span>
+					</div>
+				</div>
+				<!-- AI Service Badge -->
+				<div class="rounded-xl p-3 mb-4 flex items-center gap-3" style="background: rgba(201, 169, 110, 0.15); border: 1px solid rgba(201, 169, 110, 0.3);">
+					<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: #C9A96E;">
+						<span class="text-white font-bold text-base">AI</span>
+					</div>
+					<div>
+						<div class="text-xs font-bold text-white mb-0.5">AI Agent 全程参与</div>
+						<div class="text-[11px]" style="color: #C9A96E;">算法驱动 &middot; 多轮推理</div>
+					</div>
+				</div>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C94A4A;" onclick="goto_apply('review')">开通填报机构 AI 服务 &#x2192;</button>
+			</div>
+		</section>
+
+		<!-- Section 6: Data Sources / Trust -->
+		<section class="px-4 pb-6">
+			<div class="flex items-center justify-between mb-1">
+				<div>
+					<span class="text-lg font-bold text-dark">数据来源</span>
+					<span class="text-[10px] text-muted ml-2">Data Sources</span>
+				</div>
+				<a href="https://www.sdzk.cn" target="_blank" rel="noopener" class="text-xs cursor-pointer" style="color: #8B6914;">查看数据源 &#x2192;</a>
+			</div>
+			<p class="text-xs text-muted mt-1 mb-3">所有数据来自官方公开渠道 · 每条记录附原始来源链接</p>
+			<div class="scroll-x">
+				<!-- Source 1: 山东考试院 -->
+				<div class="flex-shrink-0 rounded-2xl p-4" style="width: 300px; background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">&#x1F3DB;&#xFE0F;</div>
+						<div>
+							<div class="text-sm font-bold text-dark">山东省教育招生考试院</div>
+							<div class="text-[10px] text-muted">sdzk.cn &middot; 官方权威</div>
+						</div>
+					</div>
+					<div class="rounded-lg px-3 py-2 mb-2" style="background: #FDF8F0;">
+						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 96,342 条投档记录 &middot; 2021-2025 五年</div>
+					</div>
+					<p class="text-[11px] text-muted leading-relaxed">一分一段表 18,619 条 &middot; 2025 选科要求 PDF &middot; 每条数据附考试院原公告 URL。</p>
+				</div>
+				<!-- Source 2: 教育部 -->
+				<div class="flex-shrink-0 rounded-2xl p-4" style="width: 300px; background: white; border: 1px solid #E5DDD0;">
+					<div class="flex items-center gap-2 mb-2">
+						<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background: #C9A96E;">&#x1F393;</div>
+						<div>
+							<div class="text-sm font-bold text-dark">教育部 &middot; 软科</div>
+							<div class="text-[10px] text-muted">moe.gov.cn &middot; shanghairanking.cn</div>
+						</div>
+					</div>
+					<div class="rounded-lg px-3 py-2 mb-2" style="background: #FDF8F0;">
+						<div class="text-xs font-semibold" style="color: #8B6914;">&#x2192; 2,868 所全国高校 &middot; 软科 2024 主榜</div>
+					</div>
+					<p class="text-[11px] text-muted leading-relaxed">教育部《2024 年全国高等学校名单》&middot; 软科中国大学排名主榜 Top 594 对齐。</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Section 8: Footer Trust -->
+		<section class="px-4 pb-8">
+			<div class="flex items-center justify-center gap-3 mb-4 flex-wrap">
+				<span class="text-[10px] text-muted">公开数据溯源</span>
+				<span class="text-[10px] text-muted">&middot;</span>
+				<span class="text-[10px] text-muted">AI 驱动</span>
+				<span class="text-[10px] text-muted">&middot;</span>
+				<span class="text-[10px] text-muted">推理透明</span>
+			</div>
+
+			<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #E5DDD0;">
+				<div class="text-[10px] leading-relaxed" style="color: #8A8A8A;">
+					<strong style="color: #8B6914;">免责声明：</strong>本服务为 AI 决策参考工具，基于公开录取数据生成。最终志愿填报请以山东省教育招生考试院官方系统为准。Me Offer 不对录取结果作任何承诺。
+				</div>
+			</div>
+
+			<div class="flex items-center justify-between text-[10px] text-muted">
+				<div class="flex items-center gap-3">
+					<span>客服微信：<strong style="color: #8B6914;">meoffer_cs</strong></span>
+				</div>
+				<div class="flex items-center gap-3">
+					<a href="orders.html" style="color: #8B6914;"><strong>订单查询</strong></a>
+				</div>
+				<div class="flex items-center gap-3">
+					<span>info@me-offer.com</span>
+				</div>
+			</div>
+
+			<div class="text-center text-[10px] text-muted mt-3">
+				<span>&copy; 2026 Me Offer</span>
+				<span class="mx-2">&middot;</span>
+				<span>ICP 备案审核中</span>
+			</div>
+		</section>
+
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5DDD0] z-50">
+	<div class="max-w-[480px] mx-auto grid grid-cols-5 py-2">
+		<a href="index.html" class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">🎯</div>
+			<div>志愿</div>
+		</a>
+		<a class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">📚</div>
+			<div>题库</div>
+		</a>
+		<a class="nav-item active text-center text-[10px] py-1">
+			<div class="relative inline-block">
+				<div class="text-lg">👩‍🏫</div>
+				<span class="nav-dot absolute -top-0.5 -right-0.5 w-2 h-2 bg-brand rounded-full"></span>
+			</div>
+			<div>陪跑</div>
+		</a>
+		<a class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">📖</div>
+			<div>档案</div>
+		</a>
+		<a class="nav-item text-center text-muted text-[10px] py-1">
+			<div class="text-lg">👤</div>
+			<div>我的</div>
+		</a>
+	</div>
+</nav>
+
+<script>
+	const api_base = location.origin;
+	const token = localStorage.getItem('me_offer_token');
+
+	$(function () {
+		load_current_student();
+		update_countdown();
+		setInterval(update_countdown, 1000);
+	});
+
+	function load_current_student() {
+		/* 【展示版】跳过 API 调用，直接用 demo 数据 */
+		apply_student_info({ real_name: '吕同学' });
+	}
+
+	function apply_student_info(student) {
+		const first_char = (student.real_name || '同').charAt(0);
+		$('#student_avatar').text(first_char);
+		document.title = student.real_name + ' · 陪跑社区 · Me Offer';
+	}
+
+	function update_countdown() {
+		/* 山东 2026 志愿填报窗口预估截止日（6 月 28 日 - 7 月 4 日） */
+		const target = new Date('2026-07-04T18:00:00+08:00').getTime();
+		const now = new Date().getTime();
+		const diff = target - now;
+
+		if (diff <= 0) {
+			$('#countdown_days').text('0');
+			$('#countdown_hours').text('0');
+			$('#countdown_minutes').text('0');
+			$('#countdown_seconds').text('0');
+			return;
+		}
+
+		const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+		const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+		const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+		$('#countdown_days').text(days);
+		$('#countdown_label').text('还有 ' + days + ' 天');
+		$('#countdown_hours').text(hours);
+		$('#countdown_minutes').text(minutes);
+		$('#countdown_seconds').text(seconds);
+	}
+</script>
+
+<!-- ═════ Agent JS（从 index.html 完整移植） ═════ -->
+<script>
+	const AGENT_META						= {
+		score:			{icon: '📊', title: '分数 Agent', subtitle: '位次换算引擎 · 基于 5 年真实数据'},
+		school:			{icon: '🏫', title: '院校 Agent', subtitle: '2,868 所高校 5 年录取走势 · 真实查询'},
+		major:			{icon: '📚', title: '专业 Agent', subtitle: '麦可思 2024 就业 + D1 实时招生统计'},
+		probability:	{icon: '🎯', title: '概率 Agent', subtitle: '位次差模型 · 录取概率精算'},
+		risk:			{icon: '⚠️', title: '风险 Agent', subtitle: '5 年大小年波动 · 滑档案例 · 调剂预警'},
+		submit:			{icon: '📋', title: '填报 Agent', subtitle: '山东 96 志愿规则 · 冲稳保策略'}
+	};
+	let probability_try_count				= 0;
+
+	$(document).on('click', '.agent-tile', function() {
+		let agent							= $(this).data('agent');
+		open_agent_detail(agent);
+	});
+
+	/* 外部跳转支持：?agent=score|school|major|probability|risk|submit 自动打开对应抽屉 */
+	$(function () {
+		const params						= new URLSearchParams(location.search);
+		const agent_from_url				= params.get('agent');
+		const valid_agents					= ['score', 'school', 'major', 'probability', 'risk', 'submit'];
+		if (agent_from_url && valid_agents.indexOf(agent_from_url) >= 0) {
+			setTimeout(function () {
+				open_agent_detail(agent_from_url);
+				const target				= document.getElementById('gaokao_agents');
+				if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}, 400);
+		}
+	});
+
+	function open_agent_detail(agent) {
+		let meta							= AGENT_META[agent];
+		$('#agent_detail_icon').html(meta.icon);
+		$('#agent_detail_title').text(meta.title);
+		$('#agent_detail_subtitle').text(meta.subtitle);
+		$('#agent_detail_body').html('<div class="text-center text-muted text-xs py-6">加载中...</div>');
+
+		// 打开抽屉
+		$('#agent_drawer').addClass('open');
+		$('#agent_drawer_overlay').addClass('open').css({opacity: 1, 'pointer-events': 'auto'});
+		$('body').css('overflow', 'hidden');
+
+		// 6 个 agent 分发
+		if (agent === 'score') render_score_agent();
+		else if (agent === 'school') render_school_agent();
+		else if (agent === 'major') render_major_agent();
+		else if (agent === 'probability') render_probability_agent();
+		else if (agent === 'risk') render_risk_agent();
+		else if (agent === 'submit') render_submit_agent();
+	}
+
+	function close_agent_detail() {
+		$('#agent_drawer').removeClass('open');
+		$('#agent_drawer_overlay').removeClass('open').css({opacity: 0, 'pointer-events': 'none'});
+		$('body').css('overflow', '');
+	}
+
+	// ESC 键关闭抽屉
+	$(document).on('keydown', function(e) {
+		if (e.key === 'Escape' && $('#agent_drawer').hasClass('open')) {
+			close_agent_detail();
+		}
+	});
+
+	// 下滑手势关闭（移动端）
+	let drawer_touch_start_y				= 0;
+	let drawer_touch_current_y				= 0;
+	$(document).on('touchstart', '.agent-drawer-handle, .agent-drawer', function(e) {
+		drawer_touch_start_y				= e.touches[0].clientY;
+	});
+	$(document).on('touchmove', '.agent-drawer-handle', function(e) {
+		drawer_touch_current_y				= e.touches[0].clientY;
+	});
+	$(document).on('touchend', '.agent-drawer-handle', function() {
+		if (drawer_touch_current_y - drawer_touch_start_y > 80) {
+			close_agent_detail();
+		}
+		drawer_touch_start_y				= 0;
+		drawer_touch_current_y				= 0;
+	});
+
+	// ===== Agent 1: 分数 =====
+	function render_score_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">输入分数即时看山东 2025 位次 + 5 年等效分</div>' +
+			'<div class="flex gap-2 mb-3">' +
+				'<input id="score_agent_input" type="number" inputmode="numeric" class="agent-input flex-1" placeholder="例如 578" min="150" max="750">' +
+				'<button class="agent-btn" onclick="query_score_agent()">试算</button>' +
+			'</div>' +
+			'<div id="score_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+
+		$('#score_agent_input').on('keydown', function(e) {
+			if (e.key === 'Enter') query_score_agent();
+		});
+	}
+
+	function query_score_agent() {
+		let score							= parseInt($('#score_agent_input').val());
+		if (isNaN(score) || score < 150 || score > 750) {
+			$('#score_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入 150-750 之间的有效分数</div>');
+			return;
+		}
+
+		$('#score_agent_result').html('<div class="text-center text-muted text-xs py-2">查询中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=score&score=' + score,
+			method:	'GET',
+			success: function(res) {
+				render_score_result(res);
+			},
+			error: function() {
+				$('#score_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">查询失败</div>');
+			}
+		});
+	}
+
+	function render_score_result(res) {
+		let equiv_html						= '';
+		let years							= [2024, 2023, 2022, 2021];
+		for (let y of years) {
+			let eq							= res.equivalent[y];
+			if (eq) {
+				equiv_html					+= '<div class="flex items-center justify-between py-1.5 border-b" style="border-color: #F3F4F6;">' +
+					'<span class="text-[12px] text-muted">' + y + ' 年</span>' +
+					'<span class="text-[12px]"><strong style="color: #8B6914;">' + eq.score + ' 分</strong> / 位次 ' + eq.rank.toLocaleString() + '</span>' +
+				'</div>';
+			}
+		}
+
+		let subj_html						= '';
+		for (let s of (res.subject_ranks || [])) {
+			subj_html						+= '<div class="text-center rounded-lg py-2 px-1" style="background: #FDF8F0;">' +
+				'<div class="text-[10px] text-muted">' + s.name + '</div>' +
+				'<div class="text-sm font-bold" style="color: #8B6914;">' + s.rank.toLocaleString() + '</div>' +
+			'</div>';
+		}
+
+		let html							= '<div class="rounded-xl p-4 mb-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5);">' +
+			'<div class="text-[11px] text-muted mb-1">你的分数 ' + res.score + ' 分 &middot; 2025 山东位次</div>' +
+			'<div class="text-3xl font-black" style="color: #8B6914;">' + res.rank.toLocaleString() + '</div>' +
+			'<div class="text-[10px] mt-1" style="color: #8B6914;">基于考试院一分一段表</div>' +
+		'</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">📊 5 年等效分对照</div>' +
+		'<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' + equiv_html + '</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">🧪 选科位次（同分数不同科）</div>' +
+		'<div class="grid grid-cols-3 gap-2 mb-3">' + subj_html + '</div>' +
+		'<button class="agent-btn agent-btn-gold w-full" style="width: 100%; padding: 12px;" onclick="goto_apply(\'free\')">基于这个分数生成 96 志愿 &rarr;</button>';
+
+		$('#score_agent_result').html(html);
+	}
+
+	// ===== Agent 2: 院校 =====
+	function render_school_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">输入院校名查看 5 年录取位次走势（基于山东考试院真实数据）</div>' +
+			'<div class="flex gap-2 mb-3">' +
+				'<input id="school_agent_input" type="text" class="agent-input flex-1" placeholder="例如：山东大学 / 清华 / 浙大">' +
+				'<button class="agent-btn" onclick="query_school_agent()">查询</button>' +
+			'</div>' +
+			'<div id="school_agent_hot" class="mb-3"></div>' +
+			'<div id="school_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+
+		$('#school_agent_input').on('keydown', function(e) {
+			if (e.key === 'Enter') query_school_agent();
+		});
+
+		// 预加载热门
+		$.ajax({
+			url: '/api/agent_data?agent=school&keyword=',
+			method: 'GET',
+			success: function(res) {
+				if (res.items && res.items.length > 0) {
+					let html				= '<div class="text-[11px] text-muted mb-1">热门院校：</div><div>';
+					for (let s of res.items.slice(0, 8)) {
+						html				+= '<span class="mini-chip" onclick="$(\'#school_agent_input\').val(\'' + s.school_name + '\'); query_school_agent()">' + s.school_name + '</span>';
+					}
+					html					+= '</div>';
+					$('#school_agent_hot').html(html);
+				}
+			}
+		});
+	}
+
+	function query_school_agent() {
+		let keyword							= $('#school_agent_input').val().trim();
+		if (keyword.length < 2) {
+			$('#school_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入至少 2 个字符</div>');
+			return;
+		}
+
+		$('#school_agent_result').html('<div class="text-center text-muted text-xs py-2">查询中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=school&keyword=' + encodeURIComponent(keyword),
+			method:	'GET',
+			success: function(res) {
+				render_school_result(res);
+			},
+			error: function() {
+				$('#school_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">查询失败</div>');
+			}
+		});
+	}
+
+	function render_school_result(res) {
+		if (res.type === 'none') {
+			$('#school_agent_result').html('<div class="text-[12px] text-muted text-center py-3">未找到"' + res.keyword + '"相关数据</div>');
+			return;
+		}
+
+		let d								= res.detail;
+		let trend_bars						= '';
+		let max_rank						= Math.max(...d.trend.map(t => t.min_rank));
+
+		for (let t of d.trend) {
+			let bar_height					= Math.round((t.min_rank / max_rank) * 80);
+			trend_bars						+= '<div class="text-center">' +
+				'<div class="text-[10px] font-bold mb-1" style="color: #8B6914;">' + t.min_rank.toLocaleString() + '</div>' +
+				'<div class="mx-auto rounded-t-md" style="width: 24px; height: ' + bar_height + 'px; background: linear-gradient(to top, #8B6914, #C9A96E);"></div>' +
+				'<div class="text-[10px] mt-1 text-muted">' + t.year + '</div>' +
+			'</div>';
+		}
+
+		let top_majors_html					= '';
+		let shown_majors					= new Set();
+		for (let m of (d.top_majors || [])) {
+			if (shown_majors.has(m.group_name)) continue;
+			shown_majors.add(m.group_name);
+			if (shown_majors.size > 5) break;
+			top_majors_html					+= '<div class="flex items-center justify-between py-1.5 border-b" style="border-color: #F3F4F6;">' +
+				'<span class="text-[12px] text-dark truncate" style="max-width: 60%;">' + escape_html_idx(m.group_name) + '</span>' +
+				'<span class="text-[12px]"><strong style="color: #8B6914;">' + m.min_rank.toLocaleString() + '</strong> <span class="text-[10px] text-muted">(' + m.year + ')</span></span>' +
+			'</div>';
+		}
+
+		let html							= '<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #C9A96E;">' +
+			'<div class="text-sm font-bold text-dark">' + escape_html_idx(d.school_name) + '</div>' +
+			'<div class="text-[10px] text-muted">院校代码：' + escape_html_idx(d.school_code) + '</div>' +
+		'</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">📈 5 年最低录取位次走势</div>' +
+		'<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' +
+			'<div class="flex items-end justify-around gap-2" style="height: 120px;">' + trend_bars + '</div>' +
+		'</div>' +
+		'<div class="text-[12px] font-bold mb-2 text-dark">🏆 热门专业（5 年录取最难）</div>' +
+		'<div class="rounded-xl p-3 mb-3" style="background: white; border: 1px solid #E5DDD0;">' + top_majors_html + '</div>' +
+		'<button class="agent-btn agent-btn-gold w-full" style="width: 100%; padding: 12px;" onclick="goto_apply(\'free\')">用 AI 匹配这所学校 &rarr;</button>';
+
+		$('#school_agent_result').html(html);
+	}
+
+	// ===== Agent 3: 专业 =====
+	function render_major_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">热门 20 专业 &middot; 就业率 + 起薪 + 趋势（基于麦可思公开数据）</div>' +
+			'<div class="mb-3">' +
+				'<span class="mini-chip active" data-cat="" onclick="filter_major_cat(\'\')">全部</span>' +
+				'<span class="mini-chip" data-cat="理工" onclick="filter_major_cat(\'理工\')">理工</span>' +
+				'<span class="mini-chip" data-cat="经管" onclick="filter_major_cat(\'经管\')">经管</span>' +
+				'<span class="mini-chip" data-cat="医学" onclick="filter_major_cat(\'医学\')">医学</span>' +
+				'<span class="mini-chip" data-cat="文法" onclick="filter_major_cat(\'文法\')">文法</span>' +
+			'</div>' +
+			'<div id="major_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+		filter_major_cat('');
+	}
+
+	function filter_major_cat(cat) {
+		$('#agent_detail_body .mini-chip').removeClass('active');
+		$('#agent_detail_body .mini-chip[data-cat="' + cat + '"]').addClass('active');
+
+		$('#major_agent_result').html('<div class="text-center text-muted text-xs py-2">加载中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=major' + (cat ? '&category=' + encodeURIComponent(cat) : ''),
+			method:	'GET',
+			success: function(res) {
+				render_major_list(res);
+			}
+		});
+	}
+
+	function render_major_list(res) {
+		let html							= '';
+		let trend_color						= {'热门': '#22C55E', '稳定': '#8B6914', '放缓': '#F59E0B', '饱和': '#F59E0B', '转型': '#F59E0B', '下滑': '#C94A4A'};
+
+		for (let m of res.items) {
+			let color						= trend_color[m.trend] || '#8B6914';
+			let school_info					= m.open_school_count > 0 ? '山东 2025 开设 <strong style="color:#8B6914;">' + m.open_school_count + '</strong> 所高校' : '';
+			let rank_info					= m.lowest_rank_2025 ? '最低位 <strong style="color:#C94A4A;">' + m.lowest_rank_2025.toLocaleString() + '</strong>' : '';
+
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center justify-between mb-1">' +
+					'<div class="flex items-center gap-2">' +
+						'<span class="text-[10px] font-bold" style="color: #8B6914;">#' + m.rank + '</span>' +
+						'<span class="text-sm font-bold text-dark">' + m.name + '</span>' +
+					'</div>' +
+					'<span class="text-[10px] px-2 py-0.5 rounded-full" style="background: ' + color + '22; color: ' + color + ';">' + m.trend + '</span>' +
+				'</div>' +
+				'<div class="flex items-center gap-3 text-[11px] mb-1">' +
+					'<span>起薪 <strong style="color: #8B6914;">¥' + m.salary_avg.toLocaleString() + '</strong></span>' +
+					'<span>就业率 <strong style="color: #8B6914;">' + m.employment + '%</strong></span>' +
+				'</div>' +
+				(school_info || rank_info ? '<div class="flex items-center gap-3 text-[10px] mb-1 text-muted">' + school_info + (school_info && rank_info ? ' &middot; ' : '') + rank_info + '</div>' : '') +
+				'<div class="text-[11px] text-muted">' + m.note + '</div>' +
+			'</div>';
+		}
+
+		if (res.source) {
+			html							+= '<div class="text-[10px] text-muted text-center mt-3">数据源：' + res.source + '</div>';
+		}
+
+		$('#major_agent_result').html(html);
+	}
+
+	// ===== Agent 4: 概率 =====
+	function render_probability_agent() {
+		let html							= '<div class="mb-3 text-[12px] text-muted">输入分数 + 心仪学校，立即看你的录取概率（<span style="color:#C94A4A;font-weight:600;">每日免费 3 次</span>，想看全部 96 志愿 → 生成完整方案）</div>' +
+			'<div class="flex gap-2 mb-2">' +
+				'<input id="prob_score" type="number" inputmode="numeric" class="agent-input" style="width: 100px;" placeholder="分数" min="150" max="750">' +
+				'<input id="prob_school" type="text" class="agent-input flex-1" placeholder="心仪学校">' +
+				'<button class="agent-btn" onclick="query_probability_agent()">试算</button>' +
+			'</div>' +
+			'<div id="prob_agent_counter" class="text-[11px] text-muted mb-2">今日剩余 3 次</div>' +
+			'<div id="prob_agent_result"></div>';
+		$('#agent_detail_body').html(html);
+		update_probability_counter();
+	}
+
+	function update_probability_counter() {
+		try {
+			let today						= new Date().toDateString();
+			let key							= 'meoffer_prob_try_' + today;
+			let used						= parseInt(localStorage.getItem(key) || '0');
+			probability_try_count			= used;
+			let left						= Math.max(0, 3 - used);
+			$('#prob_agent_counter').html('今日剩余 <strong style="color: #C94A4A;">' + left + '</strong> 次 &middot; <a style="color: #8B6914; cursor: pointer; text-decoration: underline;" onclick="goto_apply(\'early_bird\')">¥9.9 看完整 96 志愿</a>');
+		} catch (e) {}
+	}
+
+	function query_probability_agent() {
+		let score							= parseInt($('#prob_score').val());
+		let school							= $('#prob_school').val().trim();
+
+		if (isNaN(score) || score < 150 || score > 750) {
+			$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入正确分数</div>');
+			return;
+		}
+		if (school.length < 2) {
+			$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">请输入学校名</div>');
+			return;
+		}
+
+		// 检查次数
+		let today							= new Date().toDateString();
+		let key								= 'meoffer_prob_try_' + today;
+		let used							= parseInt(localStorage.getItem(key) || '0');
+		if (used >= 3) {
+			$('#prob_agent_result').html('<div class="rounded-xl p-4 text-center" style="background: #1A1A1A;">' +
+				'<div class="text-base font-bold text-white mb-2">&#x1F389; 今日试算次数已用完</div>' +
+				'<div class="text-[12px] mb-3" style="color: #AAAAAA;">¥9.9 先看完整 96 志愿，确定好了再 ¥199 解锁 PDF 下载</div>' +
+				'<button class="agent-btn agent-btn-gold" style="padding: 12px 24px;" onclick="goto_apply(\'precision\')">立即生成完整方案 &rarr;</button>' +
+			'</div>');
+			return;
+		}
+
+		$('#prob_agent_result').html('<div class="text-center text-muted text-xs py-2">AI 计算中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=probability&score=' + score + '&school=' + encodeURIComponent(school),
+			method:	'GET',
+			success: function(res) {
+				if (res.error) {
+					$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">' + res.error + '</div>');
+					return;
+				}
+
+				// 计数 +1
+				try {
+					localStorage.setItem(key, String(used + 1));
+				} catch (e) {}
+				update_probability_counter();
+
+				render_probability_result(res);
+			},
+			error: function() {
+				$('#prob_agent_result').html('<div class="text-[12px]" style="color: #C94A4A;">计算失败</div>');
+			}
+		});
+	}
+
+	function render_probability_result(res) {
+		let tier_color						= {'冲': '#C94A4A', '稳': '#8B6914', '保': '#22C55E'};
+		let tier_bg							= {'冲': '#FEECEC', '稳': '#FDF4E5', '保': '#E8F7EE'};
+
+		let html							= '<div class="rounded-xl p-3 mb-3" style="background: #FDF8F0; border: 1px solid #C9A96E;">' +
+			'<div class="text-[11px] text-muted">你的分数 ' + res.user_score + ' 分 &middot; 山东位次 <strong>' + res.user_rank.toLocaleString() + '</strong></div>' +
+			'<div class="text-sm font-bold text-dark mt-1">' + escape_html_idx(res.school) + ' 各专业录取概率</div>' +
+		'</div>';
+
+		for (let r of res.results) {
+			let color						= tier_color[r.tier];
+			let bg							= tier_bg[r.tier];
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center justify-between mb-1">' +
+					'<span class="text-[12px] font-semibold text-dark truncate" style="max-width: 65%;">' + escape_html_idx(r.group_name) + '</span>' +
+					'<span class="text-[11px] px-2 py-0.5 rounded-full font-semibold" style="background: ' + bg + '; color: ' + color + ';">' + r.tier + ' ' + r.prob + '%</span>' +
+				'</div>' +
+				'<div class="text-[10px] text-muted">2025 最低位次 ' + r.min_rank.toLocaleString() + ' &middot; 计划 ' + r.plan_count + ' 人</div>' +
+			'</div>';
+		}
+
+		$('#prob_agent_result').html(html);
+	}
+
+	// ===== Agent 5: 风险 =====
+	function render_risk_agent() {
+		$('#agent_detail_body').html('<div class="text-center text-muted text-xs py-2">加载中...</div>');
+
+		$.ajax({
+			url:	'/api/agent_data?agent=risk',
+			method:	'GET',
+			success: function(res) {
+				render_risk_content(res);
+			}
+		});
+	}
+
+	function render_risk_content(res) {
+		let html							= '<div class="mb-3 text-[12px] text-muted">志愿填报 3 大风险 + 真实历史案例</div>';
+
+		// Topics
+		for (let t of res.topics) {
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center gap-2 mb-1">' +
+					'<span class="text-lg">' + t.icon + '</span>' +
+					'<span class="text-sm font-bold text-dark">' + t.title + '</span>' +
+				'</div>' +
+				'<div class="text-[12px] text-muted leading-relaxed">' + t.desc + '</div>' +
+			'</div>';
+		}
+
+		// Big-small year cases
+		if (res.big_small_year_cases && res.big_small_year_cases.length > 0) {
+			html							+= '<div class="text-[12px] font-bold mb-2 mt-4 text-dark">📉 真实大小年案例（2024 → 2025）</div>';
+			for (let c of res.big_small_year_cases) {
+				let diff_str				= c.diff > 0 ? '+' + c.diff.toLocaleString() : c.diff.toLocaleString();
+				html						+= '<div class="rounded-xl p-3 mb-2" style="background: #FDF8F0; border: 1px solid #E5DDD0;">' +
+					'<div class="text-[12px] font-semibold text-dark mb-1">' + escape_html_idx(c.school_name) + '</div>' +
+					'<div class="text-[11px] text-muted mb-1">' + escape_html_idx(c.group_a || '') + '</div>' +
+					'<div class="flex items-center justify-between text-[11px]">' +
+						'<span>2024：位次 <strong>' + c.rank_2024.toLocaleString() + '</strong></span>' +
+						'<span style="color: #C94A4A;">→</span>' +
+						'<span>2025：位次 <strong style="color: #C94A4A;">' + c.rank_2025.toLocaleString() + '</strong></span>' +
+						'<span class="text-[10px] rounded px-1.5 py-0.5" style="background: #FEECEC; color: #C94A4A;">' + diff_str + '</span>' +
+					'</div>' +
+				'</div>';
+			}
+		}
+
+		html								+= '<div class="rounded-xl p-4 mt-4" style="background: linear-gradient(135deg, #1A1A1A, #2A2A2A);">' +
+			'<div class="flex items-center gap-2 mb-2">' +
+				'<span class="text-lg">&#x1F52C;</span>' +
+				'<span class="text-sm font-bold text-white">深度风险分析</span>' +
+				'<span class="ml-auto text-[9px] px-2 py-0.5 rounded-full" style="background: rgba(201,169,110,0.2); color: #C9A96E;">Claude 4.5</span>' +
+			'</div>' +
+			'<div class="text-[11px] leading-relaxed mb-3" style="color: #DDDDDD;">填报机构 AI 服务会为你深度生成：大小年波动分析 + 退档风险排查 + Claude 4.5 多轮推理 + 6 Agent 交叉验证</div>' +
+			'<button class="agent-btn" style="width: 100%; padding: 12px; background: #C94A4A;" onclick="goto_apply(\'review\')">查看填报机构 AI 服务 &middot; ¥1,999 &rarr;</button>' +
+		'</div>';
+
+		$('#agent_detail_body').html(html);
+	}
+
+	// ===== Agent 6: 填报 =====
+	function render_submit_agent() {
+		$.ajax({
+			url:	'/api/agent_data?agent=submit',
+			method:	'GET',
+			success: function(res) {
+				render_submit_content(res);
+			}
+		});
+	}
+
+	function render_submit_content(res) {
+		let html							= '<div class="mb-3 text-[12px] text-muted">山东新高考 96 志愿规则 + AI 最优冲稳保策略</div>';
+
+		for (let r of res.rules) {
+			html							+= '<div class="rounded-xl p-3 mb-2" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-center gap-2 mb-1">' +
+					'<span class="text-lg">' + r.icon + '</span>' +
+					'<span class="text-sm font-bold text-dark">' + r.title + '</span>' +
+				'</div>' +
+				'<div class="text-[12px] text-muted leading-relaxed">' + r.desc + '</div>' +
+			'</div>';
+		}
+
+		// 冲稳保图解
+		html								+= '<div class="text-[12px] font-bold mb-2 mt-4 text-dark">⚖️ 最优冲稳保比例</div>' +
+			'<div class="rounded-xl p-4" style="background: white; border: 1px solid #E5DDD0;">' +
+				'<div class="flex items-end justify-center gap-4 mb-2" style="height: 80px;">' +
+					'<div class="text-center"><div class="text-[10px] font-bold" style="color: #C94A4A;">24</div><div class="rounded-t-md" style="width: 48px; height: 32px; background: #C94A4A;"></div><div class="text-[10px] mt-1" style="color: #C94A4A;">冲 25%</div></div>' +
+					'<div class="text-center"><div class="text-[10px] font-bold" style="color: #C9A96E;">48</div><div class="rounded-t-md" style="width: 48px; height: 60px; background: #C9A96E;"></div><div class="text-[10px] mt-1" style="color: #8B6914;">稳 50%</div></div>' +
+					'<div class="text-center"><div class="text-[10px] font-bold" style="color: #22C55E;">24</div><div class="rounded-t-md" style="width: 48px; height: 32px; background: #22C55E;"></div><div class="text-[10px] mt-1" style="color: #22C55E;">保 25%</div></div>' +
+				'</div>' +
+				'<p class="text-[11px] text-muted text-center">AI 按此比例自动排序 96 志愿</p>' +
+			'</div>' +
+			'<button class="agent-btn agent-btn-gold" style="width: 100%; padding: 12px; margin-top: 12px;" onclick="goto_apply(\'free\')">立即填表体验 AI 填报 &rarr;</button>';
+
+		$('#agent_detail_body').html(html);
+	}
+
+	// 工具
+	function escape_html_idx(str) {
+		if (!str) return '';
+		return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+</script>
+
+<!-- ═════ Agent 抽屉 HTML（从 index.html 完整移植） ═════ -->
+	<!-- Agent Bottom Drawer · 放 body 末尾确保 position:fixed 正确 -->
+	<div id="agent_drawer_overlay" class="agent-drawer-overlay" onclick="close_agent_detail()"></div>
+	<div id="agent_drawer" class="agent-drawer">
+		<div class="agent-drawer-handle"></div>
+		<div class="flex items-center justify-between px-4 py-3" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5); border-bottom: 1px solid #E5DDD0;">
+			<div class="flex items-center gap-2 flex-1 min-w-0">
+				<span id="agent_detail_icon" class="text-xl flex-shrink-0">&#x1F4CA;</span>
+				<div class="flex-1 min-w-0">
+					<div id="agent_detail_title" class="text-sm font-bold text-dark truncate">分数 Agent</div>
+					<div id="agent_detail_subtitle" class="text-[10px] text-muted truncate">位次换算引擎 &middot; 基于 5 年真实数据</div>
+				</div>
+			</div>
+			<button onclick="close_agent_detail()" class="w-8 h-8 flex items-center justify-center rounded-full cursor-pointer flex-shrink-0" style="background: white; border: 1px solid #E5DDD0;">
+				<span class="text-base" style="color: #8A8A8A;">&times;</span>
+			</button>
+		</div>
+		<div id="agent_detail_body" class="px-4 py-4 text-[13px]">
+			<!-- Dynamic content -->
+		</div>
+	</div>
+
+
+</body>
+</html>

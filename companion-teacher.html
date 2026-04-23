@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>名师详情 - Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:		'#8B6914',
+						gold:		'#C9A96E',
+						danger:		'#C94A4A',
+						cream:		'#FDF8F0',
+						dark:		'#1A1A1A',
+						muted:		'#8A8A8A',
+						ink:		'#2C2416'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+
+		.fade-in { animation: fadeIn 0.5s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+		.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+		.chinese-serif { font-family: 'Georgia', 'STSong', 'SimSun', serif; }
+
+		.stamp { display: inline-block; border: 2px solid #8B6914; color: #8B6914; padding: 2px 8px; font-size: 10px; font-weight: bold; transform: rotate(-3deg); letter-spacing: 1px; }
+
+		.btn-primary { background: #8B6914; color: white; }
+		.btn-primary:hover { background: #6B4F0F; }
+		.btn-ghost { border: 1px solid #8B6914; color: #8B6914; background: white; }
+		.btn-ghost:hover { background: #FDF8F0; }
+
+		.feature-card { transition: all 0.2s; cursor: pointer; }
+		.feature-card:hover { border-color: #C9A96E; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(139,105,20,0.12); }
+
+		.chip-tag { display: inline-block; background: #FDF8F0; border: 1px solid #E5DDD0; color: #8B6914; font-size: 11px; padding: 3px 10px; border-radius: 12px; margin: 2px 3px; }
+
+		/* 抽屉（对话） */
+		.drawer-overlay {
+			position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 998;
+			opacity: 0; pointer-events: none; transition: opacity 0.3s;
+		}
+		.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+		.drawer {
+			display: none;
+			position: fixed; bottom: 0; left: 0; right: 0;
+			margin: 0 auto;
+			width: 100%; max-width: 480px;
+			background: white;
+			border-radius: 20px 20px 0 0;
+			max-height: 85vh; overflow-y: auto;
+			z-index: 9999;
+			box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+		}
+		.drawer.open { display: block; animation: drawer_in 0.3s ease-out; }
+		@keyframes drawer_in {
+			from { opacity: 0; bottom: -50vh; }
+			to { opacity: 1; bottom: 0; }
+		}
+		.drawer-handle { width: 40px; height: 4px; border-radius: 2px; background: #D1D5DB; margin: 10px auto 4px; }
+
+		.chat-input { width: 100%; padding: 10px 40px 10px 16px; border-radius: 22px; background: #FDF8F0; border: 1px solid #E5DDD0; font-size: 14px; outline: none; }
+		.chat-input:focus { border-color: #C9A96E; }
+
+		.chat-bubble-ai { background: #FDF8F0; border: 1px solid #E5DDD0; border-top-left-radius: 4px; }
+		.chat-bubble-user { background: #8B6914; color: white; border-top-right-radius: 4px; }
+
+		@keyframes typing { 0%, 20% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+		.typing-dot { animation: typing 1.2s infinite; display: inline-block; }
+		.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+		.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+	</style>
+</head>
+<body>
+
+<div id="teacher_page" class="max-w-[480px] mx-auto bg-cream min-h-screen pb-20">
+
+	<!-- Top Bar -->
+	<header class="sticky top-0 bg-cream/95 backdrop-blur z-40 border-b border-[#E5DDD0]">
+		<div class="flex items-center justify-between px-4 py-3">
+			<div class="flex items-center gap-2">
+				<a href="companion-demo.html" class="text-muted text-sm">←</a>
+				<span class="font-bold text-sm" id="top_title">名师详情</span>
+			</div>
+			<button id="top_subject" class="stamp">学科</button>
+		</div>
+	</header>
+
+	<!-- Hero 卡 -->
+	<section class="px-4 pt-5 fade-in">
+		<div id="hero_card" class="rounded-2xl p-5 relative overflow-hidden" style="background: linear-gradient(135deg, #FDF8F0, #F5EAD5);">
+			<div class="flex items-start gap-4">
+				<div id="hero_avatar" class="w-20 h-20 rounded-full flex items-center justify-center text-4xl flex-shrink-0 shadow-lg" style="background: white;">
+					<span>👩‍🏫</span>
+				</div>
+				<div class="flex-1">
+					<div class="flex items-center gap-2 mb-1 flex-wrap">
+						<h1 id="hero_name" class="text-xl font-bold text-ink">加载中...</h1>
+						<span id="hero_badge" class="text-[10px] px-2 py-0.5 rounded-full text-white" style="background: #C94A4A; display: none;">徽章</span>
+					</div>
+					<div id="hero_subject_line" class="text-xs text-muted mb-1">学科 · 年限 · 风格</div>
+					<p id="hero_motto" class="text-sm chinese-serif italic" style="color: #8B6914;">"座右铭"</p>
+				</div>
+			</div>
+			<div id="hero_catchphrase" class="mt-4 p-3 bg-white/80 rounded-lg text-sm text-ink leading-relaxed chinese-serif">
+				口头禅加载中...
+			</div>
+		</div>
+	</section>
+
+	<!-- 老师介绍 -->
+	<section class="px-4 pt-4 fade-in">
+		<h3 class="text-sm font-bold text-ink mb-2">👤 关于 <span id="about_name">老师</span></h3>
+		<div class="bg-white rounded-xl p-4 border border-[#E5DDD0] text-xs text-ink leading-relaxed chinese-serif">
+			<p id="about_background" class="mb-3">背景...</p>
+			<div class="mb-3">
+				<div class="font-bold text-brand mb-1">🎯 最擅长：</div>
+				<div id="about_expertise" class="flex flex-wrap">学科...</div>
+			</div>
+			<div class="mb-3">
+				<div class="font-bold text-brand mb-1">📚 教学风格：</div>
+				<p id="about_style" class="text-muted">...</p>
+			</div>
+			<div class="p-2 rounded bg-cream">
+				<div class="text-[11px] font-bold text-brand mb-1">💡 最适合：</div>
+				<p id="about_best_for" class="text-muted text-[11px]">...</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- 免费功能 -->
+	<section class="px-4 pt-4 fade-in">
+		<h3 class="text-sm font-bold text-ink mb-2">🆓 免费体验</h3>
+		<div class="grid grid-cols-2 gap-3">
+			<div class="feature-card bg-white rounded-xl p-4 border border-[#E5DDD0]" onclick="open_chat()">
+				<div class="text-2xl mb-2">💬</div>
+				<div class="font-bold text-sm mb-1">和老师对话</div>
+				<div class="text-[10px] text-muted">Haiku 4.5 · 即时回复</div>
+			</div>
+			<div class="feature-card bg-white rounded-xl p-4 border border-[#E5DDD0]" id="feature_main" onclick="go_main_feature()">
+				<div class="text-2xl mb-2" id="feature_main_emoji">📝</div>
+				<div class="font-bold text-sm mb-1" id="feature_main_title">学科问答</div>
+				<div class="text-[10px] text-muted" id="feature_main_desc">...</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 付费功能 -->
+	<section class="px-4 pt-4 fade-in">
+		<h3 class="text-sm font-bold text-ink mb-2 flex items-center gap-2">
+			<span>💰 付费服务</span>
+			<span class="text-[10px] text-muted font-normal">单次按需付费 · 无会员捆绑</span>
+		</h3>
+		<div id="paid_features_list" class="space-y-3">
+			<!-- dynamic -->
+		</div>
+	</section>
+
+	<!-- 其他名师切换 -->
+	<section class="px-4 pt-5 pb-6 fade-in">
+		<h3 class="text-sm font-bold text-ink mb-3">🎭 看看其他老师</h3>
+		<div class="flex gap-2 overflow-x-auto" id="other_teachers" style="scrollbar-width: none;">
+			<!-- dynamic -->
+		</div>
+	</section>
+
+</div>
+
+<!-- 对话抽屉 -->
+<div id="chat_overlay" class="drawer-overlay" onclick="close_chat()"></div>
+<div id="chat_drawer" class="drawer">
+	<div class="drawer-handle"></div>
+	<div class="flex items-center justify-between px-4 py-3 sticky top-0 bg-white border-b border-[#E5DDD0]" style="z-index: 10;">
+		<div class="flex items-center gap-2">
+			<span id="chat_avatar" class="text-2xl">👩‍🏫</span>
+			<div>
+				<div id="chat_name" class="font-bold text-sm">Lily 老师</div>
+				<div class="text-[10px] text-muted flex items-center gap-1">
+					<span class="w-1.5 h-1.5 bg-green-500 rounded-full pulse-dot"></span>
+					<span>在线 · Haiku 4.5</span>
+				</div>
+			</div>
+		</div>
+		<button onclick="close_chat()" class="w-8 h-8 flex items-center justify-center rounded-full border border-[#E5DDD0]">×</button>
+	</div>
+
+	<div id="chat_messages" class="px-4 py-4 space-y-3 min-h-[50vh]">
+		<!-- messages -->
+	</div>
+
+	<div class="sticky bottom-0 bg-cream border-t border-[#E5DDD0] p-3">
+		<div class="flex items-center gap-2">
+			<div class="relative flex-1">
+				<input id="chat_input" type="text" placeholder="问老师..." class="chat-input">
+				<button onclick="send_message()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-brand text-white rounded-full text-sm">↑</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	const api_base = location.origin;
+	let current_teacher = null;
+	let current_code = 'lily';
+	let all_teachers = null;
+	let chat_history = [];
+
+	$(function () {
+		const params = new URLSearchParams(location.search);
+		const code = (params.get('code') || 'lily').toLowerCase();
+
+		$.getJSON('assets/teacher-config.json', function (cfg) {
+			all_teachers = cfg.teachers;
+			if (!all_teachers[code]) {
+				$('#hero_name').text('未找到该老师');
+				return;
+			}
+			current_code = code;
+			current_teacher = all_teachers[code];
+			render_teacher(current_teacher);
+			render_other_teachers(code);
+		});
+
+		$('#chat_input').on('keypress', function (e) {
+			if (e.which === 13) send_message();
+		});
+	});
+
+	function render_teacher(t) {
+		document.title = t.name + ' · Me Offer';
+		$('#top_title').text(t.name);
+		$('#top_subject').text(t.subject);
+		$('#hero_card').css('background', t.avatar_bg || 'linear-gradient(135deg, #FDF8F0, #F5EAD5)');
+		$('#hero_avatar').find('span').text(t.avatar_emoji);
+		$('#hero_name').text(t.name);
+		if (t.badge) {
+			$('#hero_badge').text(t.badge).show();
+			if (t.is_home_teacher) $('#hero_badge').css('background', '#C94A4A');
+			else $('#hero_badge').css('background', t.color || '#8B6914');
+		}
+		$('#hero_subject_line').text(t.subject + ' · ' + t.years + ' · ' + t.style);
+		$('#hero_motto').text('"' + t.motto + '"');
+		$('#hero_catchphrase').text(t.catchphrase);
+
+		$('#about_name').text(t.name);
+		$('#about_background').text(t.background);
+
+		const expertise_html = t.expertise.map(function (s) { return '<span class="chip-tag">' + s + '</span>'; }).join('');
+		$('#about_expertise').html(expertise_html);
+
+		$('#about_style').text(t.teaching_style);
+		$('#about_best_for').text(t.best_for);
+
+		/* 主免费功能：根据学科定制 */
+		if (t.subject === '语文' || t.subject === '英语') {
+			$('#feature_main_emoji').text('📝');
+			$('#feature_main_title').text('作文批改');
+			$('#feature_main_desc').text('上传作文 · 4 维度评分');
+		} else if (t.subject === '数学' || t.subject === '物理' || t.subject === '化学') {
+			$('#feature_main_emoji').text('📷');
+			$('#feature_main_title').text('拍题解答');
+			$('#feature_main_desc').text('拍照 · AI 讲解');
+		} else {
+			$('#feature_main_emoji').text('📚');
+			$('#feature_main_title').text('学科问答');
+			$('#feature_main_desc').text('任何问题 · 深度解答');
+		}
+
+		/* 付费功能 */
+		let paid_html = '';
+		for (let f of t.paid_features) {
+			paid_html += '<div class="feature-card bg-white rounded-xl p-4 border border-[#E5DDD0] flex items-center gap-3">' +
+				'<div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style="background: ' + (t.avatar_bg || '#FDF8F0') + ';">💰</div>' +
+				'<div class="flex-1">' +
+				'<div class="font-bold text-sm mb-0.5">' + escape_html(f.name) + '</div>' +
+				'<div class="text-[10px] text-muted leading-relaxed">' + escape_html(f.desc) + '</div>' +
+				'</div>' +
+				'<div class="text-right flex-shrink-0">' +
+				'<div class="text-lg font-bold text-danger">¥' + f.price + '</div>' +
+				'<button class="mt-1 text-[10px] px-2 py-0.5 rounded border border-brand text-brand">购买</button>' +
+				'</div>' +
+				'</div>';
+		}
+		$('#paid_features_list').html(paid_html);
+	}
+
+	function render_other_teachers(current_code) {
+		let html = '';
+		for (let code in all_teachers) {
+			if (code === current_code) continue;
+			const t = all_teachers[code];
+			html += '<a href="companion-teacher.html?code=' + code + '" class="flex-shrink-0 rounded-xl p-2 border border-[#E5DDD0] bg-white text-center w-20" style="text-decoration: none;">' +
+				'<div class="text-3xl mb-1">' + t.avatar_emoji + '</div>' +
+				'<div class="text-[10px] font-bold text-ink truncate">' + t.name + '</div>' +
+				'<div class="text-[9px] text-muted mt-0.5">' + t.subject + '</div>' +
+				'</a>';
+		}
+		$('#other_teachers').html(html);
+	}
+
+	function open_chat() {
+		$('#chat_avatar').text(current_teacher.avatar_emoji);
+		$('#chat_name').text(current_teacher.name);
+		$('#chat_drawer').addClass('open');
+		$('#chat_overlay').addClass('open');
+		$('body').css('overflow', 'hidden');
+
+		if (chat_history.length === 0) {
+			const greeting = {
+				role: 'assistant',
+				content: '同学你好，我是 ' + current_teacher.name + '。有什么学习上的问题想问我？\n\n（' + current_teacher.motto + '）'
+			};
+			chat_history.push(greeting);
+			render_messages();
+		}
+	}
+
+	function close_chat() {
+		$('#chat_drawer').removeClass('open');
+		$('#chat_overlay').removeClass('open');
+		$('body').css('overflow', '');
+	}
+
+	function go_main_feature() {
+		if (current_teacher.subject === '语文' || current_teacher.subject === '英语') {
+			window.location.href = 'companion-essay.html?teacher=' + current_code;
+		} else {
+			open_chat();
+		}
+	}
+
+	function render_messages() {
+		let html = '';
+		for (let msg of chat_history) {
+			if (msg.role === 'assistant') {
+				html += '<div class="flex items-start gap-2">' +
+					'<div class="w-8 h-8 rounded-full flex items-center justify-center text-lg flex-shrink-0" style="background: ' + (current_teacher.avatar_bg || '#FDF8F0') + ';">' + current_teacher.avatar_emoji + '</div>' +
+					'<div class="chat-bubble-ai rounded-2xl p-3 max-w-[80%] text-sm text-ink leading-relaxed">' + format_text(msg.content) + '</div>' +
+					'</div>';
+			} else {
+				html += '<div class="flex items-start gap-2 justify-end">' +
+					'<div class="chat-bubble-user rounded-2xl p-3 max-w-[80%] text-sm leading-relaxed">' + escape_html(msg.content) + '</div>' +
+					'<div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold flex-shrink-0">你</div>' +
+					'</div>';
+			}
+		}
+		$('#chat_messages').html(html);
+		const el = document.getElementById('chat_drawer');
+		if (el) el.scrollTop = el.scrollHeight;
+	}
+
+	function send_message() {
+		const text = ($('#chat_input').val() || '').trim();
+		if (!text) return;
+
+		chat_history.push({ role: 'user', content: text });
+		$('#chat_input').val('');
+		render_messages();
+
+		/* 显示输入中 */
+		const typing_el = '<div id="typing_ind" class="flex items-start gap-2">' +
+			'<div class="w-8 h-8 rounded-full flex items-center justify-center text-lg flex-shrink-0" style="background: ' + (current_teacher.avatar_bg || '#FDF8F0') + ';">' + current_teacher.avatar_emoji + '</div>' +
+			'<div class="chat-bubble-ai rounded-2xl px-4 py-3"><span class="typing-dot text-brand">●</span><span class="typing-dot text-brand">●</span><span class="typing-dot text-brand">●</span></div>' +
+			'</div>';
+		$('#chat_messages').append(typing_el);
+		const el = document.getElementById('chat_drawer');
+		if (el) el.scrollTop = el.scrollHeight;
+
+		/* 调 Claude API */
+		$.ajax({
+			url: api_base + '/api/chat/haiku',
+			method: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify({
+				teacher_code: current_code,
+				teacher_name: current_teacher.name,
+				teacher_subject: current_teacher.subject,
+				teacher_motto: current_teacher.motto,
+				teacher_style: current_teacher.teaching_style,
+				messages: chat_history
+			}),
+			success: function (res) {
+				$('#typing_ind').remove();
+				chat_history.push({ role: 'assistant', content: res.reply || '（老师暂时没有回复）' });
+				render_messages();
+			},
+			error: function () {
+				$('#typing_ind').remove();
+				chat_history.push({ role: 'assistant', content: '（网络异常，请稍后再试）' });
+				render_messages();
+			}
+		});
+	}
+
+	function escape_html(s) {
+		if (!s) return '';
+		return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+	}
+
+	function format_text(s) {
+		return escape_html(s).replace(/\n/g, '<br>');
+	}
+</script>
+
+</body>
+</html>

@@ -3,3 +3,6 @@
 PLAN_*.md
 node_modules/
 *.log
+.dev.vars
+.env
+.env.local

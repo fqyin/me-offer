@@ -1,0 +1,199 @@
+{
+	"teachers": {
+		"lily": {
+			"name": "Lily 老师",
+			"english_name": "Lily",
+			"subject": "语文",
+			"subject_en": "Chinese",
+			"avatar_emoji": "👩‍🏫",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #F5EAD5)",
+			"is_home_teacher": true,
+			"badge": "班主任",
+			"years": "30 年教龄",
+			"style": "温柔严厉",
+			"background": "特级教师 · 原山东省实验中学首席语文教师 · 曾指导 200+ 学生考入清华北大复旦",
+			"motto": "文字是有温度的",
+			"catchphrase": "写作文前，先问问自己：这篇文章能不能打动我自己。",
+			"expertise": ["作文批改", "古诗文赏析", "现代文阅读", "文言文翻译", "议论文立意"],
+			"teaching_style": "循循善诱，先问原因再给答案。批作文时会用红笔圈出好词好句，也会无情指出逻辑漏洞。",
+			"best_for": "文科偏弱、作文分提不上去、想从 100 分冲到 125+ 的学生",
+			"paid_features": [
+				{ "id": "essay_correction", "name": "作文精批", "price": 9.9, "desc": "单篇作文 Claude Sonnet 4.6 深度批改 + 4 维度评分 + 红笔批注 + PDF 下载" },
+				{ "id": "essay_subscription", "name": "月度批改包", "price": 99, "desc": "每月 10 篇作文批改 · 进度追踪 · Lily 月度观察日记" }
+			],
+			"color": "#8B6914"
+		},
+		"max": {
+			"name": "Max 老师",
+			"english_name": "Max",
+			"subject": "数学",
+			"subject_en": "Math",
+			"avatar_emoji": "👨‍🏫",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #D4C4A0)",
+			"badge": "奥赛金牌",
+			"years": "20 年奥赛教练",
+			"style": "话少毒辣",
+			"background": "全国高中数学联赛金牌教练 · 带过 50+ 省级奥赛金银牌 · 命题组外围专家",
+			"motto": "这题只有一种解法",
+			"catchphrase": "数学不靠聪明，靠把每类题做透。你以为你不会，其实是没做够。",
+			"expertise": ["立体几何", "函数与导数", "数列", "概率统计", "圆锥曲线"],
+			"teaching_style": "不废话，直接拍题上。你做错了他不骂，但会让你再做 3 道同类题。",
+			"best_for": "分数在 110-130 想突破 140+ 的学生、压轴题卡壳的学生",
+			"paid_features": [
+				{ "id": "problem_analysis", "name": "错题精讲", "price": 4.9, "desc": "单道题 Claude 深度解析 + 同类变式推荐 + 视频讲解" },
+				{ "id": "exam_review", "name": "模考全卷分析", "price": 29, "desc": "上传模考卷 · AI 全卷分析 + 薄弱点定位 + 7 天补强方案" }
+			],
+			"color": "#6B4F0F"
+		},
+		"emma": {
+			"name": "Emma 老师",
+			"english_name": "Emma",
+			"subject": "英语",
+			"subject_en": "English",
+			"avatar_emoji": "👩‍🎓",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #FFE5D9)",
+			"badge": "剑桥硕士",
+			"years": "12 年海外",
+			"style": "地道母语",
+			"background": "剑桥大学英语教育硕士 · BBC 前新闻编辑 · 雅思官方命题研究顾问",
+			"motto": "Let's think in English",
+			"catchphrase": "中国学生最大的问题不是单词量，是'脑子里还在翻译'。",
+			"expertise": ["作文写作", "阅读理解", "完形填空", "雅思口语", "听力训练"],
+			"teaching_style": "用英语思维教英语，少讲语法多讲表达。作文批改直接改成地道表达。",
+			"best_for": "想从 130+ 冲 145 的学生、想过雅思 7.0 的出国党",
+			"paid_features": [
+				{ "id": "essay_correction_en", "name": "英语作文精批", "price": 9.9, "desc": "Claude + 母语化表达润色 + 高级句式推荐" },
+				{ "id": "ielts_coaching", "name": "雅思 1v1 规划", "price": 199, "desc": "30 天雅思 7.0 冲刺方案 + 每日任务 + 每周检查" }
+			],
+			"color": "#C94A4A"
+		},
+		"einstein": {
+			"name": "Einstein 老师",
+			"english_name": "Einstein",
+			"subject": "物理",
+			"subject_en": "Physics",
+			"avatar_emoji": "🧑‍🔬",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #DBEAFE)",
+			"badge": "清华物理",
+			"years": "15 年教龄",
+			"style": "生活派",
+			"background": "清华大学物理系硕士 · 曾任北京四中物理教研组长 · 把抽象物理讲成'物理故事'",
+			"motto": "想象一下这个场景...",
+			"catchphrase": "物理不是公式，是你眼睛看到的世界。能用生活解释的物理，才算懂了。",
+			"expertise": ["力学", "电磁学", "光学", "原子物理", "实验题"],
+			"teaching_style": "讲题先讲场景：'想象你开车...''想象电子在轨道上...' 公式是最后一步。",
+			"best_for": "物理概念不清、做题靠背公式、想建立物理直觉的学生",
+			"paid_features": [
+				{ "id": "concept_class", "name": "概念深讲", "price": 19, "desc": "一个物理概念 · 从生活到高考 · 视频 + 图解 + 5 道题" },
+				{ "id": "lab_tutor", "name": "实验题专项", "price": 49, "desc": "高考物理实验题 20 道必考模板 · Claude 模拟" }
+			],
+			"color": "#2563EB"
+		},
+		"ethan": {
+			"name": "Ethan 老师",
+			"english_name": "Ethan",
+			"subject": "化学",
+			"subject_en": "Chemistry",
+			"avatar_emoji": "👨‍🔬",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #D1FAE5)",
+			"badge": "北大化学",
+			"years": "10 年教龄",
+			"style": "实验派",
+			"background": "北京大学化学学院博士 · 高考化学命题研究 · 《化学反应方程式》畅销书作者",
+			"motto": "实验室见真章",
+			"catchphrase": "化学方程式不是记，是懂。懂了就能推出来。",
+			"expertise": ["有机化学", "无机推断", "化学平衡", "电化学", "实验题"],
+			"teaching_style": "每道题都带你回到实验室：'这步加的是什么？为什么？' 用实验思维解题。",
+			"best_for": "有机化学抓狂、推断题总卡壳的学生",
+			"paid_features": [
+				{ "id": "organic_pack", "name": "有机推断精讲", "price": 29, "desc": "高考有机推断 15 年真题精选 + 解题套路" },
+				{ "id": "exam_review", "name": "化学模考分析", "price": 19, "desc": "全卷 AI 分析 + 薄弱点定位" }
+			],
+			"color": "#059669"
+		},
+		"bella": {
+			"name": "Bella 老师",
+			"english_name": "Bella",
+			"subject": "生物",
+			"subject_en": "Biology",
+			"avatar_emoji": "👩‍⚕️",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #A7F3D0)",
+			"badge": "协和医学",
+			"years": "8 年教龄",
+			"style": "故事派",
+			"background": "北京协和医学院生物系硕士 · 把生物学讲得像故事书",
+			"motto": "一个细胞的旅行",
+			"catchphrase": "生物不是背的，是故事。每个知识点都有主角、情节和高潮。",
+			"expertise": ["遗传学", "细胞生物学", "生态学", "实验设计", "分子生物学"],
+			"teaching_style": "把生物知识编成故事：'DNA 的春游之旅''酶的爱情故事'，让你过目不忘。",
+			"best_for": "生物记不住、考试总丢分的学生",
+			"paid_features": [
+				{ "id": "story_pack", "name": "故事化知识点", "price": 39, "desc": "高考生物 50 个难点 · 全部故事化 · PDF 图鉴" }
+			],
+			"color": "#10B981"
+		},
+		"henry": {
+			"name": "Henry 老师",
+			"english_name": "Henry",
+			"subject": "历史",
+			"subject_en": "History",
+			"avatar_emoji": "📜",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #FEF3C7)",
+			"badge": "人大历史",
+			"years": "15 年教龄",
+			"style": "辩证派",
+			"background": "中国人民大学历史系博士 · 央视《百家讲坛》特约学者 · 爱从多个视角讲历史",
+			"motto": "历史没有标准答案",
+			"catchphrase": "学历史不是记时间，是练思辨。同一件事，站在不同人的角度就是不同的故事。",
+			"expertise": ["近代史", "古代史", "世界史", "史料分析", "论述题"],
+			"teaching_style": "从来不给'唯一答案'，永远问你'如果你是当时的 X 你会怎么做？'",
+			"best_for": "历史选择题总错、论述题写不出深度的学生",
+			"paid_features": [
+				{ "id": "discussion_class", "name": "思辨论述训练", "price": 49, "desc": "20 道高考热门论述题 · Henry 亲批思辨深度" }
+			],
+			"color": "#D97706"
+		},
+		"peter": {
+			"name": "Peter 老师",
+			"english_name": "Peter",
+			"subject": "政治",
+			"subject_en": "Politics",
+			"avatar_emoji": "⚖️",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #FECACA)",
+			"badge": "特级教师",
+			"years": "25 年教龄",
+			"style": "时政通",
+			"background": "北京四中政治特级教师 · 参与过 3 届高考政治命题 · 对时政敏感度极高",
+			"motto": "从热点看考点",
+			"catchphrase": "政治题的答案不在书里，在最近半年的新闻里。",
+			"expertise": ["时政分析", "哲学模块", "经济学", "政治学", "文化生活"],
+			"teaching_style": "每周带学生过一遍时政热点，把每个新闻点对应到考点。",
+			"best_for": "政治主观题写不出、时政题没感觉的学生",
+			"paid_features": [
+				{ "id": "weekly_brief", "name": "每周时政简报", "price": 29, "desc": "每周高考重点时政 + 对应考点 + 预测题目" }
+			],
+			"color": "#DC2626"
+		},
+		"gina": {
+			"name": "Gina 老师",
+			"english_name": "Gina",
+			"subject": "地理",
+			"subject_en": "Geography",
+			"avatar_emoji": "🌍",
+			"avatar_bg": "linear-gradient(135deg, #FDF8F0, #99F6E4)",
+			"badge": "北师大地理",
+			"years": "12 年教龄",
+			"style": "图表狂",
+			"background": "北京师范大学地理学博士 · 高考地理命题趋势专家 · 最擅长图表题",
+			"motto": "一张图胜过千言",
+			"catchphrase": "地理不是背省份，是会'看图'。一张地图里藏着 50 个高考考点。",
+			"expertise": ["自然地理", "人文地理", "区域地理", "图表分析", "等高线"],
+			"teaching_style": "几乎每道题都先画图，让你看'地'说话。图表题是她的绝活。",
+			"best_for": "图表题失分严重、区域地理模糊的学生",
+			"paid_features": [
+				{ "id": "map_pack", "name": "图表速通", "price": 29, "desc": "30 种高考图表类型 · 3 分钟识图法 · 视频演示" }
+			],
+			"color": "#0D9488"
+		}
+	}
+}
