@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>登录 · Me Offer</title>
+	<title>登录 · Me Offer 高考志愿</title>
 	<link rel="shortcut icon" href="/meuni_logo.jpg">
 	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
 	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
@@ -86,6 +86,7 @@
 			40% { opacity: 1; }
 		}
 	</style>
+<script src="https://www.me-uni.com/api/track-sdk" async></script>
 </head>
 <body class="hero-bg">
 
@@ -95,10 +96,10 @@
 	<header class="px-6 pt-12 pb-8 text-center fade-in">
 		<div class="flex items-center justify-center gap-2 mb-3">
 			<span class="text-brand font-bold text-2xl chinese-serif">Me Offer</span>
-			<span class="stamp">陪跑社区</span>
+			<span class="stamp">高考志愿</span>
 		</div>
-		<h1 class="text-xl font-bold text-ink chinese-serif mb-1">一家人，一起陪孩子赢高考</h1>
-		<p class="text-xs text-muted">9 位 AI 名师 · Lily 班主任 · 3 年陪跑档案</p>
+		<h1 class="text-xl font-bold text-ink chinese-serif mb-1">AI 一键志愿 · 国学港校双保险</h1>
+		<p class="text-xs text-muted">6 个 AI 智能体 · Claude 4.5 · 五年真实数据</p>
 	</header>
 
 	<!-- Main -->
@@ -107,18 +108,18 @@
 		<!-- Step 1: 输入手机号 -->
 		<div id="step_phone" class="fade-in">
 
-			<!-- Family 主视觉 -->
+			<!-- 主视觉 -->
 			<div class="bg-gradient-to-br from-brand to-[#6B4F0F] rounded-3xl p-6 text-white text-center mb-6 relative overflow-hidden">
 				<div class="absolute top-0 right-0 w-32 h-32 bg-gold/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
 				<div class="relative">
-					<div class="text-5xl mb-3">🏡</div>
-					<h2 class="text-lg font-bold mb-1 chinese-serif">创建你的家庭账号</h2>
-					<p class="text-xs text-white/80">孩子的成长 · 全家人共同见证</p>
+					<div class="text-5xl mb-3">🎓</div>
+					<h2 class="text-lg font-bold mb-1 chinese-serif">登录 / 注册免费使用</h2>
+					<p class="text-xs text-white/80">2 分钟生成 96 份志愿方案 · 国学 + 港校双备选</p>
 				</div>
 			</div>
 
 			<div class="bg-white rounded-2xl p-5 border border-[#E5DDD0]">
-				<label class="block text-xs text-muted mb-2">家长手机号</label>
+				<label class="block text-xs text-muted mb-2">手机号</label>
 				<input
 					type="tel"
 					id="phone_input"
@@ -130,7 +131,7 @@
 
 				<!-- 测试期提示 -->
 				<div class="mt-3 bg-cream rounded-lg p-3 text-[11px] text-brand leading-relaxed">
-					💡 <span class="font-bold">测试期：</span>输入手机号即可登录 · 无需验证码 · 未注册自动创建家庭账号
+					💡 <span class="font-bold">测试期：</span>输入手机号即可登录 · 无需验证码 · 未注册自动创建账号
 				</div>
 
 				<button
@@ -150,13 +151,13 @@
 
 			<!-- 平台特色 -->
 			<div class="mt-6 bg-white rounded-2xl p-5 border border-[#E5DDD0]">
-				<div class="text-xs font-bold text-ink mb-3 chinese-serif">🌟 加入 Me Offer 家庭，你的孩子获得</div>
+				<div class="text-xs font-bold text-ink mb-3 chinese-serif">🌟 登录后立即解锁</div>
 				<div class="space-y-2 text-xs text-ink">
-					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>9 位 AI 名师 24h 答疑（Lily / Max / Emma...）</span></div>
-					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>每日 AI 定制三件事 + Lily 早安问候</span></div>
-					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>作文批改 · 每篇生成精装 PDF 批改单</span></div>
-					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>Mia 学姐树洞 · 情绪 24h 内回应</span></div>
-					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>3 年成长档案 · 可打印成精装册</span></div>
+					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>AI 分析 5 年真实录取数据 · 精准预测概率</span></div>
+					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>96 份志愿方案 · 冲 / 稳 / 保三档全覆盖</span></div>
+					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>香港 8 所大学高考直录通道 · 无需雅思</span></div>
+					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>出分后 7 天内同步提交港校申请</span></div>
+					<div class="flex items-start"><span class="feature-dot mt-1.5"></span><span>AI 一键生成文书 · 拿不到 Offer 全额退款</span></div>
 				</div>
 			</div>
 		</div>
@@ -164,8 +165,8 @@
 		<!-- Step 2: 登录中 -->
 		<div id="step_loading" class="hidden fade-in">
 			<div class="bg-white rounded-2xl p-12 border border-[#E5DDD0] text-center">
-				<div class="text-5xl mb-4">🏡</div>
-				<div class="text-base font-bold text-ink mb-2 chinese-serif">正在为你准备家庭账号</div>
+				<div class="text-5xl mb-4">🎓</div>
+				<div class="text-base font-bold text-ink mb-2 chinese-serif">正在为你准备志愿方案</div>
 				<div class="text-xs text-muted">
 					<span class="loading-dot">●</span>
 					<span class="loading-dot">●</span>
@@ -186,7 +187,7 @@
 
 	<!-- Footer -->
 	<footer class="px-6 py-6 text-center text-[10px] text-muted">
-		<div>Me Offer · 陪伴中国学生走进理想大学</div>
+		<div>Me Offer · AI 高考志愿 · 国学港校双保险</div>
 		<div class="mt-1">© 2026 Me Offer · me-uni.com</div>
 	</footer>
 
@@ -266,22 +267,9 @@
 	}
 
 	function route_after_login(data) {
-		/* 路由逻辑：
-		   1. 没填家长真名/家庭名 → setup-family.html
-		   2. 有家长信息但没孩子 → add-child.html
-		   3. 全部齐备 → parent.html
-		*/
-		const family_name_default_pattern = /^家长\d{4}之家$/;
-		const need_setup_family = !data.parent.real_name ||
-			(data.family && family_name_default_pattern.test(data.family.family_name));
-
-		if (need_setup_family) {
-			location.href = 'setup-family.html';
-		} else if (!data.students || data.students.length === 0) {
-			location.href = 'add-child.html';
-		} else {
-			location.href = 'parent.html';
-		}
+		/* 最简路由：登录后一律进主首页 —— 不再中间跳 setup-family/parent
+		   资料需要补的在 index 上用小提示条，不强制 */
+		location.href = 'index.html';
 	}
 
 	function show_error(msg) {
