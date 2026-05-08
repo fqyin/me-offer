@@ -633,7 +633,7 @@
 			<div class="scroll-x" style="gap: 12px; padding-bottom: 4px;">
 
 				<!-- HKU 香港大学 -->
-				<div class="flex-shrink-0 rounded-2xl overflow-hidden" style="width: 200px; background: white; border: 1px solid #E5DDD0; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+				<div class="flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer" onclick="open_uni('hku')" style="width: 200px; background: white; border: 1px solid #E5DDD0; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
 					<div style="height: 110px; overflow: hidden; position: relative;">
 						<img src="https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=400&q=80" alt="香港大学" style="width: 100%; height: 100%; object-fit: cover;">
 						<div style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); border-radius: 6px; padding: 2px 7px;">
@@ -653,7 +653,7 @@
 							<span class="text-[10px]" style="color: #C9A96E;">免雅思</span>
 						</div>
 						<div class="text-[10px] text-muted mb-2.5">独立招生 · 需面试</div>
-						<button onclick="goto_apply('double')" class="w-full py-1.5 rounded-lg text-[11px] font-bold text-white cursor-pointer" style="background: linear-gradient(90deg, #C94A4A, #8B1A1A);">申请这所学校 →</button>
+						<div class="w-full py-1.5 rounded-lg text-[11px] font-bold text-white text-center" style="background: linear-gradient(90deg, #C94A4A, #8B1A1A);">查看招生详情 →</div>
 					</div>
 				</div>
 
@@ -1185,6 +1185,120 @@
 	function close_agent_detail() {
 		$('#agent_drawer').removeClass('open');
 		$('#agent_drawer_overlay').removeClass('open').css({opacity: 0, 'pointer-events': 'none'});
+		$('body').css('overflow', '');
+	}
+
+	/* ==================== 大学招生详情抽屉 ==================== */
+
+	const UNI_DATA = {
+		hku: {
+			name:		'香港大学',
+			en:			'The University of Hong Kong',
+			badge:		'全球 Top 17',
+			img:		'https://images.unsplash.com/photo-1564981797816-1043664bf78d?w=800&q=85',
+			rank:		'Top 17',
+			eng:		'130+',
+			offer:		'3 周',
+			partner:	false,
+			intro:		'香港大学创立于1911年，是香港历史最悠久的高等学府，也是亚洲顶尖研究型大学之一。QS 2025 全球排第17位，在法律、医学、建筑、商科领域享有国际声誉。校园位于香港岛薄扶林，毗邻维多利亚港，全英文教学环境，拥有来自100多个国家的学生。',
+			majors: [
+				{ name: '法学院 LLB', fee: 'HKD 14.2万/年', tag: '顶尖', color: '#3B5BDB', bg: '#F0F4FF' },
+				{ name: '医学院 MBBS', fee: 'HKD 18.5万/年', tag: '顶尖', color: '#C2255C', bg: '#FFF0F6' },
+				{ name: '经管学院 BBA', fee: 'HKD 14.2万/年', tag: '热门', color: '#E67700', bg: '#FFF8F0' },
+				{ name: '工程学院 BEng', fee: 'HKD 14.2万/年', tag: '热门', color: '#2F9E44', bg: '#F0FFF4' },
+				{ name: '理学院 BSc', fee: 'HKD 14.2万/年', tag: '稳妥', color: '#7048E8', bg: '#F3F0FF' }
+			],
+			reqs: [
+				'高考英语 130 分及以上（高考外语科目须为英语）',
+				'高考总分达到所在省市重点线（一本线）',
+				'通过港大独立招生面试（视频面试 / 现场面试）',
+				'无需雅思/托福，高考英语成绩直接替代',
+				'不占内地统一招生名额，可与内地志愿并行'
+			],
+			timeline: [
+				{ date: '2026年3月', event: '网上申请开放', type: 'open' },
+				{ date: '2026年4月底', event: '申请截止', type: 'warn' },
+				{ date: '2026年5-6月', event: '面试通知 & 面试', type: 'normal' },
+				{ date: '2026年6月下旬', event: '高考出分 · 同步确认录取', type: 'open' },
+				{ date: '2026年9月', event: '正式入学', type: 'normal' }
+			]
+		}
+	};
+
+	function open_uni(key) {
+		let d = UNI_DATA[key];
+
+		if (!d) return;
+
+		$('#uni_sheet_img').attr('src', d.img).attr('alt', d.name);
+		$('#uni_sheet_badge').text(d.badge);
+		$('#uni_sheet_name').text(d.name);
+		$('#uni_sheet_en').text(d.en);
+		$('#uni_stat_rank').text(d.rank);
+		$('#uni_stat_eng').text(d.eng);
+		$('#uni_stat_offer').text(d.offer);
+		$('#uni_sheet_intro').text(d.intro);
+
+		let majors_html = '';
+
+		for (let m of d.majors) {
+			majors_html += '<div class="flex items-center justify-between rounded-xl px-3 py-2.5" style="background:' + m.bg + '; border:1px solid ' + m.color + '22;">'
+				+ '<div class="flex items-center gap-2">'
+				+ '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md text-white" style="background:' + m.color + ';">' + m.tag + '</span>'
+				+ '<span class="text-xs font-medium text-dark">' + m.name + '</span>'
+				+ '</div>'
+				+ '<span class="text-[10px] text-muted">' + m.fee + '</span>'
+				+ '</div>';
+		}
+
+		$('#uni_sheet_majors').html(majors_html);
+
+		let reqs_html = '';
+
+		for (let r of d.reqs) {
+			reqs_html += '<div class="flex items-start gap-2">'
+				+ '<span class="text-green-500 text-xs flex-shrink-0 mt-0.5">✓</span>'
+				+ '<span class="text-xs text-muted leading-relaxed">' + r + '</span>'
+				+ '</div>';
+		}
+
+		$('#uni_sheet_reqs').html(reqs_html);
+
+		let timeline_html = '';
+		let type_styles = {
+			open:	{ dot: '#2F9E44', bg: '#F0FFF4' },
+			warn:	{ dot: '#C94A4A', bg: '#FFF5F5' },
+			normal:	{ dot: '#C9A96E', bg: '#FDF8F0' }
+		};
+
+		for (let t of d.timeline) {
+			let s = type_styles[t.type] || type_styles.normal;
+
+			timeline_html += '<div class="flex items-center gap-3 rounded-xl px-3 py-2" style="background:' + s.bg + ';">'
+				+ '<div style="width:8px; height:8px; border-radius:50%; background:' + s.dot + '; flex-shrink:0;"></div>'
+				+ '<div>'
+				+ '<div class="text-[10px] font-bold text-dark">' + t.date + '</div>'
+				+ '<div class="text-[10px] text-muted">' + t.event + '</div>'
+				+ '</div>'
+				+ '</div>';
+		}
+
+		$('#uni_sheet_timeline').html(timeline_html);
+
+		if (d.partner) {
+			$('#uni_partner_badge').removeClass('hidden');
+		} else {
+			$('#uni_partner_badge').addClass('hidden');
+		}
+
+		$('#uni_sheet_overlay').fadeIn(180);
+		$('#uni_sheet').css('display', 'block').animate({bottom: '0'}, 0);
+		$('body').css('overflow', 'hidden');
+	}
+
+	function close_uni() {
+		$('#uni_sheet_overlay').fadeOut(180);
+		$('#uni_sheet').fadeOut(180);
 		$('body').css('overflow', '');
 	}
 
@@ -1767,6 +1881,86 @@
 		</div>
 		<div id="agent_detail_body" class="px-4 py-4 text-[13px]">
 			<!-- Dynamic content -->
+		</div>
+	</div>
+
+	<!-- ======== 大学招生详情抽屉 ======== -->
+	<div id="uni_sheet_overlay" onclick="close_uni()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; backdrop-filter:blur(2px);"></div>
+	<div id="uni_sheet" style="display:none; position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:390px; background:#fff; border-radius:24px 24px 0 0; z-index:1001; max-height:88vh; overflow-y:auto; box-shadow:0 -8px 40px rgba(0,0,0,0.18);">
+
+		<!-- 拖拽条 -->
+		<div class="flex justify-center pt-3 pb-1">
+			<div style="width:36px; height:4px; background:#E5DDD0; border-radius:2px;"></div>
+		</div>
+
+		<!-- 封面图 -->
+		<div style="height:180px; overflow:hidden; position:relative;">
+			<img id="uni_sheet_img" src="" alt="" style="width:100%; height:100%; object-fit:cover;">
+			<div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);"></div>
+			<div style="position:absolute; bottom:14px; left:16px; right:44px;">
+				<div id="uni_sheet_badge" class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5" style="background:rgba(255,180,0,0.25); color:#FFB400; border:1px solid rgba(255,180,0,0.4);"></div>
+				<div id="uni_sheet_name" class="text-xl font-black text-white leading-tight"></div>
+				<div id="uni_sheet_en" class="text-[11px] mt-0.5" style="color:rgba(255,255,255,0.7);"></div>
+			</div>
+			<button onclick="close_uni()" style="position:absolute; top:12px; right:12px; background:rgba(0,0,0,0.45); border:none; border-radius:50%; width:28px; height:28px; color:#fff; font-size:14px; cursor:pointer; line-height:28px; text-align:center;">&#x2715;</button>
+		</div>
+
+		<!-- 内容区 -->
+		<div class="px-4 pt-4 pb-8">
+
+			<!-- 关键数据 3格 -->
+			<div class="grid grid-cols-3 gap-2 mb-4">
+				<div class="rounded-xl p-2.5 text-center" style="background:#FDF8F0; border:1px solid #E5DDD0;">
+					<div id="uni_stat_rank" class="text-sm font-black" style="color:#C94A4A;"></div>
+					<div class="text-[9px] text-muted mt-0.5">QS 全球排名</div>
+				</div>
+				<div class="rounded-xl p-2.5 text-center" style="background:#FDF8F0; border:1px solid #E5DDD0;">
+					<div id="uni_stat_eng" class="text-sm font-black" style="color:#8B6914;"></div>
+					<div class="text-[9px] text-muted mt-0.5">高考英语要求</div>
+				</div>
+				<div class="rounded-xl p-2.5 text-center" style="background:#FDF8F0; border:1px solid #E5DDD0;">
+					<div id="uni_stat_offer" class="text-sm font-black" style="color:#2F9E44;"></div>
+					<div class="text-[9px] text-muted mt-0.5">最快拿Offer</div>
+				</div>
+			</div>
+
+			<!-- 学校简介 -->
+			<div class="mb-4">
+				<div class="text-xs font-bold text-dark mb-1.5">&#x1F3EB; 学校简介</div>
+				<p id="uni_sheet_intro" class="text-xs text-muted leading-relaxed"></p>
+			</div>
+
+			<!-- 招生专业 -->
+			<div class="mb-4">
+				<div class="text-xs font-bold text-dark mb-2">&#x1F4DA; 开放招生专业</div>
+				<div id="uni_sheet_majors" class="space-y-2"></div>
+			</div>
+
+			<!-- 申请要求 -->
+			<div class="mb-4">
+				<div class="text-xs font-bold text-dark mb-2">&#x2705; 申请要求</div>
+				<div id="uni_sheet_reqs" class="space-y-1.5"></div>
+			</div>
+
+			<!-- 招生时间线 -->
+			<div class="mb-5">
+				<div class="text-xs font-bold text-dark mb-2">&#x1F4C5; 2026 招生时间</div>
+				<div id="uni_sheet_timeline" class="space-y-2"></div>
+			</div>
+
+			<!-- 官方合作标签 -->
+			<div id="uni_partner_badge" class="hidden rounded-xl p-3 mb-4 flex items-center gap-2" style="background:rgba(201,169,110,0.1); border:1px solid rgba(201,169,110,0.3);">
+				<span style="color:#8B6914; font-size:16px;">&#x2B50;</span>
+				<div>
+					<div class="text-[10px] font-bold" style="color:#8B6914;">官方合作院校</div>
+					<div class="text-[10px] text-muted">Me Uni 已与该校建立招生合作 · 申请直通绿色通道</div>
+				</div>
+			</div>
+
+			<!-- CTA -->
+			<button onclick="goto_apply('double')" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer mb-2" style="background:linear-gradient(90deg,#C94A4A,#8B1A1A);">&#x1F3EB; 立即申请这所学校 →</button>
+			<button onclick="close_uni()" class="w-full py-2.5 rounded-xl text-xs text-muted cursor-pointer" style="background:#F5F5F5;">返回</button>
+
 		</div>
 	</div>
 
