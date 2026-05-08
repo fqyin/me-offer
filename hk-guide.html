@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>香港大学高考直录指南 · Me Offer</title>
+	<link rel="shortcut icon" href="/meuni_logo.jpg">
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/tailwind.min.js"></script>
+	<script src="https://meuni-nutrition.oss-cn-beijing.aliyuncs.com/libs/jquery-3.7.1.min.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand:	'#8B6914',
+						gold:	'#C9A96E',
+						danger:	'#C94A4A',
+						cream:	'#FDF8F0',
+						dark:	'#1A1A1A',
+						muted:	'#8A8A8A'
+					}
+				}
+			}
+		}
+	</script>
+	<style>
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+		body { font-family: 'Helvetica', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #FDF8F0; color: #1A1A1A; }
+		.fade-in { animation: fadeIn 0.4s ease-out; }
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+		.scroll-x { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+		.scroll-x::-webkit-scrollbar { display: none; }
+		.faq-item { border-bottom: 1px solid #E5DDD0; }
+		.faq-answer { display: none; }
+		.faq-item.open .faq-answer { display: block; }
+		.faq-item.open .faq-arrow { transform: rotate(180deg); }
+		.faq-arrow { transition: transform 0.2s; }
+		.timeline-line { position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: #E5DDD0; }
+		.uni-card { transition: transform 0.15s, box-shadow 0.15s; }
+		.uni-card:active { transform: scale(0.98); }
+	</style>
+</head>
+<body>
+
+<div class="max-w-[390px] mx-auto min-h-screen fade-in">
+
+	<!-- 顶部导航 -->
+	<header class="sticky top-0 z-50 px-4 py-3 flex items-center gap-3" style="background: rgba(253,248,240,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #E5DDD0;">
+		<a href="index.html" class="w-8 h-8 rounded-full flex items-center justify-center" style="background: #F5EFE5;">
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B6914" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+		</a>
+		<div>
+			<div class="text-sm font-bold text-dark">香港大学高考直录指南</div>
+			<div class="text-[10px] text-muted">HK University Gaokao Guide · 家长必读</div>
+		</div>
+	</header>
+
+	<!-- Hero -->
+	<section class="px-4 pt-6 pb-5">
+		<div class="rounded-3xl p-6 text-white relative overflow-hidden" style="background: linear-gradient(135deg, #1A3A5C 0%, #0D2137 100%);">
+			<div class="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10" style="background: #C9A96E; transform: translate(30%, -30%);"></div>
+			<div class="absolute bottom-0 left-0 w-32 h-32 rounded-full opacity-10" style="background: #fff; transform: translate(-30%, 30%);"></div>
+			<div class="relative">
+				<div class="flex items-center gap-2 mb-3">
+					<span class="text-2xl">🇭🇰</span>
+					<span class="text-xs px-2 py-1 rounded-full font-bold" style="background: rgba(201,169,110,0.3); color: #FFD080;">家长必读</span>
+				</div>
+				<h1 class="text-xl font-bold mb-2" style="line-height: 1.35;">用高考成绩<br>直接录取香港大学</h1>
+				<p class="text-xs leading-relaxed mb-4" style="color: rgba(255,255,255,0.8);">很多家长不知道：孩子根本不需要雅思、不需要留学中介，用高考英语分数就能直接申请香港 8 所顶尖大学，而且不影响内地志愿填报。</p>
+				<div class="flex gap-3">
+					<div class="text-center">
+						<div class="text-lg font-bold" style="color: #FFD080;">8所</div>
+						<div class="text-[10px]" style="color: rgba(255,255,255,0.7);">港校可直录</div>
+					</div>
+					<div style="width: 1px; background: rgba(255,255,255,0.2);"></div>
+					<div class="text-center">
+						<div class="text-lg font-bold" style="color: #FFD080;">免雅思</div>
+						<div class="text-[10px]" style="color: rgba(255,255,255,0.7);">高考英语替代</div>
+					</div>
+					<div style="width: 1px; background: rgba(255,255,255,0.2);"></div>
+					<div class="text-center">
+						<div class="text-lg font-bold" style="color: #FFD080;">不影响</div>
+						<div class="text-[10px]" style="color: rgba(255,255,255,0.7);">内地填报</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 最重要的事：两种招生方式 -->
+	<section class="px-4 pb-6">
+		<div class="flex items-center gap-2 mb-3">
+			<span class="text-base font-bold text-dark">家长最需要知道的一件事</span>
+		</div>
+		<p class="text-xs text-muted mb-4 leading-relaxed">港校招生分两种方式，搞清楚这个，孩子就能在不影响内地高考志愿的情况下多一条出路。</p>
+
+		<div class="space-y-3">
+			<!-- 独立招生 -->
+			<div class="rounded-2xl p-4" style="background: #F0FFF4; border: 1.5px solid #2F9E44;">
+				<div class="flex items-start gap-3">
+					<div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base" style="background: #2F9E44;">✅</div>
+					<div class="flex-1">
+						<div class="text-sm font-bold text-dark mb-1">方式一：独立招生</div>
+						<div class="text-[11px] font-semibold mb-2" style="color: #2F9E44;">✅ 完全不占内地志愿，零风险</div>
+						<p class="text-xs text-muted leading-relaxed mb-2">孩子在高考前/后向港校单独网申，与内地高考志愿完全分开，两边同时进行。港校发 Offer 了再决定去不去，不影响内地任何志愿。</p>
+						<div class="flex flex-wrap gap-1">
+							<span class="text-[10px] px-2 py-0.5 rounded-full font-medium" style="background: #2F9E44; color: white;">港大 HKU</span>
+							<span class="text-[10px] px-2 py-0.5 rounded-full font-medium" style="background: #2F9E44; color: white;">科大 HKUST</span>
+							<span class="text-[10px] px-2 py-0.5 rounded-full font-medium" style="background: #2F9E44; color: white;">理大 PolyU</span>
+							<span class="text-[10px] px-2 py-0.5 rounded-full font-medium" style="background: #2F9E44; color: white;">浸大 HKBU</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 统招提前批 -->
+			<div class="rounded-2xl p-4" style="background: #FFF5F5; border: 1.5px solid #C94A4A;">
+				<div class="flex items-start gap-3">
+					<div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base" style="background: #C94A4A;">⚠️</div>
+					<div class="flex-1">
+						<div class="text-sm font-bold text-dark mb-1">方式二：统招提前批</div>
+						<div class="text-[11px] font-semibold mb-2" style="color: #C94A4A;">⚠️ 录取后须放弃内地其他志愿</div>
+						<p class="text-xs text-muted leading-relaxed mb-2">中大、城大走内地统招提前批，高考后在省招办填报志愿，流程与内地大学相同。好处是无需提前申请、无面试，坏处是录取后必须选择，不能再填内地志愿。</p>
+						<div class="flex flex-wrap gap-1">
+							<span class="text-[10px] px-2 py-0.5 rounded-full font-medium" style="background: #C94A4A; color: white;">中大 CUHK</span>
+							<span class="text-[10px] px-2 py-0.5 rounded-full font-medium" style="background: #C94A4A; color: white;">城大 CityU</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 各校英语分数门槛 -->
+	<section class="px-4 pb-6">
+		<div class="flex items-center gap-2 mb-1">
+			<span class="text-base font-bold text-dark">英语分数要求一览</span>
+			<span class="text-[10px] text-muted">高考英语/150分</span>
+		</div>
+		<p class="text-xs text-muted mb-4">高考外语科目须为英语，达到以下分数即可免雅思直接申请</p>
+
+		<div class="space-y-2">
+			<!-- 100分档 -->
+			<div class="text-[10px] font-bold text-muted uppercase tracking-wider mb-1">100 分以上可申请</div>
+			<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+				<div>
+					<div class="text-sm font-bold text-dark">岭南大学</div>
+					<div class="text-[10px] text-muted">Lingnan · 二本线以上即可 · 无面试</div>
+				</div>
+				<div class="text-right">
+					<div class="text-base font-bold" style="color: #2F9E44;">100+</div>
+					<div class="text-[10px] text-muted">门槛最低</div>
+				</div>
+			</div>
+			<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+				<div>
+					<div class="text-sm font-bold text-dark">香港都会大学</div>
+					<div class="text-[10px] text-muted">HKMU · 一本线 · 部分专业面试</div>
+				</div>
+				<div class="text-right">
+					<div class="text-base font-bold" style="color: #2F9E44;">100+</div>
+					<div class="text-[10px] text-muted">学费最低</div>
+				</div>
+			</div>
+
+			<!-- 110分档 -->
+			<div class="text-[10px] font-bold text-muted uppercase tracking-wider mt-3 mb-1">110 分以上可申请</div>
+			<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+				<div>
+					<div class="text-sm font-bold text-dark">香港科技大学</div>
+					<div class="text-[10px] text-muted">HKUST Top 47 · 必须面试（面试权重高）</div>
+				</div>
+				<div class="text-right">
+					<div class="text-base font-bold" style="color: #E67700;">110+</div>
+					<div class="text-[10px] text-muted">面试决定</div>
+				</div>
+			</div>
+			<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+				<div>
+					<div class="text-sm font-bold text-dark">香港浸会大学</div>
+					<div class="text-[10px] text-muted">HKBU · 传媒最强 · 无面试 · 招生最多</div>
+				</div>
+				<div class="text-right">
+					<div class="text-base font-bold" style="color: #E67700;">110+</div>
+					<div class="text-[10px] text-muted">约600人/年</div>
+				</div>
+			</div>
+
+			<!-- 120分档 -->
+			<div class="text-[10px] font-bold text-muted uppercase tracking-wider mt-3 mb-1">120 分以上可申请</div>
+			<div class="space-y-2">
+				<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+					<div>
+						<div class="text-sm font-bold text-dark">香港大学</div>
+						<div class="text-[10px] text-muted">HKU Top 17 · 必须全英文面试</div>
+					</div>
+					<div class="text-right">
+						<div class="text-base font-bold" style="color: #C94A4A;">120+</div>
+						<div class="text-[10px] text-muted">奖学金130+</div>
+					</div>
+				</div>
+				<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+					<div>
+						<div class="text-sm font-bold text-dark">香港中文大学</div>
+						<div class="text-[10px] text-muted">CUHK Top 47 · 无面试 · 统招</div>
+					</div>
+					<div class="text-right">
+						<div class="text-base font-bold" style="color: #C94A4A;">120+</div>
+						<div class="text-[10px] text-muted">约400人/年</div>
+					</div>
+				</div>
+				<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+					<div>
+						<div class="text-sm font-bold text-dark">香港城市大学</div>
+						<div class="text-[10px] text-muted">CityU Top 62 · 无面试 · 统招</div>
+					</div>
+					<div class="text-right">
+						<div class="text-base font-bold" style="color: #C94A4A;">120+</div>
+						<div class="text-[10px] text-muted">约300人/年</div>
+					</div>
+				</div>
+				<div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background: white; border: 1px solid #E5DDD0;">
+					<div>
+						<div class="text-sm font-bold text-dark">香港理工大学</div>
+						<div class="text-[10px] text-muted">PolyU Top 65 · 部分专业面试</div>
+					</div>
+					<div class="text-right">
+						<div class="text-base font-bold" style="color: #C94A4A;">120+</div>
+						<div class="text-[10px] text-muted">建议125+</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 关键时间线 -->
+	<section class="px-4 pb-6">
+		<div class="flex items-center gap-2 mb-3">
+			<span class="text-base font-bold text-dark">申请关键时间线</span>
+			<span class="text-[10px] text-muted">以 2026 年为例</span>
+		</div>
+
+		<div class="rounded-2xl p-4" style="background: white; border: 1px solid #E5DDD0;">
+			<div class="relative">
+				<div class="timeline-line"></div>
+				<div class="space-y-4">
+					<div class="flex items-start gap-4 relative">
+						<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white z-10" style="background: #8B6914;">3月</div>
+						<div class="pt-0.5">
+							<div class="text-xs font-bold text-dark">独立招生学校开放网申</div>
+							<div class="text-[10px] text-muted leading-relaxed">港大、科大、理大、浸大同步开放申请（高考前需完成部分学校的申请）</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-4 relative">
+						<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white z-10" style="background: #C94A4A;">4-6月</div>
+						<div class="pt-0.5">
+							<div class="text-xs font-bold" style="color: #C94A4A;">⚠️ 独立招生截止（高考前后）</div>
+							<div class="text-[10px] text-muted leading-relaxed">港大约4月底·科大约6月10日·理大约6月12日·浸大约6月11日<br>部分学校安排面试</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-4 relative">
+						<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white z-10" style="background: #2F9E44;">6月</div>
+						<div class="pt-0.5">
+							<div class="text-xs font-bold text-dark">高考出分 · 同步推进两条线</div>
+							<div class="text-[10px] text-muted leading-relaxed">① 出分后填报统招提前批（中大/城大）<br>② 独立招生学校收到分数后确认录取</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-4 relative">
+						<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white z-10" style="background: #3B5BDB;">7月</div>
+						<div class="pt-0.5">
+							<div class="text-xs font-bold text-dark">录取通知书陆续发出</div>
+							<div class="text-[10px] text-muted leading-relaxed">确认录取 · 缴纳学费定金 · 办理入港手续</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-4 relative">
+						<div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white z-10" style="background: #C9A96E;">9月</div>
+						<div class="pt-0.5">
+							<div class="text-xs font-bold text-dark">正式入学</div>
+							<div class="text-[10px] text-muted">开始香港大学生活</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 各校对比卡片 -->
+	<section class="px-4 pb-6">
+		<div class="flex items-center gap-2 mb-3">
+			<span class="text-base font-bold text-dark">8 所港校快速对比</span>
+		</div>
+		<div class="scroll-x">
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🏛️</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港大学</div>
+				<div class="text-[10px] text-muted mb-2">全球 Top 17</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#C94A4A;">120+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#2F9E44;">独立招生</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#C94A4A;">全英文面试</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 19.8万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">~400人</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🔬</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港科技大学</div>
+				<div class="text-[10px] text-muted mb-2">全球 Top 47</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#E67700;">110+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#2F9E44;">独立招生</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#C94A4A;">全英文面试</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 18.5万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">~250人</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">📚</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港中文大学</div>
+				<div class="text-[10px] text-muted mb-2">全球 Top 47</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#C94A4A;">120+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#C94A4A;">统招提前批</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#2F9E44;">无面试</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 17.8万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">~400人</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🏙️</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港城市大学</div>
+				<div class="text-[10px] text-muted mb-2">全球 Top 62</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#C94A4A;">120+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#C94A4A;">统招提前批</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#2F9E44;">无面试</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 17万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">~300人</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🏗️</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港理工大学</div>
+				<div class="text-[10px] text-muted mb-2">全球 Top 65</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#C94A4A;">120+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#2F9E44;">独立招生</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#E67700;">部分面试</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 17.5万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">不设上限</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🎬</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港浸会大学</div>
+				<div class="text-[10px] text-muted mb-2">传媒最强港校</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#E67700;">110+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#2F9E44;">独立招生</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#2F9E44;">无面试</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 17.5万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">~600人</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🌿</div>
+				<div class="text-sm font-bold text-dark mb-0.5">岭南大学</div>
+				<div class="text-[10px] text-muted mb-2">香港博雅教育第一</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#2F9E44;">100+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#2F9E44;">独立招生</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#E67700;">部分专业</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 16万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">不设上限</span></div>
+				</div>
+			</div>
+			<div class="uni-card flex-shrink-0 rounded-2xl p-4" style="width: 200px; background: white; border: 1px solid #E5DDD0;">
+				<div class="text-2xl mb-2">🏫</div>
+				<div class="text-sm font-bold text-dark mb-0.5">香港都会大学</div>
+				<div class="text-[10px] text-muted mb-2">学费最低的港校</div>
+				<div class="space-y-1 text-[10px]">
+					<div class="flex justify-between"><span class="text-muted">英语要求</span><span class="font-bold" style="color:#2F9E44;">100+</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生方式</span><span class="font-bold" style="color:#2F9E44;">独立招生</span></div>
+					<div class="flex justify-between"><span class="text-muted">面试</span><span class="font-bold" style="color:#E67700;">部分专业</span></div>
+					<div class="flex justify-between"><span class="text-muted">学费/年</span><span class="font-bold">HKD 10.2万</span></div>
+					<div class="flex justify-between"><span class="text-muted">招生人数</span><span class="font-bold">不设上限</span></div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- 家长常见问题 FAQ -->
+	<section class="px-4 pb-6">
+		<div class="flex items-center gap-2 mb-3">
+			<span class="text-base font-bold text-dark">家长最常问的问题</span>
+		</div>
+		<div class="rounded-2xl overflow-hidden" style="background: white; border: 1px solid #E5DDD0;">
+			<div class="faq-item cursor-pointer" onclick="toggle_faq(this)">
+				<div class="px-4 py-3.5 flex items-center justify-between">
+					<span class="text-xs font-semibold text-dark">孩子去香港上大学安全吗？</span>
+					<svg class="faq-arrow w-4 h-4 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="faq-answer px-4 pb-4">
+					<p class="text-xs text-muted leading-relaxed">香港整体治安良好，校园环境安全。香港拥有完善的法治体系和公共安全保障。各大学校园内配备完善的学生服务和安全设施。2020年后香港局势已趋于稳定，8所顶尖大学每年持续录取大量内地学生，是极为成熟的升学路径。</p>
+				</div>
+			</div>
+			<div class="faq-item cursor-pointer" onclick="toggle_faq(this)">
+				<div class="px-4 py-3.5 flex items-center justify-between">
+					<span class="text-xs font-semibold text-dark">香港大学文凭内地承认吗？</span>
+					<svg class="faq-arrow w-4 h-4 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="faq-answer px-4 pb-4">
+					<p class="text-xs text-muted leading-relaxed">完全承认。香港8所大学均被教育部认可，毕业证书在内地求职、考研、考公均有效，效力等同内地985/211院校文凭。港大、科大、中大的学历在外企和跨国公司更具竞争力。</p>
+				</div>
+			</div>
+			<div class="faq-item cursor-pointer" onclick="toggle_faq(this)">
+				<div class="px-4 py-3.5 flex items-center justify-between">
+					<span class="text-xs font-semibold text-dark">申请港校会影响内地高考志愿吗？</span>
+					<svg class="faq-arrow w-4 h-4 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="faq-answer px-4 pb-4">
+					<p class="text-xs text-muted leading-relaxed"><strong>独立招生（港大/科大/理大/浸大等）完全不影响内地志愿。</strong>可以同时申请港校 + 正常填内地志愿，两边各走各的流程，拿到港校 Offer 后再决定去不去。<br><br>统招提前批（中大/城大）则有影响：若被录取须放弃其他内地志愿，需谨慎决策。</p>
+				</div>
+			</div>
+			<div class="faq-item cursor-pointer" onclick="toggle_faq(this)">
+				<div class="px-4 py-3.5 flex items-center justify-between">
+					<span class="text-xs font-semibold text-dark">孩子英语不是特别好，能申请吗？</span>
+					<svg class="faq-arrow w-4 h-4 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="faq-answer px-4 pb-4">
+					<p class="text-xs text-muted leading-relaxed">高考英语 100 分以上就可以申请岭南大学和都会大学（门槛最低的港校）。110 分可以申请浸大（传媒/中医药/商科）和科大（面试为主）。实际上只要高考英语达到各校门槛，就免去了雅思备考，省了至少 6-12 个月的时间和数万元费用。</p>
+				</div>
+			</div>
+			<div class="faq-item cursor-pointer" onclick="toggle_faq(this)">
+				<div class="px-4 py-3.5 flex items-center justify-between">
+					<span class="text-xs font-semibold text-dark">学费大概要多少？生活费呢？</span>
+					<svg class="faq-arrow w-4 h-4 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="faq-answer px-4 pb-4">
+					<p class="text-xs text-muted leading-relaxed"><strong>学费：</strong>HKD 10-20万/年（约人民币 9-18 万），都会大学最低，港大医学最高。<br><br><strong>住宿：</strong>大一一般保证宿位，HKD 3-5 万/年。大二起可能须校外租房，HKD 5-8 万/年。<br><br><strong>生活费：</strong>HKD 3-5 万/年（餐饮、交通、日常）。<br><br><strong>总计：</strong>每年约 HKD 20-30 万（人民币 18-27 万），比英美便宜，且可兼职补贴。</p>
+				</div>
+			</div>
+			<div class="faq-item cursor-pointer" onclick="toggle_faq(this)">
+				<div class="px-4 py-3.5 flex items-center justify-between">
+					<span class="text-xs font-semibold text-dark">需要找中介帮忙申请吗？</span>
+					<svg class="faq-arrow w-4 h-4 flex-shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+				</div>
+				<div class="faq-answer px-4 pb-4">
+					<p class="text-xs text-muted leading-relaxed">不需要传统中介。港校官网均有中文申请页面，流程相对简单。Me Offer 用 AI 帮你完成：① 选校推荐（基于孩子的高考估分）② 申请材料准备 ③ 文书撰写 ④ 申请提交跟进，费用远低于传统中介，全程透明。</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA -->
+	<section class="px-4 pb-8">
+		<div class="rounded-3xl p-6 text-center" style="background: linear-gradient(135deg, #8B6914, #C9A96E);">
+			<div class="text-2xl mb-2">🎓</div>
+			<div class="text-base font-bold text-white mb-1">让 AI 帮孩子找最适合的港校</div>
+			<p class="text-xs mb-4" style="color: rgba(255,255,255,0.85);">输入高考估分 + 英语分数<br>2 分钟生成专属港校申请方案</p>
+			<a href="index.html" class="block w-full py-3.5 rounded-2xl text-sm font-bold" style="background: white; color: #8B6914;">
+				立即免费获取方案 →
+			</a>
+			<div class="mt-3 text-[10px]" style="color: rgba(255,255,255,0.7);">AI 文书 + 申请跟进 · 拿不到 Offer 全额退款</div>
+		</div>
+	</section>
+
+</div>
+
+<script>
+	function toggle_faq(el) {
+		let is_open = $(el).hasClass('open');
+		$('.faq-item').removeClass('open');
+		if (!is_open) $(el).addClass('open');
+	}
+</script>
+
+</body>
+</html>
