@@ -37,10 +37,15 @@ export async function onRequestPost(context) {
 	}
 
 	// 1. 估算用户位次
-	const user_rank							= await estimate_user_rank(env.DB, score, subject_type, target_year);
+	const user_rank							= await estimate_user_rank(env.DB, score, subject_type, target_year, province);
 	if (!user_rank) {
 		return json_response({error: 'no segment data'}, 500);
 	}
+
+	/* 各省志愿数从 provinces 表配置读，不硬编码（山东 24/48/24、北京 8/14/8 等） */
+	const target_chong						= province_config.chong_count || 24;
+	const target_wen						= province_config.wen_count || 48;
+	const target_bao						= province_config.bao_count || 24;
 
 	// 2. 查询候选院校专业组（传真实 user_rank）
 	const candidates						= await fetch_candidates(env.DB, user_rank, body);
@@ -195,8 +200,10 @@ export async function onRequestPost(context) {
 		return {
 			school_code:	c.school_code,
 			school_name:	c.school_name,
+			school_city:	c.school_city,
 			group_code:		c.group_code,
 			group_name:		c.group_name,
+			subject_require: c.subject_require,
 			min_rank:		c.min_rank,
 			plan_count:		c.plan_count,
 			school_tier:	c.tier,
@@ -240,12 +247,31 @@ export async function onRequestPost(context) {
 		});
 	};
 
-	/* 兜底 v5：稳档不足时从冲/保档借（高分段专业池稀疏，清北华五就这么多） */
-	if (wen_list.length < 48) {
-		const need							= 48 - wen_list.length;
+	/* 北京：按"院校专业组"投档，每个学校在同一档位只保留 1 条
+	   （否则 30 志愿里会出现"清华 01 专业组 / 清华 02 专业组" 占多个名额，违反真实填报心智） */
+	if (province === 'beijing') {
+		const dedup_by_school				= (list) => {
+			const seen						= new Set();
+			const out						= [];
+			for (let item of list) {
+				if (seen.has(item.school_code)) continue;
+				seen.add(item.school_code);
+				out.push(item);
+			}
+			return out;
+		};
+		chong_list							= dedup_by_school(chong_list);
+		wen_list							= dedup_by_school(wen_list);
+		bao_list							= dedup_by_school(bao_list);
+	}
+
+	/* 兜底 v5：稳档不足时从冲/保档借（高分段专业池稀疏，清北华五就这么多）
+	   v6（2026-04-26）：硬编码 24/48/24 改成读省份配置 target_chong/wen/bao */
+	if (wen_list.length < target_wen) {
+		const need							= target_wen - wen_list.length;
 		/* 优先从 chong 借（先匹配专业，再低 diff） */
 		const chong_sorted					= rank_by_major_then_diff(chong_list, 'asc');
-		const take_from_chong				= Math.min(Math.ceil(need / 2), Math.max(0, chong_list.length - 24));
+		const take_from_chong				= Math.min(Math.ceil(need / 2), Math.max(0, chong_list.length - target_chong));
 		for (let i = 0; i < take_from_chong; i++) {
 			const item						= { ...chong_sorted[i], tier: 'wen' };
 			wen_list.push(item);
@@ -254,8 +280,8 @@ export async function onRequestPost(context) {
 		}
 		/* 再从 bao 借（先匹配专业，再高 diff） */
 		const bao_sorted					= rank_by_major_then_diff(bao_list, 'desc');
-		const still_need					= 48 - wen_list.length;
-		const take_from_bao					= Math.min(still_need, Math.max(0, bao_list.length - 24));
+		const still_need					= target_wen - wen_list.length;
+		const take_from_bao					= Math.min(still_need, Math.max(0, bao_list.length - target_bao));
 		for (let i = 0; i < take_from_bao; i++) {
 			const item						= { ...bao_sorted[i], tier: 'wen' };
 			wen_list.push(item);
@@ -265,9 +291,9 @@ export async function onRequestPost(context) {
 	}
 
 	/* 冲档不足：从 wen 借（先匹配专业，再高 diff 接近冲档） */
-	if (chong_list.length < 24 && wen_list.length > 0) {
+	if (chong_list.length < target_chong && wen_list.length > 0) {
 		const sorted						= rank_by_major_then_diff(wen_list, 'desc');
-		const need							= 24 - chong_list.length;
+		const need							= target_chong - chong_list.length;
 		for (let i = 0; i < Math.min(need, sorted.length); i++) {
 			const item						= { ...sorted[i], tier: 'chong' };
 			chong_list.push(item);
@@ -277,9 +303,9 @@ export async function onRequestPost(context) {
 	}
 
 	/* 保档不足：从 wen 借（先匹配专业，再低 diff 接近保档） */
-	if (bao_list.length < 24 && wen_list.length > 0) {
+	if (bao_list.length < target_bao && wen_list.length > 0) {
 		const sorted						= rank_by_major_then_diff(wen_list, 'asc');
-		const need							= 24 - bao_list.length;
+		const need							= target_bao - bao_list.length;
 		for (let i = 0; i < Math.min(need, sorted.length); i++) {
 			const item						= { ...sorted[i], tier: 'bao' };
 			bao_list.push(item);
@@ -288,17 +314,17 @@ export async function onRequestPost(context) {
 		}
 	}
 
-	const final_chong						= chong_list.slice(0, 24);
-	const final_wen							= wen_list.slice(0, 48);
-	const final_bao							= bao_list.slice(0, 24);
+	const final_chong						= chong_list.slice(0, target_chong);
+	const final_wen							= wen_list.slice(0, target_wen);
+	const final_bao							= bao_list.slice(0, target_bao);
 
 	const final_list						= [...final_chong, ...final_wen, ...final_bao];
 
-	/* v17+: 额外返回 "备选池" extras = 未进入 96 的候选（每档再 40 所，共 120 个）
+	/* v17+: 额外返回 "备选池" extras = 未进入志愿表的候选（每档再 40 所）
 	   用户可在工作台替换默认方案 */
-	const extras_chong						= chong_list.slice(24, 64);
-	const extras_wen						= wen_list.slice(48, 88);
-	const extras_bao						= bao_list.slice(24, 64);
+	const extras_chong						= chong_list.slice(target_chong, target_chong + 40);
+	const extras_wen						= wen_list.slice(target_wen, target_wen + 40);
+	const extras_bao						= bao_list.slice(target_bao, target_bao + 40);
 	const extras_list						= [...extras_chong, ...extras_wen, ...extras_bao];
 
 	/* 统一补 group_code：D1 里 group_code 常空，从 group_name 前缀提取（如 "0B智能制造工程" → "0B"）
@@ -313,6 +339,18 @@ export async function onRequestPost(context) {
 			}
 			item.group_name					= raw_gn.substring(m[1].length);
 		}
+		else if (province === 'beijing' && /^\d{1,2}$/.test(raw_gn.trim())) {
+			/* \u5317\u4eac\uff1agroup_name \u5c31\u662f\u7eaf\u6570\u5b57 "01"/"02"\uff0c\u628a\u5b83\u5f53 group_code\uff0c\u5e76\u8865\u4e24\u4f4d */
+			if (!item.group_code || String(item.group_code).trim() === '') {
+				item.group_code				= raw_gn.trim().padStart(2, '0');
+			}
+		}
+	}
+
+	/* 北京：JOIN beijing_group_majors 给每个 volunteer 挂上"专业组里的专业明细"
+	   (school_code, group_code) → group_majors: [{ major_index, major_name, ... }] */
+	if (province === 'beijing') {
+		await attach_beijing_group_majors(env.DB, all_items);
 	}
 
 	return json_response({
@@ -332,11 +370,11 @@ export async function onRequestPost(context) {
 }
 
 
-async function estimate_user_rank(db, score, subject_type, year) {
-	const exact								= await db.prepare('SELECT rank FROM gaokao_segments WHERE year = ? AND subject_type = ? AND score = ? LIMIT 1').bind(year, subject_type, score).first();
+async function estimate_user_rank(db, score, subject_type, year, province) {
+	const exact								= await db.prepare('SELECT rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? AND score = ? LIMIT 1').bind(province, year, subject_type, score).first();
 	if (exact) return exact.rank;
 
-	const neighbors							= await db.prepare('SELECT score, rank FROM gaokao_segments WHERE year = ? AND subject_type = ? ORDER BY ABS(score - ?) LIMIT 2').bind(year, subject_type, score).all();
+	const neighbors							= await db.prepare('SELECT score, rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? ORDER BY ABS(score - ?) LIMIT 2').bind(province, year, subject_type, score).all();
 	if (!neighbors.results || neighbors.results.length === 0) return null;
 
 	const s1								= neighbors.results[0];
@@ -351,7 +389,10 @@ async function estimate_user_rank(db, score, subject_type, year) {
 async function fetch_candidates(db, user_rank, body) {
 	/* 关键修复 v4：
 	   - 分别查 冲 / 稳 / 保 三段，每段足够大
-	   - 高分段（rank < 3000）百分比会导致范围太窄，改用绝对偏移 */
+	   - 高分段（rank < 3000）百分比会导致范围太窄，改用绝对偏移
+	   修复 v5（2026-04-26）：加 province 过滤，避免跨省数据污染
+	   （之前 SQL 不带 WHERE province=?，山东用户拿到的推荐里混入了浙江/河北/北京/江苏的数据） */
+	const province								= body.province || 'shandong';
 
 	/* 动态决定偏移策略 */
 	let chong_low, chong_high, wen_low, wen_high, bao_low, bao_high;
@@ -387,35 +428,38 @@ async function fetch_candidates(db, user_rank, body) {
 	const q_chong							= db.prepare(`
 		SELECT s.school_code, s.school_name, s.group_code, s.group_name,
 			   s.min_rank, s.plan_count, s.year, s.subject_require,
-			   u.city, u.tier, u.nature
+			   s.school_city, s.school_nature,
+			   u.city as u_city, u.tier as u_tier, u.nature as u_nature
 		FROM gaokao_scores s
 		LEFT JOIN universities u ON s.school_code = u.code
-		WHERE s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
+		WHERE s.province = ? AND s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
 		ORDER BY s.year DESC, s.min_rank DESC
 		LIMIT 1500
-	`).bind(chong_low, chong_high);
+	`).bind(province, chong_low, chong_high);
 
 	const q_wen								= db.prepare(`
 		SELECT s.school_code, s.school_name, s.group_code, s.group_name,
 			   s.min_rank, s.plan_count, s.year, s.subject_require,
-			   u.city, u.tier, u.nature
+			   s.school_city, s.school_nature,
+			   u.city as u_city, u.tier as u_tier, u.nature as u_nature
 		FROM gaokao_scores s
 		LEFT JOIN universities u ON s.school_code = u.code
-		WHERE s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
+		WHERE s.province = ? AND s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
 		ORDER BY s.year DESC, ABS(s.min_rank - ?)
 		LIMIT 2000
-	`).bind(wen_low, wen_high, user_rank);
+	`).bind(province, wen_low, wen_high, user_rank);
 
 	const q_bao								= db.prepare(`
 		SELECT s.school_code, s.school_name, s.group_code, s.group_name,
 			   s.min_rank, s.plan_count, s.year, s.subject_require,
-			   u.city, u.tier, u.nature
+			   s.school_city, s.school_nature,
+			   u.city as u_city, u.tier as u_tier, u.nature as u_nature
 		FROM gaokao_scores s
 		LEFT JOIN universities u ON s.school_code = u.code
-		WHERE s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
+		WHERE s.province = ? AND s.year IN (2024, 2025) AND s.min_rank BETWEEN ? AND ?
 		ORDER BY s.year DESC, s.min_rank
 		LIMIT 1500
-	`).bind(bao_low, bao_high);
+	`).bind(province, bao_low, bao_high);
 
 	const [r_chong, r_wen, r_bao]			= await Promise.all([q_chong.all(), q_wen.all(), q_bao.all()]);
 
@@ -434,14 +478,14 @@ async function fetch_candidates(db, user_rank, body) {
 				school_code:	r.school_code,
 				school_name:	r.school_name,
 				group_code:		r.group_code,
-				group_name:		r.group_name,
+				group_name:		r.group_name || '',
 				min_rank:		r.min_rank,
 				plan_count:		r.plan_count,
 				year:			r.year,
 				subject_require: r.subject_require || '',
-				school_city:	r.city || '',
-				tier:			r.tier || '普通本科',
-				nature:			r.nature || '公办'
+				school_city:	r.school_city || r.u_city || '',
+				tier:			r.u_tier || '普通本科',
+				nature:			r.school_nature || r.u_nature || '公办'
 			});
 		}
 	}
@@ -848,4 +892,54 @@ export async function onRequestOptions() {
 			'Access-Control-Allow-Headers':	'Content-Type'
 		}
 	});
+}
+
+
+/* 北京：批量查 beijing_group_majors，给每个 volunteer 挂上 group_majors 数组
+   一次 SQL 查全部，避免 N+1 */
+async function attach_beijing_group_majors(db, items) {
+	if (!items || items.length === 0) return;
+
+	/* 先收集所有唯一的 (school_code, group_code) */
+	const keys = new Set();
+	for (let it of items) {
+		if (it.school_code && it.group_code) {
+			keys.add(it.school_code + '|' + it.group_code);
+		}
+	}
+	if (keys.size === 0) return;
+
+	/* 用 IN (?,?,?...) 一次查全 — D1 单条 SQL 限制 100 个绑定参数，超了分批 */
+	const key_list						= Array.from(keys);
+	const map							= new Map();		// key -> majors[]
+
+	const batch_size					= 40;
+	for (let i = 0; i < key_list.length; i += batch_size) {
+		const chunk						= key_list.slice(i, i + batch_size);
+		const placeholders				= chunk.map(() => '(? || \'|\' || group_code) = ?').join(' OR ');
+		/* 构造 SQL：WHERE (school_code || '|' || group_code) IN (?, ?...) 更简单 */
+		const ph						= chunk.map(() => '?').join(',');
+		const sql						= 'SELECT school_code, group_code, major_index, major_name, major_note, tuition, plan_count ' +
+											'FROM beijing_group_majors ' +
+											'WHERE (school_code || \'|\' || group_code) IN (' + ph + ') ' +
+											'ORDER BY school_code, group_code, major_index';
+		const res						= await db.prepare(sql).bind(...chunk).all();
+		for (let r of (res.results || [])) {
+			const k						= r.school_code + '|' + r.group_code;
+			if (!map.has(k)) map.set(k, []);
+			map.get(k).push({
+				major_index:	r.major_index || '',
+				major_name:		r.major_name || '',
+				major_note:		r.major_note || '',
+				tuition:		r.tuition,
+				plan_count:		r.plan_count
+			});
+		}
+	}
+
+	/* 挂回 volunteer */
+	for (let it of items) {
+		const k							= (it.school_code || '') + '|' + (it.group_code || '');
+		it.group_majors					= map.get(k) || [];
+	}
 }

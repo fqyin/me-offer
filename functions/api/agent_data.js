@@ -37,6 +37,7 @@ export async function onRequest(context) {
 // ========== Agent 1: 分数 ==========
 async function handle_score(url, env) {
 	const score								= parseInt(url.searchParams.get('score'));
+	const province							= url.searchParams.get('province') || 'shandong';
 
 	if (isNaN(score) || score < 150 || score > 750) {
 		return json_response({error: '分数必须在 150-750'}, 400);
@@ -44,31 +45,41 @@ async function handle_score(url, env) {
 
 	const target_year						= 2025;
 
-	// 查 2025 位次
-	const rank_2025							= await query_rank(env.DB, score, 'total', target_year);
+	/* 江苏没有 total（3+1+2 模式分物理类/历史类），默认走 physics */
+	const default_subject					= (province === 'jiangsu') ? 'physics' : 'total';
 
-	// 查 2021-2025 等效分
+	// 查 2025 位次（按省）
+	const rank_2025							= await query_rank(env.DB, score, default_subject, target_year, province);
+
+	// 查 2021-2024 等效分（按省 — 北京/浙江/江苏目前只有 2025 数据，会返回空对象）
 	const years								= [2024, 2023, 2022, 2021];
 	const equivalent						= {};
-	for (const y of years) {
-		const res							= await env.DB.prepare('SELECT score, rank FROM gaokao_segments WHERE year = ? AND subject_type = ? ORDER BY ABS(rank - ?) LIMIT 1').bind(y, 'total', rank_2025).first();
-		if (res) {
-			equivalent[y]					= {score: res.score, rank: res.rank};
+	if (rank_2025) {
+		for (const y of years) {
+			const res						= await env.DB.prepare('SELECT score, rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? ORDER BY ABS(rank - ?) LIMIT 1').bind(province, y, default_subject, rank_2025).first();
+			if (res) {
+				equivalent[y]				= {score: res.score, rank: res.rank};
+			}
 		}
 	}
 
-	// 查选科位次（物/化/生/政/史/地）
-	const subjects							= [['physics', '物理'], ['chemistry', '化学'], ['biology', '生物'], ['politics', '政治'], ['history', '历史'], ['geography', '地理']];
+	/* 选科位次（同分数不同科目排名差异）—— 只山东和浙江有 6 科 segments
+	   北京 / 江苏 不显示选科位次（数据没拆分） */
 	const subject_ranks						= [];
-	for (const [k, name] of subjects) {
-		const r								= await query_rank(env.DB, score, k, target_year);
-		if (r) subject_ranks.push({key: k, name: name, rank: r});
+	if (province === 'shandong' || province === 'zhejiang') {
+		const subjects						= [['physics', '物理'], ['chemistry', '化学'], ['biology', '生物'], ['politics', '政治'], ['history', '历史'], ['geography', '地理']];
+		for (const [k, name] of subjects) {
+			const r							= await query_rank(env.DB, score, k, target_year, province);
+			if (r) subject_ranks.push({key: k, name: name, rank: r});
+		}
 	}
 
 	return json_response({
 		agent:		'score',
 		score:		score,
 		year:		target_year,
+		province:	province,
+		subject_type: default_subject,
 		rank:		rank_2025,
 		equivalent:	equivalent,
 		subject_ranks: subject_ranks
@@ -76,11 +87,11 @@ async function handle_score(url, env) {
 }
 
 
-async function query_rank(db, score, subject_type, year) {
-	const exact								= await db.prepare('SELECT rank FROM gaokao_segments WHERE year = ? AND subject_type = ? AND score = ? LIMIT 1').bind(year, subject_type, score).first();
+async function query_rank(db, score, subject_type, year, province) {
+	const exact								= await db.prepare('SELECT rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? AND score = ? LIMIT 1').bind(province, year, subject_type, score).first();
 	if (exact) return exact.rank;
 
-	const neighbors							= await db.prepare('SELECT score, rank FROM gaokao_segments WHERE year = ? AND subject_type = ? ORDER BY ABS(score - ?) LIMIT 2').bind(year, subject_type, score).all();
+	const neighbors							= await db.prepare('SELECT score, rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? ORDER BY ABS(score - ?) LIMIT 2').bind(province, year, subject_type, score).all();
 	const rows								= neighbors.results || [];
 	if (rows.length === 0) return null;
 
@@ -96,49 +107,53 @@ async function query_rank(db, score, subject_type, year) {
 // ========== Agent 2: 院校 ==========
 async function handle_school(url, env) {
 	const keyword							= (url.searchParams.get('keyword') || '').trim();
+	const province							= url.searchParams.get('province') || 'shandong';
+
+	const PROV_NAMES						= {shandong: '山东', zhejiang: '浙江', beijing: '北京', jiangsu: '江苏'};
+	const prov_name							= PROV_NAMES[province] || '山东';
 
 	if (keyword.length < 2) {
-		// 真实热门院校：从 2025 投档数据自动选最难进的前 12 所（按所有专业组最低位次）
-		const hot							= await env.DB.prepare(`
-			SELECT school_name, school_code, MIN(min_rank) AS top_rank
-			FROM gaokao_scores
-			WHERE year = 2025
-			GROUP BY school_name
-			ORDER BY top_rank ASC
-			LIMIT 12
-		`).all();
+		// 热门院校：按所选省 2025 投档数据 minimum rank 排序
+		const hot							= await env.DB.prepare(
+			'SELECT school_name, school_code, MIN(min_rank) AS top_rank ' +
+			'FROM gaokao_scores ' +
+			'WHERE province = ? AND year = 2025 AND min_rank IS NOT NULL ' +
+			'GROUP BY school_name ' +
+			'ORDER BY top_rank ASC ' +
+			'LIMIT 12'
+		).bind(province).all();
 		return json_response({
-			agent:	'school',
-			type:	'hot',
-			items:	hot.results || [],
-			source:	'2025 山东投档数据 · 按最难录取位次排序'
+			agent:		'school',
+			type:		'hot',
+			province:	province,
+			items:		hot.results || [],
+			source:		'2025 ' + prov_name + '投档数据 · 按最难录取位次排序'
 		});
 	}
 
-	// 模糊搜索
-	const searched							= await env.DB.prepare(`
-		SELECT DISTINCT school_name, school_code FROM gaokao_scores
-		WHERE year = 2025 AND school_name LIKE ?
-		LIMIT 20
-	`).bind('%' + keyword + '%').all();
+	// 模糊搜索（按省）
+	const searched							= await env.DB.prepare(
+		'SELECT DISTINCT school_name, school_code FROM gaokao_scores ' +
+		'WHERE province = ? AND year = 2025 AND school_name LIKE ? ' +
+		'LIMIT 20'
+	).bind(province, '%' + keyword + '%').all();
 
 	const school_list						= searched.results || [];
 
 	if (school_list.length === 0) {
-		return json_response({agent: 'school', type: 'none', keyword: keyword});
+		return json_response({agent: 'school', type: 'none', province: province, keyword: keyword});
 	}
 
-	// 取第一个做详细展示（用 school_name 匹配所有年份，院校代码可能变化）
 	const first								= school_list[0];
 
-	// 每年单独查最低位次（确保 5 年都有数据，排除 NULL）
+	// 每年最低位次（按省）
 	const trend_rows						= [];
 	for (const y of [2021, 2022, 2023, 2024, 2025]) {
-		const r								= await env.DB.prepare(`
-			SELECT year, group_name, min_rank FROM gaokao_scores
-			WHERE school_name = ? AND year = ? AND min_rank IS NOT NULL
-			ORDER BY min_rank ASC LIMIT 1
-		`).bind(first.school_name, y).first();
+		const r								= await env.DB.prepare(
+			'SELECT year, group_name, min_rank FROM gaokao_scores ' +
+			'WHERE province = ? AND school_name = ? AND year = ? AND min_rank IS NOT NULL ' +
+			'ORDER BY min_rank ASC LIMIT 1'
+		).bind(province, first.school_name, y).first();
 		if (r) {
 			trend_rows.push(r);
 		} else {
@@ -146,18 +161,19 @@ async function handle_school(url, env) {
 		}
 	}
 
-	// Top 6 热门专业（2025 年最难进的，排除 NULL）
-	const history							= await env.DB.prepare(`
-		SELECT year, group_name, min_rank, plan_count FROM gaokao_scores
-		WHERE school_name = ? AND year = 2025 AND min_rank IS NOT NULL
-		ORDER BY min_rank ASC LIMIT 6
-	`).bind(first.school_name).all();
+	// Top 6 热门专业组（2025 该省最难进，按省）
+	const history							= await env.DB.prepare(
+		'SELECT year, group_name, min_rank, plan_count FROM gaokao_scores ' +
+		'WHERE province = ? AND school_name = ? AND year = 2025 AND min_rank IS NOT NULL ' +
+		'ORDER BY min_rank ASC LIMIT 6'
+	).bind(province, first.school_name).all();
 
 	const trend								= trend_rows.sort((a, b) => a.year - b.year);
 
 	return json_response({
 		agent:		'school',
 		type:		'detail',
+		province:	province,
 		keyword:	keyword,
 		matched:	school_list.slice(0, 10),
 		detail:	{

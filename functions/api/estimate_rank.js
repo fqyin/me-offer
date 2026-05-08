@@ -1,6 +1,6 @@
 // Me Offer · 位次估算 API
-// POST /api/estimate_rank  body: { score: 578, subject_type: 'total' | 'physics' | ... }
-// Returns: { rank, year, score, equivalent: { 2024: {score,rank}, ... } }
+// POST /api/estimate_rank  body: { score: 578, subject_type: 'total', province: 'shandong' }
+// Returns: { rank, year, score, province, equivalent: { 2024: {score,rank}, ... } }
 
 export async function onRequestPost(context) {
 	const request							= context.request;
@@ -16,6 +16,7 @@ export async function onRequestPost(context) {
 	const score								= parseInt(body.score);
 	const subject_type						= body.subject_type || 'total';
 	const target_year						= parseInt(body.year) || 2025;
+	const province							= body.province || 'shandong';
 
 	if (isNaN(score) || score < 100 || score > 750) {
 		return json_response({error: 'score must be 100-750'}, 400);
@@ -26,16 +27,16 @@ export async function onRequestPost(context) {
 		return json_response({error: 'invalid subject_type'}, 400);
 	}
 
-	// 查目标年份的位次
-	const stmt								= env.DB.prepare('SELECT score, rank, count FROM gaokao_segments WHERE year = ? AND subject_type = ? AND score = ? LIMIT 1');
-	const exact								= await stmt.bind(target_year, subject_type, score).first();
+	// 查目标年份的位次（带 province 过滤）
+	const stmt								= env.DB.prepare('SELECT score, rank, count FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? AND score = ? LIMIT 1');
+	const exact								= await stmt.bind(province, target_year, subject_type, score).first();
 
 	let rank;
 	if (exact) {
 		rank								= exact.rank;
 	} else {
 		// 线性插值：找上下最近两个分数
-		const neighbors						= await env.DB.prepare('SELECT score, rank FROM gaokao_segments WHERE year = ? AND subject_type = ? ORDER BY ABS(score - ?) LIMIT 2').bind(target_year, subject_type, score).all();
+		const neighbors						= await env.DB.prepare('SELECT score, rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? ORDER BY ABS(score - ?) LIMIT 2').bind(province, target_year, subject_type, score).all();
 		if (!neighbors.results || neighbors.results.length === 0) {
 			return json_response({error: 'no data for year'}, 404);
 		}
@@ -49,11 +50,11 @@ export async function onRequestPost(context) {
 		}
 	}
 
-	// 查近 4 年等效分：给定位次找对应分数
+	// 查近 4 年等效分：给定位次找对应分数（同省）
 	const equivalent						= {};
 	const eq_years							= [2024, 2023, 2022, 2021].filter(y => y !== target_year);
 	for (const y of eq_years) {
-		const eq_stmt						= env.DB.prepare('SELECT score, rank FROM gaokao_segments WHERE year = ? AND subject_type = ? ORDER BY ABS(rank - ?) LIMIT 1').bind(y, subject_type, rank);
+		const eq_stmt						= env.DB.prepare('SELECT score, rank FROM gaokao_segments WHERE province = ? AND year = ? AND subject_type = ? ORDER BY ABS(rank - ?) LIMIT 1').bind(province, y, subject_type, rank);
 		const eq							= await eq_stmt.first();
 		if (eq) {
 			equivalent[y]					= {score: eq.score, rank: eq.rank};
@@ -64,6 +65,7 @@ export async function onRequestPost(context) {
 		score:					score,
 		subject_type:			subject_type,
 		year:					target_year,
+		province:				province,
 		rank:					rank,
 		equivalent:				equivalent
 	});

@@ -464,7 +464,7 @@
 		<section id="step_5" class="hidden-section px-4 pt-5 pb-6">
 			<div class="mb-4">
 				<div class="text-[10px] tracking-widest text-muted uppercase mb-1">ANALYSIS COMPLETE</div>
-				<h2 class="text-2xl font-black text-dark mb-1">你的 96 志愿方案已生成</h2>
+				<h2 class="text-2xl font-black text-dark mb-1" id="result_title">你的志愿推荐表已生成</h2>
 				<p class="text-xs text-muted">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例排序</p>
 			</div>
 
@@ -472,12 +472,12 @@
 			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
 				<div class="flex items-center justify-between mb-3">
 					<div>
-						<div class="text-xs text-muted">你的位次（山东省）</div>
+						<div class="text-xs text-muted" id="result_rank_label">你的位次</div>
 						<div class="text-xl font-black" id="result_rank" style="color: #8B6914;">—</div>
 					</div>
 					<div class="text-right">
 						<div class="text-xs text-muted">总志愿数</div>
-						<div class="text-xl font-black text-dark">96</div>
+						<div class="text-xl font-black text-dark" id="result_total">96</div>
 					</div>
 				</div>
 				<div class="flex gap-2">
@@ -512,7 +512,7 @@
 			<div class="mb-4">
 				<div class="flex items-center justify-between mb-2">
 					<div class="text-sm font-bold text-dark">志愿表预览</div>
-					<div class="text-[11px] text-muted">前 3 个 &middot; 完整 96 个需解锁</div>
+					<div class="text-[11px] text-muted" id="preview_subtitle">前 3 个 &middot; 完整推荐表需解锁</div>
 				</div>
 				<div id="volunteer_list"></div>
 			</div>
@@ -595,12 +595,12 @@
 					</div>
 					<div class="space-y-1.5 mb-3 text-[12px] text-dark">
 						<div>&#x2713; 包含免费版所有内容</div>
-						<div>&#x2713; <strong>完整 96 志愿</strong>（24 冲 / 48 稳 / 24 保）</div>
+						<div>&#x2713; <strong>完整志愿推荐表</strong>（按冲 / 稳 / 保科学分配）</div>
 						<div>&#x2713; 每个志愿 <strong>录取概率 + 位次差</strong></div>
 						<div class="text-muted">&#x00B7; PDF 下载 <span style="color: #C94A4A;">不可用</span></div>
 						<div class="text-muted">&#x00B7; 想下载/AI 对话 &rarr; 升级 ¥99 精准方案</div>
 					</div>
-					<button onclick="trigger_pay(1)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #F59E0B, #D97706);">&#xFFE5;1 看完整 96 志愿 &#x2192;</button>
+					<button onclick="trigger_pay(1)" class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: linear-gradient(135deg, #F59E0B, #D97706);">&#xFFE5;1 看完整志愿推荐表 &#x2192;</button>
 				</div>
 
 				<!-- Plan ¥99 精准方案（热销）-->
@@ -670,7 +670,7 @@
 						<div class="py-2 px-1.5 text-center" style="color: #22C55E; background: #2A2A2A;">&#x2713;</div>
 					</div>
 					<div class="grid grid-cols-5 text-[11px] border-t" style="border-color: #E5DDD0;">
-						<div class="py-2 px-1.5">96 志愿完整</div>
+						<div class="py-2 px-1.5">完整志愿推荐表</div>
 						<div class="py-2 px-1.5 text-center" style="color: #C94A4A;">仅 3 个</div>
 						<div class="py-2 px-1.5 text-center" style="color: #22C55E; background: #FEFBF0;">&#x2713;</div>
 						<div class="py-2 px-1.5 text-center" style="color: #22C55E; background: #FDF8F0;">&#x2713;</div>
@@ -1044,6 +1044,15 @@ function render_provinces_dropdown() {
 function bind_province_change() {
 	$(document).on('change', '#input_province', function() {
 		update_province_info();
+		/* 切省后刷新位次：必须用 input 框的实时值（form_data.score 要等点"下一步"才赋值，太晚）
+		   山东 / 北京 / 浙江 / 江苏 segments 完全不同，必须重新查 */
+		form_data.province					= $('#input_province').val();
+		let cur_score						= parseInt($('#input_score').val());
+		if (!isNaN(cur_score) && cur_score >= 150 && cur_score <= 750) {
+			delete last_rank_cache[cur_score];				/* 清缓存避免拿到旧省的位次 */
+			$('#score_hint').hide();						/* 先隐藏旧位次，避免视觉跳变 */
+			fetch_real_rank(cur_score);
+		}
 	});
 }
 
@@ -1180,11 +1189,24 @@ function fetch_real_rank(score) {
 		return;
 	}
 
+	/* 关键：把当前 form_data.province 和 subject_type 一并传过去
+	   北京/江苏/浙江/山东都有自己的 segments，必须按省查 */
+	let api_subject						= form_data.subject_type || 'total';
+	if (form_data.province === 'jiangsu' && api_subject === 'total') {
+		/* 江苏没有 total，用物理类作默认（用户后续选科会刷新） */
+		api_subject						= 'physics';
+	}
+
 	$.ajax({
 		url:		'/api/estimate_rank',
 		method:		'POST',
 		contentType:	'application/json',
-		data:		JSON.stringify({score: score, year: 2025, subject_type: 'total'}),
+		data:		JSON.stringify({
+			score:			score,
+			year:			2025,
+			subject_type:	api_subject,
+			province:		form_data.province || 'shandong'
+		}),
 		success: function(res) {
 			if (res && res.rank) {
 				last_rank_cache[score]		= res.rank;
@@ -1206,15 +1228,26 @@ function render_rank_hint(score, rank) {
 	let eq_2022								= eq['2022'] ? eq['2022'].score : null;
 	let eq_2021								= eq['2021'] ? eq['2021'].score : null;
 
-	// 推断本科线（山东 2025 一段线约 437）
-	let line_status							= '';
-	if (score >= 600) line_status			= '<span style="color:#C94A4A;">&#x2B50; 高分段（约 5% 考生）</span>';
-	else if (score >= 540) line_status		= '<span style="color:#8B6914;">&#x1F3AF; 良好（一段线 +100 以上）</span>';
-	else if (score >= 480) line_status		= '<span style="color:#8B6914;">&#x1F3AF; 稳定达本科线</span>';
-	else if (score >= 437) line_status		= '<span style="color:#F59E0B;">&#x26A0;&#xFE0F; 接近一段线</span>';
-	else line_status						= '<span style="color:#C94A4A;">&#x26A0;&#xFE0F; 低于一段线 437</span>';
+	/* 各省 2025 一段线（本科批控制线）
+	   山东 437 / 浙江 492（一段）/ 北京 430（普通本科）/ 江苏物理 421 历史 478 */
+	let prov_meta_map						= {
+		shandong:	{name: '山东省', source: '山东省教育招生考试院',	line: 437, line_label: '一段线'},
+		zhejiang:	{name: '浙江省', source: '浙江省教育考试院',		line: 492, line_label: '一段线'},
+		beijing:	{name: '北京市', source: '北京教育考试院',		line: 430, line_label: '本科线'},
+		jiangsu:	{name: '江苏省', source: '江苏省教育考试院',		line: 421, line_label: '本科线（物理类）'}
+	};
+	let prov								= form_data.province || 'shandong';
+	let pm									= prov_meta_map[prov] || prov_meta_map.shandong;
 
-	let html								= '<div style="color:#8B6914;font-weight:600;">&#x1F4CA; 你在山东省约排 <strong>' + rank.toLocaleString() + '</strong> 名</div>' +
+	// 本科线状态判断：基于实际省线
+	let line_status							= '';
+	if (score >= pm.line + 160) line_status	= '<span style="color:#C94A4A;">&#x2B50; 高分段（约 5% 考生）</span>';
+	else if (score >= pm.line + 100) line_status = '<span style="color:#8B6914;">&#x1F3AF; 良好（' + pm.line_label + ' +100 以上）</span>';
+	else if (score >= pm.line + 40) line_status = '<span style="color:#8B6914;">&#x1F3AF; 稳定达本科线</span>';
+	else if (score >= pm.line) line_status	= '<span style="color:#F59E0B;">&#x26A0;&#xFE0F; 接近' + pm.line_label + '</span>';
+	else line_status						= '<span style="color:#C94A4A;">&#x26A0;&#xFE0F; 低于' + pm.line_label + ' ' + pm.line + '</span>';
+
+	let html								= '<div style="color:#8B6914;font-weight:600;">&#x1F4CA; 你在' + pm.name + '约排 <strong>' + rank.toLocaleString() + '</strong> 名</div>' +
 		'<div style="color:#666;margin-top:3px;">' + line_status + '</div>';
 
 	// 等效分
@@ -1228,7 +1261,7 @@ function render_rank_hint(score, rank) {
 		html								+= eq_parts.join(' / ') + '</div>';
 	}
 
-	html									+= '<div style="color:#AAA;margin-top:4px;font-size:9px;">基于 2025 山东省教育招生考试院官方一分一段表</div>';
+	html									+= '<div style="color:#AAA;margin-top:4px;font-size:9px;">基于 2025 ' + pm.source + '官方一分一段表</div>';
 
 	$('#score_rank_text').html(html);
 	$('#score_hint').fadeIn(200);
@@ -1502,7 +1535,8 @@ function run_agent_sequence(index) {
 	// Print logs one by one
 	agent_def.logs.forEach(function(log) {
 		setTimeout(function() {
-			append_log(log.text, log.color);
+			let log_text						= rewrite_log_for_province(log.text);
+			append_log(log_text, log.color);
 		}, log.delay);
 	});
 
@@ -1551,6 +1585,24 @@ function wait_for_api_then_show() {
 			}, 800);
 		}
 	}, 200);
+}
+
+/* 把终端动画的硬编码 24/48/24/96 改成当前省的真实数字
+   山东/浙江：24/48/24=96 · 北京：8/14/8=30 · 江苏：10/20/10=40 */
+function rewrite_log_for_province(text) {
+	let p									= form_data.province || 'shandong';
+	let cfg									= {
+		shandong:	{ chong: 24, wen: 48, bao: 24, total: 96 },
+		zhejiang:	{ chong: 24, wen: 48, bao: 24, total: 96 },
+		beijing:	{ chong: 8,  wen: 14, bao: 8,  total: 30 },
+		jiangsu:	{ chong: 10, wen: 20, bao: 10, total: 40 }
+	}[p] || { chong: 24, wen: 48, bao: 24, total: 96 };
+
+	return text
+		.replace('冲档志愿：24 个', '冲档志愿：' + cfg.chong + ' 个')
+		.replace('稳档志愿：48 个', '稳档志愿：' + cfg.wen + ' 个')
+		.replace('保档志愿：24 个', '保档志愿：' + cfg.bao + ' 个')
+		.replace('96 志愿方案生成完成', cfg.total + ' 志愿方案生成完成');
 }
 
 function append_log(text, color) {
@@ -1615,8 +1667,29 @@ function show_results() {
 	let rank								= (api_result_96 && api_result_96.rank) || form_data.rank_current || 0;
 	$('#result_rank').text(rank ? rank.toLocaleString() : '—');
 
-	// 更新 24/48/24 实际数量
+	/* 省份相关动态文案：标题/位次标签/总志愿数/预览副标题
+	   山东/浙江：96 志愿 · 北京：30 院校专业组 · 江苏：40 志愿 */
+	let province_label_map					= {
+		shandong: '山东省',
+		zhejiang: '浙江省',
+		beijing: '北京市',
+		jiangsu: '江苏省'
+	};
+	let prov_label							= province_label_map[form_data.province] || '';
+	$('#result_rank_label').text('你的位次（' + prov_label + '）');
+
 	if (api_result_96 && api_result_96.count) {
+		let total							= api_result_96.count.total || 96;
+		$('#result_total').text(total);
+
+		if (form_data.province === 'beijing') {
+			$('#result_title').text('你的 ' + total + ' 院校专业组方案已生成');
+			$('#preview_subtitle').text('前 3 个 · 完整 ' + total + ' 个专业组需解锁');
+		} else {
+			$('#result_title').text('你的 ' + total + ' 志愿方案已生成');
+			$('#preview_subtitle').text('前 3 个 · 完整 ' + total + ' 志愿需解锁');
+		}
+
 		$('[style*="FEECEC"] div:first-child').text(api_result_96.count.chong || 24);
 		$('[style*="FDF4E5"] div:first-child').text(api_result_96.count.wen || 48);
 		$('[style*="E8F7EE"] div:first-child').text(api_result_96.count.bao || 24);
@@ -1753,15 +1826,74 @@ function render_volunteer_row(v, idx, is_blur) {
 	let tag_class							= 'tag-' + (v.tier === 'wen' ? 'wen' : v.tier);
 	let row_class							= is_blur ? 'volunteer-row volunteer-row-blur' : 'volunteer-row';
 
-	return '<div class="' + row_class + '">' +
+	/* 北京：院校专业组模式
+	   - group_name 是 "01"/"02" 这种纯数字编号（北京 2025 招办公开格式）
+	   - 第二行展示「01 专业组 · 物理+化学」让家长能识别
+	   - 卡片下方加可折叠区「组内含 6 个专业明细补充中」 */
+	let is_beijing							= form_data.province === 'beijing';
+	let group_display						= '';
+
+	if (is_beijing) {
+		let group_idx						= escape_html(v.group_name || v.group_code || '');
+		let sub_req							= escape_html(v.subject_require || '不限选科');
+		group_display						= group_idx + ' 专业组 &middot; ' + sub_req;
+	} else {
+		group_display						= escape_html(v.group_name || '');
+	}
+
+	let main_row							= '<div class="' + row_class + '">' +
 		'<div class="text-xs font-bold" style="color: #8B6914;">' + String(idx).padStart(2, '0') + '</div>' +
 		'<div>' +
 			'<div class="text-[13px] font-semibold text-dark">' + escape_html(v.school_name) + '</div>' +
-			'<div class="text-[11px] text-muted">' + escape_html(v.group_name || '') + '</div>' +
+			'<div class="text-[11px] text-muted">' + group_display + '</div>' +
 		'</div>' +
 		'<div class="text-center"><span class="tag ' + tag_class + '">' + tier_label + '</span></div>' +
 		'<div class="text-[12px] font-semibold text-right" style="color: #8B6914;">' + (v.prob || 0) + '%</div>' +
 	'</div>';
+
+	/* 北京额外加一行：
+	   - 有真实 group_majors（v.group_majors 数组非空）→ 列出专业
+	   - 没数据（PDF 里这个组没明细）→ 显示「专业明细补充中」 */
+	if (is_beijing && !is_blur) {
+		let majors_arr						= (v.group_majors && Array.isArray(v.group_majors)) ? v.group_majors : [];
+		/* 过滤掉解析噪音：major_name 含〔〕或太长（>30 字）或纯标点的剔除 */
+		majors_arr							= majors_arr.filter(function(m) {
+			let name						= (m.major_name || '').trim();
+			if (!name) return false;
+			if (name.length > 25) return false;
+			/* 剔除 OCR 噪音：含特殊括号、办学地点、含「以上」「办学」「校区」「分方向」等附注关键字的 */
+			if (/^[〔〕\[\]【】（）()0-9 \-、，；。：]+$/.test(name)) return false;
+			if (name.indexOf('〔') >= 0 || name.indexOf('[') >= 0) return false;
+			if (name.indexOf('以上') >= 0 || name.indexOf('办学') >= 0 || name.indexOf('校区') >= 0) return false;
+			if (name.indexOf('分方向') >= 0 || name.indexOf('培养') >= 0) return false;
+			/* 不能以标点开头 */
+			if (/^[、，；：。)）\]】]/.test(name)) return false;
+			return true;
+		});
+
+		if (majors_arr.length > 0) {
+			let lines						= [];
+			for (let i = 0; i < Math.min(6, majors_arr.length); i++) {
+				let m						= majors_arr[i];
+				let idx_str					= m.major_index ? (m.major_index + ' ') : '';
+				let plan					= m.plan_count ? ('&middot; ' + m.plan_count + '人') : '';
+				let tu						= m.tuition ? ('&middot; ' + m.tuition + '元/年') : '';
+				lines.push('<div>' + escape_html(idx_str) + escape_html(m.major_name) + ' <span style="color:#999;">' + plan + ' ' + tu + '</span></div>');
+			}
+			let more						= majors_arr.length > 6 ? '<div style="color:#C9A96E;">… 共 ' + majors_arr.length + ' 个专业</div>' : '';
+			main_row						+= '<div class="text-[10px] text-muted px-3 -mt-2 mb-2 leading-relaxed" style="padding-left: 56px;">' +
+				'&#x2728; <strong>组内专业</strong>：' +
+				lines.join('') +
+				more +
+				'</div>';
+		} else {
+			main_row						+= '<div class="text-[10px] text-muted px-3 -mt-2 mb-2" style="padding-left: 56px;">' +
+				'&#x2728; 组内含 6 个专业 + 调剂选项 · <span style="color:#C9A96E;">专业明细补充中</span>' +
+				'</div>';
+		}
+	}
+
+	return main_row;
 }
 
 function escape_html(str) {
