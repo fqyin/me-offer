@@ -133,31 +133,31 @@
 				</ul>
 			</div>
 
-			<!-- 钩子：Plan B 三线并行（移到此处）-->
-			<div onclick="document.getElementById('plan_b').scrollIntoView({behavior:'smooth'})" class="px-3 py-3 rounded-xl cursor-pointer mb-4" style="background: rgba(139,105,20,0.06); border: 1px solid rgba(139,105,20,0.18);">
-				<div class="text-[10px] font-semibold mb-2" style="color: #5a3e10;">📌 出分后,三线并行更稳妥</div>
-				<div class="flex flex-col gap-1.5">
-					<div class="flex items-center gap-2">
-						<span class="text-[10px] w-20 flex-shrink-0" style="color: #5a3e10;">高考志愿填报</span>
-						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
-							<div style="width:80%; height:100%; background: linear-gradient(90deg,#8B6914,#C9A96E); border-radius:9999px;"></div>
-						</div>
-						<span class="text-[10px]" style="color: #8B6914;">进行中</span>
+			<!-- 三大方向：博士帽按钮 -->
+			<div class="grid grid-cols-3 gap-3 mb-4">
+				<!-- 本科 -->
+				<div onclick="document.getElementById('plan_b').scrollIntoView({behavior:'smooth'})" class="cursor-pointer text-center">
+					<div class="aspect-square rounded-2xl flex items-center justify-center mb-2 transition" style="background: #F0E6D0; border: 1px solid #E5DDD0;">
+						<span class="text-5xl">&#x1F393;</span>
 					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-[10px] w-20 flex-shrink-0" style="color: #1a2f4a;">港澳院校申请</span>
-						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
-							<div style="width:15%; height:100%; background: linear-gradient(90deg,#0a1628,#1a5276); border-radius:9999px; animation: grow-bar 2s ease-out forwards;"></div>
-						</div>
-						<span class="text-[10px] font-semibold" style="color: #1a2f4a;">同步启动 1999 元 →</span>
+					<div class="text-sm font-bold text-dark leading-tight">本科</div>
+					<div class="text-[11px] mt-1" style="color: #8B6914;">高考<br>稳录取</div>
+				</div>
+				<!-- 研究生 -->
+				<div onclick="document.getElementById('plan_b').scrollIntoView({behavior:'smooth'})" class="cursor-pointer text-center">
+					<div class="aspect-square rounded-2xl flex items-center justify-center mb-2 transition" style="background: #E8EDF5; border: 1px solid #D4DBE7;">
+						<span class="text-5xl">&#x1F393;</span>
 					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-[10px] w-20 flex-shrink-0" style="color: #6B4226;">海外留学申请</span>
-						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
-							<div style="width:10%; height:100%; background: linear-gradient(90deg,#6B4226,#A0612D); border-radius:9999px; animation: grow-bar 2s ease-out forwards;"></div>
-						</div>
-						<span class="text-[10px] font-semibold" style="color: #6B4226;">一键直达 1999 元 →</span>
+					<div class="text-sm font-bold text-dark leading-tight">研究生</div>
+					<div class="text-[11px] mt-1" style="color: #1a2f4a;">港校<br>高考直录</div>
+				</div>
+				<!-- 实习 -->
+				<div onclick="document.getElementById('plan_b').scrollIntoView({behavior:'smooth'})" class="cursor-pointer text-center">
+					<div class="aspect-square rounded-2xl flex items-center justify-center mb-2 transition" style="background: #EFE3D7; border: 1px solid #DDC9B6;">
+						<span class="text-5xl">&#x1F393;</span>
 					</div>
+					<div class="text-sm font-bold text-dark leading-tight">实习</div>
+					<div class="text-[11px] mt-1" style="color: #6B4226;">留学<br>本科备选</div>
 				</div>
 			</div>
 
