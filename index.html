@@ -158,81 +158,6 @@
 				</div>
 			</div>
 
-			<!-- 为什么要提前规划? (新插入) -->
-			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
-				<div class="text-sm font-black text-dark mb-3 flex items-center gap-2">
-					<span>💡</span><span>为什么要提前规划?</span>
-				</div>
-				<div class="grid grid-cols-1 gap-2.5">
-					<div class="flex items-start gap-2.5">
-						<span class="text-base flex-shrink-0">⏰</span>
-						<div>
-							<div class="text-xs font-semibold text-dark">出分后时间紧</div>
-							<div class="text-[11px]" style="color: #8A8A8A;">容易慌乱扎堆,错失最优志愿组合</div>
-						</div>
-					</div>
-					<div class="flex items-start gap-2.5">
-						<span class="text-base flex-shrink-0">⚠️</span>
-						<div>
-							<div class="text-xs font-semibold text-dark">志愿填错代价高</div>
-							<div class="text-[11px]" style="color: #8A8A8A;">可能错失录取位次,一年时间不可逆</div>
-						</div>
-					</div>
-					<div class="flex items-start gap-2.5">
-						<span class="text-base flex-shrink-0">🎯</span>
-						<div>
-							<div class="text-xs font-semibold text-dark">港校/留学有窗口期</div>
-							<div class="text-[11px]" style="color: #8A8A8A;">需要同步准备,错过就要等下一届</div>
-						</div>
-					</div>
-					<div class="flex items-start gap-2.5">
-						<span class="text-base flex-shrink-0">🛡️</span>
-						<div>
-							<div class="text-xs font-semibold text-dark">多一路径,多一份保障</div>
-							<div class="text-[11px]" style="color: #8A8A8A;">三线并行,让选择更从容</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Countdown Card -->
-			<div class="rounded-2xl p-4" style="background: #1A1A1A;">
-				<div class="flex items-center gap-2 mb-3">
-					<span class="text-base">&#x23F0;</span>
-					<span class="text-white text-sm font-semibold" id="countdown_label">距 2026 高考填报截止</span>
-				</div>
-				<!-- 出分前：倒计时 -->
-				<div id="countdown_before">
-					<div class="flex gap-3 mb-3" id="gaokao_countdown">
-						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
-							<div class="text-2xl font-black text-white" id="gaokao_days">--</div>
-							<div class="text-[10px] text-muted uppercase tracking-wider">DAYS</div>
-						</div>
-						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
-							<div class="text-2xl font-black text-white" id="gaokao_hours">--</div>
-							<div class="text-[10px] text-muted uppercase tracking-wider">HOURS</div>
-						</div>
-						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
-							<div class="text-2xl font-black text-white" id="gaokao_min">--</div>
-							<div class="text-[10px] text-muted uppercase tracking-wider">MIN</div>
-						</div>
-						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
-							<div class="text-2xl font-black text-white" id="gaokao_sec">--</div>
-							<div class="text-[10px] text-muted uppercase tracking-wider">SEC</div>
-						</div>
-					</div>
-					<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，每一分都关键。让 AI 基于 5 年真实数据，辅助你做好参考决策。</p>
-				</div>
-				<!-- 出分当天：行动号召 -->
-				<div id="countdown_scores_out" style="display:none;">
-					<div class="rounded-xl p-3 mb-3 text-center" style="background: rgba(201,74,74,0.15); border: 1px solid rgba(201,74,74,0.4);">
-						<div class="text-sm font-black text-white mb-1">🔴 今天出分！填报窗口已开启</div>
-						<div class="text-xs" style="color: #C94A4A;">填报只有 5-7 天 · 每一分都关键 · 现在生成方案</div>
-					</div>
-					<button onclick="goto_apply('earlybird')" class="w-full py-3 rounded-xl text-sm font-black text-white cursor-pointer" style="background: linear-gradient(90deg, #C94A4A, #8B1A1A); animation: pulse-cta 1.5s infinite;">⚡ 立即生成我的志愿方案 →</button>
-				</div>
-			</div>
-		</section>
 
 		<!-- Section 3: 志愿管理工作台 演示 -->
 		<section class="px-4 pb-6">
@@ -422,6 +347,81 @@
 
 		</section>
 
+			<!-- 为什么要提前规划? (新插入) -->
+			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-sm font-black text-dark mb-3 flex items-center gap-2">
+					<span>💡</span><span>为什么要提前规划?</span>
+				</div>
+				<div class="grid grid-cols-1 gap-2.5">
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">⏰</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">出分后时间紧</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">容易慌乱扎堆,错失最优志愿组合</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">⚠️</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">志愿填错代价高</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">可能错失录取位次,一年时间不可逆</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">🎯</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">港校/留学有窗口期</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">需要同步准备,错过就要等下一届</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">🛡️</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">多一路径,多一份保障</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">三线并行,让选择更从容</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Countdown Card -->
+			<div class="rounded-2xl p-4" style="background: #1A1A1A;">
+				<div class="flex items-center gap-2 mb-3">
+					<span class="text-base">&#x23F0;</span>
+					<span class="text-white text-sm font-semibold" id="countdown_label">距 2026 高考填报截止</span>
+				</div>
+				<!-- 出分前：倒计时 -->
+				<div id="countdown_before">
+					<div class="flex gap-3 mb-3" id="gaokao_countdown">
+						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+							<div class="text-2xl font-black text-white" id="gaokao_days">--</div>
+							<div class="text-[10px] text-muted uppercase tracking-wider">DAYS</div>
+						</div>
+						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+							<div class="text-2xl font-black text-white" id="gaokao_hours">--</div>
+							<div class="text-[10px] text-muted uppercase tracking-wider">HOURS</div>
+						</div>
+						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+							<div class="text-2xl font-black text-white" id="gaokao_min">--</div>
+							<div class="text-[10px] text-muted uppercase tracking-wider">MIN</div>
+						</div>
+						<div class="flex-1 rounded-xl py-3 text-center" style="background: #2A2A2A;">
+							<div class="text-2xl font-black text-white" id="gaokao_sec">--</div>
+							<div class="text-[10px] text-muted uppercase tracking-wider">SEC</div>
+						</div>
+					</div>
+					<p class="text-xs leading-relaxed" style="color: #C94A4A;">填报只有 5-7 天，每一分都关键。让 AI 基于 5 年真实数据，辅助你做好参考决策。</p>
+				</div>
+				<!-- 出分当天：行动号召 -->
+				<div id="countdown_scores_out" style="display:none;">
+					<div class="rounded-xl p-3 mb-3 text-center" style="background: rgba(201,74,74,0.15); border: 1px solid rgba(201,74,74,0.4);">
+						<div class="text-sm font-black text-white mb-1">🔴 今天出分！填报窗口已开启</div>
+						<div class="text-xs" style="color: #C94A4A;">填报只有 5-7 天 · 每一分都关键 · 现在生成方案</div>
+					</div>
+					<button onclick="goto_apply('earlybird')" class="w-full py-3 rounded-xl text-sm font-black text-white cursor-pointer" style="background: linear-gradient(90deg, #C94A4A, #8B1A1A); animation: pulse-cta 1.5s infinite;">⚡ 立即生成我的志愿方案 →</button>
+				</div>
+			</div>
+		</section>
 		<!-- Section 5: Three Plans -->
 		<section class="px-4 pb-6" id="gaokao_plans">
 			<div class="mb-1">
