@@ -122,9 +122,81 @@
 			<div class="flex items-center gap-2 mb-3">
 				<span class="text-[10px] tracking-widest text-muted uppercase">AI ONE-CLICK GAOKAO · 一键志愿</span>
 			</div>
-			<h1 class="text-4xl font-black leading-tight mb-1 text-dark">高考双保险</h1>
-			<h1 class="text-4xl font-black leading-tight mb-4" style="color: #C94A4A;">国学 港校 留学</h1>
-			<p class="text-sm leading-relaxed mb-6" style="color: #5A5A5A;">6 个 AI 智能体 &middot; Claude 4.5 深度推理 &middot; 基于山东考试院 2021-2025 五年真实数据 &middot; 2 分钟生成 96 志愿参考方案。</p>
+			<h1 class="text-4xl font-black leading-tight mb-1 text-dark">高考三重保障</h1>
+			<h1 class="text-4xl font-black leading-tight mb-4" style="color: #C94A4A;">内地 · 港澳 · 留学</h1>
+			<div class="mb-6">
+				<p class="text-sm font-bold leading-relaxed mb-3 text-dark">AI智能保证 &middot; 家长省钱 &middot; 学生省心</p>
+				<ul class="text-sm leading-relaxed space-y-2" style="color: #5A5A5A;">
+					<li><span style="color: #C94A4A;" class="font-bold">&yen;199</span> 解锁 96 个高报志愿 + 无限次模拟填报（高考）</li>
+					<li><span style="color: #C94A4A;" class="font-bold">&yen;199</span> 解锁选校方案 + 中英双语文书（港校、留学）</li>
+					<li><span style="color: #C94A4A;" class="font-bold">&yen;1999</span> Offer 保障计划 ｜ 不含申请费 ｜ 拿不到 Offer，全额退款（港校、留学）</li>
+				</ul>
+			</div>
+
+			<!-- 钩子：Plan B 三线并行（移到此处）-->
+			<div onclick="document.getElementById('plan_b').scrollIntoView({behavior:'smooth'})" class="px-3 py-3 rounded-xl cursor-pointer mb-4" style="background: rgba(139,105,20,0.06); border: 1px solid rgba(139,105,20,0.18);">
+				<div class="text-[10px] font-semibold mb-2" style="color: #5a3e10;">📌 出分后,三线并行更稳妥</div>
+				<div class="flex flex-col gap-1.5">
+					<div class="flex items-center gap-2">
+						<span class="text-[10px] w-20 flex-shrink-0" style="color: #5a3e10;">高考志愿填报</span>
+						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
+							<div style="width:80%; height:100%; background: linear-gradient(90deg,#8B6914,#C9A96E); border-radius:9999px;"></div>
+						</div>
+						<span class="text-[10px]" style="color: #8B6914;">进行中</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-[10px] w-20 flex-shrink-0" style="color: #1a2f4a;">港澳院校申请</span>
+						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
+							<div style="width:15%; height:100%; background: linear-gradient(90deg,#0a1628,#1a5276); border-radius:9999px; animation: grow-bar 2s ease-out forwards;"></div>
+						</div>
+						<span class="text-[10px] font-semibold" style="color: #1a2f4a;">同步启动 1999 元 →</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-[10px] w-20 flex-shrink-0" style="color: #6B4226;">海外留学申请</span>
+						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
+							<div style="width:10%; height:100%; background: linear-gradient(90deg,#6B4226,#A0612D); border-radius:9999px; animation: grow-bar 2s ease-out forwards;"></div>
+						</div>
+						<span class="text-[10px] font-semibold" style="color: #6B4226;">一键直达 1999 元 →</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 为什么要提前规划? (新插入) -->
+			<div class="rounded-2xl p-4 mb-4" style="background: white; border: 1px solid #E5DDD0;">
+				<div class="text-sm font-black text-dark mb-3 flex items-center gap-2">
+					<span>💡</span><span>为什么要提前规划?</span>
+				</div>
+				<div class="grid grid-cols-1 gap-2.5">
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">⏰</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">出分后时间紧</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">容易慌乱扎堆,错失最优志愿组合</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">⚠️</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">志愿填错代价高</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">可能错失录取位次,一年时间不可逆</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">🎯</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">港校/留学有窗口期</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">需要同步准备,错过就要等下一届</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-2.5">
+						<span class="text-base flex-shrink-0">🛡️</span>
+						<div>
+							<div class="text-xs font-semibold text-dark">多一路径,多一份保障</div>
+							<div class="text-[11px]" style="color: #8A8A8A;">三线并行,让选择更从容</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<!-- Countdown Card -->
 			<div class="rounded-2xl p-4" style="background: #1A1A1A;">
@@ -161,29 +233,6 @@
 						<div class="text-xs" style="color: #C94A4A;">填报只有 5-7 天 · 每一分都关键 · 现在生成方案</div>
 					</div>
 					<button onclick="goto_apply('earlybird')" class="w-full py-3 rounded-xl text-sm font-black text-white cursor-pointer" style="background: linear-gradient(90deg, #C94A4A, #8B1A1A); animation: pulse-cta 1.5s infinite;">⚡ 立即生成我的志愿方案 →</button>
-				</div>
-			</div>
-		</section>
-
-		<!-- 钩子：Plan B 双线进度条 -->
-		<section class="px-4 pb-4">
-			<div onclick="document.getElementById('plan_b').scrollIntoView({behavior:'smooth'})" class="px-3 py-3 rounded-xl cursor-pointer" style="background: rgba(139,105,20,0.06); border: 1px solid rgba(139,105,20,0.18);">
-				<div class="text-[10px] font-semibold mb-2" style="color: #5a3e10;">📌 出分后两件事同步进行 · 万一滑档不慌</div>
-				<div class="flex flex-col gap-1.5">
-					<div class="flex items-center gap-2">
-						<span class="text-[10px] w-16 flex-shrink-0" style="color: #5a3e10;">国内志愿</span>
-						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
-							<div style="width:80%; height:100%; background: linear-gradient(90deg,#8B6914,#C9A96E); border-radius:9999px;"></div>
-						</div>
-						<span class="text-[10px]" style="color: #8B6914;">进行中</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<span class="text-[10px] w-16 flex-shrink-0" style="color: #1a2f4a;">香港申请</span>
-						<div class="flex-1 rounded-full overflow-hidden" style="height:6px; background:#E5DDD0;">
-							<div style="width:15%; height:100%; background: linear-gradient(90deg,#0a1628,#1a5276); border-radius:9999px; animation: grow-bar 2s ease-out forwards;"></div>
-						</div>
-						<span class="text-[10px] font-semibold" style="color: #1a2f4a;">同步启动 →</span>
-					</div>
 				</div>
 			</div>
 		</section>
@@ -304,7 +353,7 @@
 				<span class="text-lg font-bold text-dark">高考 AI 智能体</span>
 				<span class="text-[10px] text-muted ml-2">6 Gaokao Agents</span>
 			</div>
-			<p class="text-xs text-muted mb-4">覆盖全国 2,868 所高校 &middot; 96,342 条山东投档数据 &middot; 18,619 条一分一段 &middot; <span style="color: #22C55E; font-weight: 600;">点击卡片体验 &middot; 免费</span></p>
+			<p class="text-xs text-muted mb-4">覆盖全国 2,868 所高校 &middot; 96,342 条山东投档数据 &middot; 18,619 条一分一段</p>
 			<div class="grid grid-cols-2 gap-3" id="gaokao_agents">
 				<!-- Agent 1: Score -->
 				<div class="agent-tile rounded-xl p-3 cursor-pointer" data-agent="score" style="background: white; border: 1px solid #E5DDD0;">
@@ -406,9 +455,9 @@
 				<div class="absolute top-3 right-3">
 					<span class="px-2 py-1 rounded-full text-[10px] font-semibold text-white" style="background: #C94A4A;">热销 &middot; 推荐</span>
 				</div>
-				<div class="text-base font-bold text-dark mb-1 mt-1">精准志愿方案</div>
+				<div class="text-base font-bold text-dark mb-1 mt-1">高考志愿深度方案</div>
 				<div class="text-[10px] tracking-wider text-muted uppercase mb-2">PRECISION</div>
-				<p class="text-xs text-muted leading-relaxed mb-3">完整 96 志愿 + PDF 下载 + Claude 4.5 AI 对话 + 可多次重算</p>
+				<p class="text-xs text-muted leading-relaxed mb-3">一份可直接参考填报的完整志愿分析</p>
 				<div class="flex items-baseline gap-2 mb-4">
 					<span class="text-3xl font-black" style="color: #C94A4A;">&#xFFE5;199</span>
 					<span class="text-sm line-through text-muted">原价 &#xFFE5;399</span>
@@ -416,23 +465,31 @@
 				<div class="space-y-2 mb-4">
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">包含早鸟体验所有内容</span>
+						<span class="text-xs text-dark">完整96个志愿填报方案</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark"><strong>PDF 下载</strong> &middot; 可直接抄到考试院</span>
+						<span class="text-xs text-dark">冲稳保梯度分析</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark"><strong>AI 对话答疑</strong>（Claude 4.5 追问调整）</span>
+						<span class="text-xs text-dark">院校专业匹配建议</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark"><strong>多次重算</strong>（改偏好实时更新）</span>
+						<span class="text-xs text-dark">志愿风险评估分析</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<span class="text-green-500 text-xs">&#x2713;</span>
-						<span class="text-xs text-dark">个性化风险深度洞察</span>
+						<span class="text-xs text-dark">PDF 导出下载</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">支持根据偏好调整方案</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="text-green-500 text-xs">&#x2713;</span>
+						<span class="text-xs text-dark">AI 智能辅助分析</span>
 					</div>
 				</div>
 				<!-- Bar Chart -->
@@ -456,7 +513,7 @@
 					</div>
 					<p class="text-[10px] text-muted text-center leading-snug">AI 按 25% 冲 / 50% 稳 / 25% 保的最优比例自动排序</p>
 				</div>
-				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">&#xFFE5;199 解锁精准方案 &#x2192;</button>
+				<button class="w-full py-3 rounded-xl text-sm font-bold text-white cursor-pointer" style="background: #C9A96E;" onclick="goto_apply('precision')">&#xFFE5;199 解锁高考志愿深度方案 &#x2192;</button>
 			</div>
 
 			<!-- Plan 3: 双保险套餐 ¥1999 -->
