@@ -60,6 +60,45 @@ export async function onRequestPost(context) {
 		};
 
 		is_new_parent						= true;
+
+		/* 记录注册元数据 (IP / 国家 / 城市 / 来源) */
+		try {
+			const req						= context.request;
+			const cf						= req.cf || {};
+			const xff						= (req.headers.get('X-Forwarded-For') || '').split(',')[0].trim();
+			const real_ip					= xff || req.headers.get('X-Real-IP') || req.headers.get('CF-Connecting-IP') || '';
+
+			let country						= cf.country || '';
+			let region						= cf.region || '';
+			let city						= cf.city || '';
+			let timezone					= cf.timezone || '';
+
+			/* 经 Nginx 中转时 cf.country 不准, 用真实 IP 查 ip-api.com */
+			const cf_ip						= req.headers.get('CF-Connecting-IP') || '';
+			if (real_ip && real_ip !== cf_ip) {
+				try {
+					const geo_resp			= await fetch('http://ip-api.com/json/' + real_ip + '?fields=status,countryCode,regionName,city,timezone', {
+						cf:	{ cacheTtl: 86400, cacheEverything: true }
+					});
+					if (geo_resp.ok) {
+						const g				= await geo_resp.json();
+						if (g.status === 'success') {
+							country			= g.countryCode || country;
+							region			= g.regionName || region;
+							city			= g.city || city;
+							timezone		= g.timezone || timezone;
+						}
+					}
+				} catch (e) {}
+			}
+
+			const ua						= (req.headers.get('User-Agent') || '').slice(0, 300);
+			const referrer					= (req.headers.get('Referer') || '').slice(0, 300);
+
+			await env.DB.prepare(
+				'INSERT OR REPLACE INTO user_register_meta (user_id, ip, country, region, city, timezone, user_agent, referrer, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+			).bind(String(parent.id), real_ip, country, region, city, timezone, ua, referrer, 'me_offer').run();
+		} catch (e) {}
 	} else {
 		/* 老家长 · 更新 last_login_at */
 		await env.DB.prepare(
